@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 
-// Updated the interface to match the form fields structure from useForm
+// Define the interface to make fields non-optional
 interface RegisterFormValues {
   fullName: string;
   email: string;
@@ -20,8 +20,9 @@ interface RegisterFormValues {
   hasEar: boolean;
 }
 
+// Update the form prop to accept the correct generics for UseFormReturn
 interface RegisterFormProps {
-  form: UseFormReturn<RegisterFormValues, any, undefined>;  // Updated to match useForm's return type
+  form: UseFormReturn<RegisterFormValues, any, undefined>;
   onSubmit: (data: RegisterFormValues) => Promise<void>;
   isSubmitting: boolean;
 }

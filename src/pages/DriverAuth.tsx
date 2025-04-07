@@ -17,6 +17,7 @@ import { Card } from '@/components/ui/card';
 // Type definition for Supabase drivers table insert
 type DriversInsert = Database['public']['Tables']['drivers']['Insert'];
 
+// Define the schema types to match our form interfaces
 const loginSchema = z.object({
   email: z.string().email('E-mail inválido'),
   password: z.string().min(6, 'A senha deve ter pelo menos 6 caracteres'),
@@ -33,6 +34,7 @@ const registerSchema = z.object({
   hasEar: z.boolean().default(false)
 });
 
+// Define these types using the z.infer to ensure they match the schema
 type LoginFormValues = z.infer<typeof loginSchema>;
 type RegisterFormValues = z.infer<typeof registerSchema>;
 
@@ -43,7 +45,7 @@ const DriverAuth = () => {
   const { signIn, signUp } = useAuth();
   const { toast } = useToast();
 
-  // Updated to explicitly define the type and use defineForm with explicit generics
+  // Ensure we're using the correct types and default values are explicitly set
   const loginForm = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -52,7 +54,7 @@ const DriverAuth = () => {
     },
   });
 
-  // Updated to explicitly define the type and use defineForm with explicit generics
+  // Ensure we're using the correct types and default values are explicitly set
   const registerForm = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
