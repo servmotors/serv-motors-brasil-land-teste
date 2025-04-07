@@ -16,6 +16,7 @@ export type Database = {
           cpf: string
           created_at: string
           full_name: string
+          has_ear: boolean | null
           id: string
           is_approved: boolean | null
           phone: string
@@ -32,6 +33,7 @@ export type Database = {
           cpf: string
           created_at?: string
           full_name: string
+          has_ear?: boolean | null
           id?: string
           is_approved?: boolean | null
           phone: string
@@ -48,6 +50,7 @@ export type Database = {
           cpf?: string
           created_at?: string
           full_name?: string
+          has_ear?: boolean | null
           id?: string
           is_approved?: boolean | null
           phone?: string

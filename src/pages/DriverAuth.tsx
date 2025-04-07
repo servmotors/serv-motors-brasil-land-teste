@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
@@ -13,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import type { Database } from '@/integrations/supabase/types';
 
 const loginSchema = z.object({
   email: z.string().email('E-mail inválido'),
@@ -27,10 +27,12 @@ const registerSchema = z.object({
   cpf: z.string().min(11, 'CPF inválido'),
   cnh: z.string().min(9, 'CNH inválida'),
   cnhCategory: z.string().min(1, 'Categoria da CNH é obrigatória'),
+  hasEar: z.boolean().default(false)
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 type RegisterFormValues = z.infer<typeof registerSchema>;
+type DriversInsert = Database['public']['Tables']['drivers']['Insert'];
 
 const DriverAuth = () => {
   const [isRegistering, setIsRegistering] = useState(false);
@@ -57,6 +59,7 @@ const DriverAuth = () => {
       cpf: '',
       cnh: '',
       cnhCategory: '',
+      hasEar: false,
     },
   });
 
@@ -81,6 +84,7 @@ const DriverAuth = () => {
     try {
       const authResult = await signUp(data.email, data.password, {
         fullName: data.fullName,
+        userType: 'driver'
       });
       
       if (authResult.error) {
@@ -88,15 +92,19 @@ const DriverAuth = () => {
       }
       
       if (authResult.user) {
-        // Create driver profile
-        const { error: driverError } = await supabase.from('drivers').insert({
+        const driverData: DriversInsert = {
           user_id: authResult.user.id,
           full_name: data.fullName,
           phone: data.phone,
           cpf: data.cpf,
           cnh: data.cnh,
           cnh_category: data.cnhCategory,
-        });
+          has_ear: data.hasEar
+        };
+
+        const { error: driverError } = await supabase
+          .from('drivers')
+          .insert(driverData);
 
         if (driverError) {
           toast({
@@ -114,6 +122,12 @@ const DriverAuth = () => {
         
         navigate('/driver/dashboard');
       }
+    } catch (error: any) {
+      toast({
+        title: 'Erro ao criar conta',
+        description: error.message,
+        variant: 'destructive',
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -317,6 +331,30 @@ const DriverAuth = () => {
                       {registerForm.formState.errors.cnhCategory && (
                         <p className="text-sm text-red-500">{registerForm.formState.errors.cnhCategory.message}</p>
                       )}
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label>Exerce Atividade Remunerada (EAR)</Label>
+                      <div className="flex items-center space-x-4">
+                        <label className="flex items-center space-x-2">
+                          <input
+                            type="radio"
+                            value="true"
+                            {...registerForm.register('hasEar')}
+                            checked={registerForm.watch('hasEar') === true}
+                          />
+                          <span>Sim</span>
+                        </label>
+                        <label className="flex items-center space-x-2">
+                          <input
+                            type="radio"
+                            value="false"
+                            {...registerForm.register('hasEar')}
+                            checked={registerForm.watch('hasEar') === false}
+                          />
+                          <span>Não</span>
+                        </label>
+                      </div>
                     </div>
                   </CardContent>
                   <CardFooter>

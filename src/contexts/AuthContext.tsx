@@ -1,13 +1,17 @@
-
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import type { Database } from '@/integrations/supabase/types';
+
+type ProfileType = Database['public']['Tables']['profiles']['Row'];
+type DriverType = Database['public']['Tables']['drivers']['Row'];
 
 type AuthContextType = {
   session: Session | null;
   user: User | null;
-  profile: any | null;
+  profile: ProfileType | null;
+  driverProfile: DriverType | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<any>;
   signUp: (email: string, password: string, userData: any) => Promise<any>;
@@ -19,34 +23,34 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
-  const [profile, setProfile] = useState<any | null>(null);
+  const [profile, setProfile] = useState<ProfileType | null>(null);
+  const [driverProfile, setDriverProfile] = useState<DriverType | null>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
   useEffect(() => {
-    // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, currentSession) => {
         setSession(currentSession);
         setUser(currentSession?.user ?? null);
         
         if (currentSession?.user) {
-          setTimeout(() => {
-            fetchProfile(currentSession.user.id);
-          }, 0);
+          fetchProfile(currentSession.user.id);
+          fetchDriverProfile(currentSession.user.id);
         } else {
           setProfile(null);
+          setDriverProfile(null);
         }
       }
     );
 
-    // THEN check for existing session
     supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
       setSession(currentSession);
       setUser(currentSession?.user ?? null);
       
       if (currentSession?.user) {
         fetchProfile(currentSession.user.id);
+        fetchDriverProfile(currentSession.user.id);
       }
       setLoading(false);
     });
@@ -70,6 +74,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setProfile(data);
     } catch (error) {
       console.error('Error in fetchProfile:', error);
+    }
+  };
+
+  const fetchDriverProfile = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('drivers')
+        .select('*')
+        .eq('user_id', userId)
+        .single();
+
+      if (error) {
+        console.error('Error fetching driver profile:', error);
+        return;
+      }
+
+      setDriverProfile(data);
+    } catch (error) {
+      console.error('Error in fetchDriverProfile:', error);
     }
   };
 
@@ -143,6 +166,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         session,
         user,
         profile,
+        driverProfile,
         loading,
         signIn,
         signUp,
