@@ -103,9 +103,9 @@ const DriverAuth = () => {
     setIsTestLoading(true);
     try {
       console.log("Iniciando login como motorista de teste");
-      // Credenciais do motorista de teste
+      // Credenciais do motorista de teste - usando um email válido
       const testCredentials = {
-        email: 'motorista.teste@servmotors.com',
+        email: 'motorista.teste@gmail.com', // Changed to a common valid email domain
         password: 'teste123'
       };
       
@@ -155,9 +155,9 @@ const DriverAuth = () => {
   const createTestDriver = async () => {
     try {
       console.log("Iniciando criação do motorista de teste");
-      // Dados do motorista de teste
+      // Dados do motorista de teste - usando um email válido
       const testCredentials = {
-        email: 'motorista.teste@servmotors.com',
+        email: 'motorista.teste@gmail.com', // Changed to a common valid email domain
         password: 'teste123',
         fullName: 'Motorista Teste',
         phone: '11999998888',
