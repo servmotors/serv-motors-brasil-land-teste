@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 
-// Define the interface to make fields non-optional
+// Update interface to match what zod schema produces
 interface RegisterFormValues {
   fullName: string;
   email: string;
@@ -20,9 +20,18 @@ interface RegisterFormValues {
   hasEar: boolean;
 }
 
-// Update the form prop to accept the correct generics for UseFormReturn
+// Update the form prop to explicitly match what useForm returns
 interface RegisterFormProps {
-  form: UseFormReturn<RegisterFormValues, any, undefined>;
+  form: UseFormReturn<{
+    fullName: string;
+    email: string;
+    password: string;
+    phone: string;
+    cpf: string;
+    cnh: string;
+    cnhCategory: string;
+    hasEar: boolean;
+  }, any, undefined>;
   onSubmit: (data: RegisterFormValues) => Promise<void>;
   isSubmitting: boolean;
 }

@@ -7,15 +7,18 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 
-// Define the interface to make fields non-optional
+// Update interface to make fields match the useForm implementation
 interface LoginFormValues {
   email: string;
   password: string;
 }
 
-// Update the form prop to accept the correct generics for UseFormReturn
+// Update the form prop to explicitly match what useForm returns
 interface LoginFormProps {
-  form: UseFormReturn<LoginFormValues, any, undefined>;
+  form: UseFormReturn<{
+    email: string;
+    password: string;
+  }, any, undefined>;
   onSubmit: (data: LoginFormValues) => Promise<void>;
   isSubmitting: boolean;
 }
