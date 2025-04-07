@@ -45,8 +45,11 @@ const DriverAuth = () => {
   const { signIn, signUp } = useAuth();
   const { toast } = useToast();
 
-  // Ensure we're using the correct types and default values are NON-optional
-  const loginForm = useForm<LoginFormValues>({
+  // Use non-optional types for form values to match component expectations
+  const loginForm = useForm<{
+    email: string;
+    password: string;
+  }>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
       email: '',
@@ -54,8 +57,17 @@ const DriverAuth = () => {
     },
   });
 
-  // Ensure we're using the correct types and default values are NON-optional
-  const registerForm = useForm<RegisterFormValues>({
+  // Use non-optional types for form values to match component expectations
+  const registerForm = useForm<{
+    fullName: string;
+    email: string;
+    password: string;
+    phone: string;
+    cpf: string;
+    cnh: string;
+    cnhCategory: string;
+    hasEar: boolean;
+  }>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
       fullName: '',
