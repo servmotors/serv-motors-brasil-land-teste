@@ -1,6 +1,8 @@
 
 import React from 'react';
 import { Check } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Button } from "@/components/ui/button";
 
 const MotoristasSection: React.FC = () => {
   const beneficios = [
@@ -54,7 +56,9 @@ const MotoristasSection: React.FC = () => {
                 <div className="p-6">
                   <h4 className="text-xl font-semibold mb-2">Cadastre-se como motorista</h4>
                   <p className="text-gray-600 mb-4">Comece a dirigir em poucos passos</p>
-                  <button className="btn-primary w-full">Seja motorista parceiro</button>
+                  <Button className="w-full bg-primary hover:bg-primary/90" asChild>
+                    <Link to="/motorista/auth">Seja motorista parceiro</Link>
+                  </Button>
                 </div>
               </div>
             </div>

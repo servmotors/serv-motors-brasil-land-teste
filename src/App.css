@@ -42,3 +42,55 @@
 .read-the-docs {
   color: #888;
 }
+
+/* Container personalizado para manter consistência no layout */
+.container-custom {
+  width: 100%;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+/* Espaçamento de seção padrão */
+.section-padding {
+  padding-top: 5rem;
+  padding-bottom: 5rem;
+}
+
+@media (max-width: 768px) {
+  .section-padding {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+  }
+}
+
+/* Animações */
+.animate-fade-in {
+  animation: fade-in 0.8s ease-in-out;
+}
+
+.animate-bounce-subtle {
+  animation: bounce-subtle 6s infinite ease-in-out;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bounce-subtle {
+  0%, 100% {
+    transform: translateY(0) rotate(-6deg);
+  }
+  50% {
+    transform: translateY(-10px) rotate(-6deg);
+  }
+}
