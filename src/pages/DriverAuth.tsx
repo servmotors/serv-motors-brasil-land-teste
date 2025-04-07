@@ -13,6 +13,7 @@ import LoginForm from '@/components/auth/LoginForm';
 import RegisterForm from '@/components/auth/RegisterForm';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 
 // Type definition for Supabase drivers table insert
 type DriversInsert = Database['public']['Tables']['drivers']['Insert'];
@@ -41,6 +42,7 @@ type RegisterFormValues = z.infer<typeof registerSchema>;
 const DriverAuth = () => {
   const [isRegistering, setIsRegistering] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isTestLoading, setIsTestLoading] = useState(false);
   const navigate = useNavigate();
   const { signIn, signUp } = useAuth();
   const { toast } = useToast();
@@ -94,6 +96,105 @@ const DriverAuth = () => {
       }
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleTestDriverLogin = async () => {
+    setIsTestLoading(true);
+    try {
+      // Credenciais do motorista de teste
+      const testCredentials = {
+        email: 'motorista.teste@servmotors.com',
+        password: 'teste123'
+      };
+      
+      const result = await signIn(testCredentials.email, testCredentials.password);
+      
+      if (!result.error) {
+        toast({
+          title: 'Login como motorista de teste',
+          description: 'Você entrou como motorista de teste.',
+        });
+        navigate('/driver/dashboard');
+      } else {
+        // Se não existe, criar o usuário de teste
+        await createTestDriver();
+      }
+    } catch (error) {
+      toast({
+        title: 'Erro ao entrar como motorista de teste',
+        description: 'Tente novamente mais tarde.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsTestLoading(false);
+    }
+  };
+
+  const createTestDriver = async () => {
+    try {
+      // Dados do motorista de teste
+      const testCredentials = {
+        email: 'motorista.teste@servmotors.com',
+        password: 'teste123',
+        fullName: 'Motorista Teste',
+        phone: '11999998888',
+        cpf: '12345678901',
+        cnh: '123456789',
+        cnhCategory: 'B',
+        hasEar: true
+      };
+      
+      // Criar conta no Supabase Auth
+      const authResult = await signUp(testCredentials.email, testCredentials.password, {
+        fullName: testCredentials.fullName,
+        userType: 'driver'
+      });
+      
+      if (authResult.error) {
+        throw new Error(authResult.error.message);
+      }
+      
+      if (authResult.user) {
+        // Criar perfil de motorista
+        const driverData: DriversInsert = {
+          user_id: authResult.user.id,
+          full_name: testCredentials.fullName,
+          phone: testCredentials.phone,
+          cpf: testCredentials.cpf,
+          cnh: testCredentials.cnh,
+          cnh_category: testCredentials.cnhCategory,
+          has_ear: testCredentials.hasEar,
+          is_approved: true  // Motorista de teste já aprovado
+        };
+
+        const { error: driverError } = await supabase
+          .from('drivers')
+          .insert(driverData);
+
+        if (driverError) {
+          throw new Error(driverError.message);
+        }
+
+        // Fazer login com as credenciais criadas
+        const loginResult = await signIn(testCredentials.email, testCredentials.password);
+        
+        if (!loginResult.error) {
+          toast({
+            title: 'Motorista de teste criado',
+            description: 'Você entrou como motorista de teste.',
+          });
+          navigate('/driver/dashboard');
+        } else {
+          throw new Error(loginResult.error.message);
+        }
+      }
+    } catch (error: any) {
+      toast({
+        title: 'Erro ao criar motorista de teste',
+        description: error.message || 'Tente novamente mais tarde.',
+        variant: 'destructive',
+      });
     }
   };
 
@@ -157,6 +258,15 @@ const DriverAuth = () => {
       
       <main className="flex-1 flex items-center justify-center p-4">
         <div className="w-full max-w-md">
+          <Button 
+            variant="outline" 
+            className="w-full mb-4 border-dashed border-primary text-primary hover:bg-primary/5"
+            onClick={handleTestDriverLogin}
+            disabled={isTestLoading}
+          >
+            {isTestLoading ? 'Processando...' : 'Entrar como Motorista Teste'}
+          </Button>
+          
           <Tabs defaultValue="login" onValueChange={(value) => setIsRegistering(value === 'register')}>
             <TabsList className="grid w-full grid-cols-2 mb-8">
               <TabsTrigger value="login">Login</TabsTrigger>
