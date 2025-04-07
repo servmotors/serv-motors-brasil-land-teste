@@ -1,18 +1,23 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ChevronLeft, User, Car, Key, Mail, Phone, FileText } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ChevronLeft } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import type { Database } from '@/integrations/supabase/types';
+import Header from '@/components/auth/Header';
+import LoginForm from '@/components/auth/LoginForm';
+import RegisterForm from '@/components/auth/RegisterForm';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+
+// Type definition for Supabase drivers table insert
+type DriversInsert = Database['public']['Tables']['drivers']['Insert'];
 
 const loginSchema = z.object({
   email: z.string().email('E-mail inválido'),
@@ -32,7 +37,6 @@ const registerSchema = z.object({
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 type RegisterFormValues = z.infer<typeof registerSchema>;
-type DriversInsert = Database['public']['Tables']['drivers']['Insert'];
 
 const DriverAuth = () => {
   const [isRegistering, setIsRegistering] = useState(false);
@@ -135,21 +139,7 @@ const DriverAuth = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      <header className="bg-white shadow-sm py-4">
-        <div className="container-custom flex items-center">
-          <Button 
-            variant="ghost" 
-            className="mr-2"
-            onClick={() => navigate('/')}
-          >
-            <ChevronLeft className="mr-2" size={20} />
-            Voltar
-          </Button>
-          <span className="text-2xl font-display font-bold text-primary">
-            Serv<span className="text-black">Motors</span>
-          </span>
-        </div>
-      </header>
+      <Header navigateBack={() => navigate('/')} />
       
       <main className="flex-1 flex items-center justify-center p-4">
         <div className="w-full max-w-md">
@@ -161,212 +151,21 @@ const DriverAuth = () => {
             
             <TabsContent value="login">
               <Card>
-                <CardHeader>
-                  <CardTitle>Área do Motorista</CardTitle>
-                  <CardDescription>Faça login para acessar sua conta</CardDescription>
-                </CardHeader>
-                <form onSubmit={loginForm.handleSubmit(handleLogin)}>
-                  <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="email">E-mail</Label>
-                      <div className="relative">
-                        <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                        <Input
-                          id="email"
-                          placeholder="seu@email.com"
-                          className="pl-9"
-                          {...loginForm.register('email')}
-                        />
-                      </div>
-                      {loginForm.formState.errors.email && (
-                        <p className="text-sm text-red-500">{loginForm.formState.errors.email.message}</p>
-                      )}
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="password">Senha</Label>
-                      <div className="relative">
-                        <Key className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                        <Input
-                          id="password"
-                          type="password"
-                          placeholder="********"
-                          className="pl-9"
-                          {...loginForm.register('password')}
-                        />
-                      </div>
-                      {loginForm.formState.errors.password && (
-                        <p className="text-sm text-red-500">{loginForm.formState.errors.password.message}</p>
-                      )}
-                    </div>
-                  </CardContent>
-                  <CardFooter>
-                    <Button 
-                      type="submit"
-                      className="w-full bg-primary hover:bg-primary/90"
-                      disabled={isSubmitting}
-                    >
-                      {isSubmitting ? 'Processando...' : 'Entrar'}
-                    </Button>
-                  </CardFooter>
-                </form>
+                <LoginForm 
+                  form={loginForm} 
+                  onSubmit={handleLogin}
+                  isSubmitting={isSubmitting}
+                />
               </Card>
             </TabsContent>
             
             <TabsContent value="register">
               <Card>
-                <CardHeader>
-                  <CardTitle>Cadastro de Motorista</CardTitle>
-                  <CardDescription>Crie sua conta para dirigir com a Serv Motors</CardDescription>
-                </CardHeader>
-                <form onSubmit={registerForm.handleSubmit(handleRegister)}>
-                  <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="fullName">Nome completo</Label>
-                      <div className="relative">
-                        <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                        <Input
-                          id="fullName"
-                          placeholder="Seu nome completo"
-                          className="pl-9"
-                          {...registerForm.register('fullName')}
-                        />
-                      </div>
-                      {registerForm.formState.errors.fullName && (
-                        <p className="text-sm text-red-500">{registerForm.formState.errors.fullName.message}</p>
-                      )}
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="email">E-mail</Label>
-                      <div className="relative">
-                        <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                        <Input
-                          id="email"
-                          placeholder="seu@email.com"
-                          className="pl-9"
-                          {...registerForm.register('email')}
-                        />
-                      </div>
-                      {registerForm.formState.errors.email && (
-                        <p className="text-sm text-red-500">{registerForm.formState.errors.email.message}</p>
-                      )}
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="password">Senha</Label>
-                      <div className="relative">
-                        <Key className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                        <Input
-                          id="password"
-                          type="password"
-                          placeholder="Senha (mínimo 6 caracteres)"
-                          className="pl-9"
-                          {...registerForm.register('password')}
-                        />
-                      </div>
-                      {registerForm.formState.errors.password && (
-                        <p className="text-sm text-red-500">{registerForm.formState.errors.password.message}</p>
-                      )}
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="phone">Telefone</Label>
-                      <div className="relative">
-                        <Phone className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                        <Input
-                          id="phone"
-                          placeholder="(99) 99999-9999"
-                          className="pl-9"
-                          {...registerForm.register('phone')}
-                        />
-                      </div>
-                      {registerForm.formState.errors.phone && (
-                        <p className="text-sm text-red-500">{registerForm.formState.errors.phone.message}</p>
-                      )}
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="cpf">CPF</Label>
-                      <div className="relative">
-                        <FileText className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                        <Input
-                          id="cpf"
-                          placeholder="999.999.999-99"
-                          className="pl-9"
-                          {...registerForm.register('cpf')}
-                        />
-                      </div>
-                      {registerForm.formState.errors.cpf && (
-                        <p className="text-sm text-red-500">{registerForm.formState.errors.cpf.message}</p>
-                      )}
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="cnh">CNH</Label>
-                      <div className="relative">
-                        <FileText className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                        <Input
-                          id="cnh"
-                          placeholder="Número da CNH"
-                          className="pl-9"
-                          {...registerForm.register('cnh')}
-                        />
-                      </div>
-                      {registerForm.formState.errors.cnh && (
-                        <p className="text-sm text-red-500">{registerForm.formState.errors.cnh.message}</p>
-                      )}
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="cnhCategory">Categoria da CNH</Label>
-                      <div className="relative">
-                        <Car className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                        <Input
-                          id="cnhCategory"
-                          placeholder="Ex: B, AB, etc."
-                          className="pl-9"
-                          {...registerForm.register('cnhCategory')}
-                        />
-                      </div>
-                      {registerForm.formState.errors.cnhCategory && (
-                        <p className="text-sm text-red-500">{registerForm.formState.errors.cnhCategory.message}</p>
-                      )}
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label>Exerce Atividade Remunerada (EAR)</Label>
-                      <div className="flex items-center space-x-4">
-                        <label className="flex items-center space-x-2">
-                          <input
-                            type="radio"
-                            value="true"
-                            {...registerForm.register('hasEar')}
-                            checked={registerForm.watch('hasEar') === true}
-                          />
-                          <span>Sim</span>
-                        </label>
-                        <label className="flex items-center space-x-2">
-                          <input
-                            type="radio"
-                            value="false"
-                            {...registerForm.register('hasEar')}
-                            checked={registerForm.watch('hasEar') === false}
-                          />
-                          <span>Não</span>
-                        </label>
-                      </div>
-                    </div>
-                  </CardContent>
-                  <CardFooter>
-                    <Button 
-                      type="submit"
-                      className="w-full bg-primary hover:bg-primary/90"
-                      disabled={isSubmitting}
-                    >
-                      {isSubmitting ? 'Processando...' : 'Cadastrar como motorista'}
-                    </Button>
-                  </CardFooter>
-                </form>
+                <RegisterForm 
+                  form={registerForm} 
+                  onSubmit={handleRegister}
+                  isSubmitting={isSubmitting}
+                />
               </Card>
             </TabsContent>
           </Tabs>
