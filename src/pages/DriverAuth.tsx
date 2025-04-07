@@ -102,28 +102,49 @@ const DriverAuth = () => {
   const handleTestDriverLogin = async () => {
     setIsTestLoading(true);
     try {
+      console.log("Iniciando login como motorista de teste");
       // Credenciais do motorista de teste
       const testCredentials = {
         email: 'motorista.teste@servmotors.com',
         password: 'teste123'
       };
       
-      const result = await signIn(testCredentials.email, testCredentials.password);
+      // Verificar se o usuário já existe
+      const { data: existingUser } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('email', testCredentials.email)
+        .single();
       
-      if (!result.error) {
-        toast({
-          title: 'Login como motorista de teste',
-          description: 'Você entrou como motorista de teste.',
-        });
-        navigate('/driver/dashboard');
+      if (existingUser) {
+        console.log("Usuário de teste encontrado, fazendo login");
+        // Usuário existe, fazer login
+        const result = await signIn(testCredentials.email, testCredentials.password);
+        
+        if (!result.error) {
+          toast({
+            title: 'Login como motorista de teste',
+            description: 'Você entrou como motorista de teste.',
+          });
+          navigate('/driver/dashboard');
+        } else {
+          console.error("Erro ao fazer login:", result.error);
+          toast({
+            title: 'Erro ao fazer login',
+            description: result.error.message,
+            variant: 'destructive',
+          });
+        }
       } else {
+        console.log("Usuário de teste não encontrado, criando novo usuário");
         // Se não existe, criar o usuário de teste
         await createTestDriver();
       }
-    } catch (error) {
+    } catch (error: any) {
+      console.error("Erro no processo de login de teste:", error);
       toast({
         title: 'Erro ao entrar como motorista de teste',
-        description: 'Tente novamente mais tarde.',
+        description: error.message || 'Tente novamente mais tarde.',
         variant: 'destructive',
       });
     } finally {
@@ -133,6 +154,7 @@ const DriverAuth = () => {
 
   const createTestDriver = async () => {
     try {
+      console.log("Iniciando criação do motorista de teste");
       // Dados do motorista de teste
       const testCredentials = {
         email: 'motorista.teste@servmotors.com',
@@ -146,16 +168,22 @@ const DriverAuth = () => {
       };
       
       // Criar conta no Supabase Auth
+      console.log("Criando conta de autenticação");
       const authResult = await signUp(testCredentials.email, testCredentials.password, {
         fullName: testCredentials.fullName,
         userType: 'driver'
       });
       
       if (authResult.error) {
+        console.error("Erro ao criar autenticação:", authResult.error);
         throw new Error(authResult.error.message);
       }
       
+      // Aguardar um momento para garantir que o trigger tenha tempo de criar o perfil
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
       if (authResult.user) {
+        console.log("Criando perfil de motorista");
         // Criar perfil de motorista
         const driverData: DriversInsert = {
           user_id: authResult.user.id,
@@ -173,9 +201,11 @@ const DriverAuth = () => {
           .insert(driverData);
 
         if (driverError) {
+          console.error("Erro ao criar perfil de motorista:", driverError);
           throw new Error(driverError.message);
         }
 
+        console.log("Fazendo login após criação");
         // Fazer login com as credenciais criadas
         const loginResult = await signIn(testCredentials.email, testCredentials.password);
         
@@ -186,10 +216,12 @@ const DriverAuth = () => {
           });
           navigate('/driver/dashboard');
         } else {
+          console.error("Erro ao fazer login após criação:", loginResult.error);
           throw new Error(loginResult.error.message);
         }
       }
     } catch (error: any) {
+      console.error("Erro na criação do motorista de teste:", error);
       toast({
         title: 'Erro ao criar motorista de teste',
         description: error.message || 'Tente novamente mais tarde.',
