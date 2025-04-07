@@ -45,7 +45,7 @@ const DriverAuth = () => {
   const { signIn, signUp } = useAuth();
   const { toast } = useToast();
 
-  // Use non-optional types for form values to match component expectations
+  // Use the explicit non-optional types matching the component expectations
   const loginForm = useForm<{
     email: string;
     password: string;
@@ -57,7 +57,7 @@ const DriverAuth = () => {
     },
   });
 
-  // Use non-optional types for form values to match component expectations
+  // Use the explicit non-optional types matching the component expectations
   const registerForm = useForm<{
     fullName: string;
     email: string;
