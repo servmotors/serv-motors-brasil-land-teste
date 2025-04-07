@@ -7,13 +7,14 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 
+// Updated the interface to match the form fields structure from useForm
 interface LoginFormValues {
   email: string;
   password: string;
 }
 
 interface LoginFormProps {
-  form: UseFormReturn<LoginFormValues>;
+  form: UseFormReturn<LoginFormValues, any, undefined>;  // Updated to match useForm's return type
   onSubmit: (data: LoginFormValues) => Promise<void>;
   isSubmitting: boolean;
 }

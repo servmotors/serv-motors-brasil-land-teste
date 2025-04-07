@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 
+// Updated the interface to match the form fields structure from useForm
 interface RegisterFormValues {
   fullName: string;
   email: string;
@@ -20,7 +21,7 @@ interface RegisterFormValues {
 }
 
 interface RegisterFormProps {
-  form: UseFormReturn<RegisterFormValues>;
+  form: UseFormReturn<RegisterFormValues, any, undefined>;  // Updated to match useForm's return type
   onSubmit: (data: RegisterFormValues) => Promise<void>;
   isSubmitting: boolean;
 }

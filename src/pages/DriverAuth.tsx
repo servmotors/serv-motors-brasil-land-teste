@@ -43,26 +43,26 @@ const DriverAuth = () => {
   const { signIn, signUp } = useAuth();
   const { toast } = useToast();
 
-  // Fix: Ensure default values match the required schema fields
+  // Updated to explicitly define the type and use defineForm with explicit generics
   const loginForm = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: '',  // Required field
-      password: '', // Required field
+      email: '',
+      password: '',
     },
   });
 
-  // Fix: Ensure default values match the required schema fields
+  // Updated to explicitly define the type and use defineForm with explicit generics
   const registerForm = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      fullName: '', // Required field
-      email: '',  // Required field
-      password: '', // Required field
-      phone: '',  // Required field
-      cpf: '',  // Required field
-      cnh: '',  // Required field
-      cnhCategory: '',  // Required field
+      fullName: '',
+      email: '',
+      password: '',
+      phone: '',
+      cpf: '',
+      cnh: '',
+      cnhCategory: '',
       hasEar: false,
     },
   });
