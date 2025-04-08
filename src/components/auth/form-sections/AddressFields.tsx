@@ -72,27 +72,31 @@ const AddressFields = ({ register, errors, setValue, watch }: AddressFieldsProps
 
   return (
     <>
-      <div className="flex gap-2">
-        <div className="flex-1">
-          <InputField
-            id="cep"
-            label="CEP"
-            placeholder="00000-000"
-            icon={MapPin}
-            register={register}
-            error={errors.cep?.message}
-          />
-        </div>
-        <div className="flex items-end mb-2">
+      <div className="space-y-2">
+        <Label htmlFor="cep">CEP</Label>
+        <div className="flex gap-2 items-center">
+          <div className="relative flex-1">
+            <MapPin className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+            <input
+              id="cep"
+              type="text"
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm pl-9"
+              placeholder="00000-000"
+              {...register('cep')}
+            />
+          </div>
           <Button 
             type="button" 
             onClick={searchAddressByCep}
             disabled={isSearching || !cep || cep.length !== 8}
-            className="h-10"
+            className="h-10 whitespace-nowrap"
           >
             {isSearching ? 'Buscando...' : 'Buscar CEP'}
           </Button>
         </div>
+        {errors.cep?.message && (
+          <p className="text-sm text-red-500">{errors.cep?.message}</p>
+        )}
       </div>
       
       <InputField
@@ -148,6 +152,7 @@ const AddressFields = ({ register, errors, setValue, watch }: AddressFieldsProps
           <Select 
             onValueChange={(value) => setValue('state', value)} 
             defaultValue={watch('state')}
+            value={watch('state')}
           >
             <SelectTrigger id="state" className="w-full">
               <SelectValue placeholder="UF" />
