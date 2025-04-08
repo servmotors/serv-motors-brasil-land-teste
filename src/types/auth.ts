@@ -22,13 +22,14 @@ export const registerSchema = z.object({
   path: ["confirmPassword"],
 });
 
-// Updated validation for minimum age and required CNH
+// Updated validation for minimum age, required CNH and non-expired CNH
 export const driverIdentitySchema = z.object({
   birthDate: z.date({
     required_error: "Data de nascimento é obrigatória",
   }),
-  cpf: z.string().min(11, 'CPF inválido'),
-  cpfDocument: z.instanceof(File, { message: "Documento do CPF é obrigatório" }),
+  rg: z.string().min(7, 'RG inválido'),
+  rgFrontDocument: z.instanceof(File, { message: "Documento do RG (frente) é obrigatório" }),
+  rgBackDocument: z.instanceof(File, { message: "Documento do RG (verso) é obrigatório" }),
   cnh: z.string().min(11, 'CNH inválida'),
   cnhDocument: z.instanceof(File, { message: "Documento da CNH é obrigatório" }),
   cnhExpiry: z.date({
@@ -48,6 +49,15 @@ export const driverIdentitySchema = z.object({
 }, {
   message: "Você deve ter pelo menos 18 anos para se cadastrar como motorista",
   path: ["birthDate"],
+}).refine((data) => {
+  // Check if CNH expiry date is not in the past
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); // Set to start of day for accurate comparison
+  const expiryDate = new Date(data.cnhExpiry);
+  return expiryDate >= today;
+}, {
+  message: "CNH vencida. Não é possível prosseguir com o cadastro.",
+  path: ["cnhExpiry"],
 });
 
 export const driverAddressSchema = z.object({

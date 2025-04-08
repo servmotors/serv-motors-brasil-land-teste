@@ -61,6 +61,18 @@ const IdentityFields = ({ register, errors, setValue, watch }: IdentityFieldsPro
   // Check if the driver is underage
   const isUnderage = birthDate ? calculateAge(birthDate) < 18 : false;
 
+  // Check if CNH is expired
+  const isCnhExpired = (): boolean => {
+    if (!cnhExpiry) return false;
+    
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Set to start of day for accurate comparison
+    return cnhExpiry < today;
+  };
+
+  // Check CNH expiration status
+  const cnhExpired = isCnhExpired();
+
   return (
     <>
       {isUnderage && (
@@ -68,6 +80,15 @@ const IdentityFields = ({ register, errors, setValue, watch }: IdentityFieldsPro
           <AlertCircle className="h-4 w-4 mr-2" />
           <AlertDescription>
             Você deve ter pelo menos 18 anos para se cadastrar como motorista
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {cnhExpired && (
+        <Alert variant="destructive" className="mb-4">
+          <AlertCircle className="h-4 w-4 mr-2" />
+          <AlertDescription>
+            CNH vencida. Não é possível prosseguir com o cadastro.
           </AlertDescription>
         </Alert>
       )}
@@ -122,19 +143,27 @@ const IdentityFields = ({ register, errors, setValue, watch }: IdentityFieldsPro
       </div>
 
       <InputField
-        id="cpf"
-        label="CPF"
-        placeholder="000.000.000-00"
+        id="rg"
+        label="RG (Registro Geral)"
+        placeholder="0000000"
         icon={CreditCard}
         register={register}
-        error={errors.cpf?.message}
+        error={errors.rg?.message}
       />
 
       <FileUploadField
-        id="cpfDocument"
-        label="Anexar CPF (imagem ou PDF)"
+        id="rgFrontDocument"
+        label="Anexar RG - Frente (imagem ou PDF)"
         setValue={setValue}
-        error={errors.cpfDocument?.message}
+        error={errors.rgFrontDocument?.message}
+        accept=".pdf,.jpg,.jpeg,.png"
+      />
+
+      <FileUploadField
+        id="rgBackDocument"
+        label="Anexar RG - Verso (imagem ou PDF)"
+        setValue={setValue}
+        error={errors.rgBackDocument?.message}
         accept=".pdf,.jpg,.jpeg,.png"
       />
       
@@ -165,7 +194,8 @@ const IdentityFields = ({ register, errors, setValue, watch }: IdentityFieldsPro
                 variant="outline"
                 className={cn(
                   "w-1/2 justify-start text-left font-normal",
-                  !cnhExpiry && "text-muted-foreground"
+                  !cnhExpiry && "text-muted-foreground",
+                  cnhExpired && "border-red-500 text-red-500"
                 )}
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
@@ -177,7 +207,7 @@ const IdentityFields = ({ register, errors, setValue, watch }: IdentityFieldsPro
                 mode="single"
                 selected={cnhExpiry}
                 onSelect={(date) => setValue('cnhExpiry', date)}
-                disabled={(date) => date < new Date()}
+                disabled={(date) => date < new Date('2000-01-01')} // Removed restriction on past dates to allow selection
                 initialFocus
                 className="p-3 pointer-events-auto"
               />
@@ -187,13 +217,19 @@ const IdentityFields = ({ register, errors, setValue, watch }: IdentityFieldsPro
             type="text"
             placeholder="DD/MM/AAAA"
             maxLength={10}
-            className="w-1/2"
+            className={cn(
+              "w-1/2",
+              cnhExpired && "border-red-500 text-red-500"
+            )}
             onChange={handleDateChange('cnhExpiry')}
             defaultValue={cnhExpiry ? format(cnhExpiry, 'dd/MM/yyyy') : ''}
           />
         </div>
         {errors.cnhExpiry && (
           <p className="text-sm text-red-500">{errors.cnhExpiry.message}</p>
+        )}
+        {cnhExpiry && cnhExpired && (
+          <p className="text-sm text-red-500">CNH vencida. Não é possível prosseguir com o cadastro.</p>
         )}
       </div>
 
