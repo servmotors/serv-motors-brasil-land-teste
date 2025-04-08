@@ -47,7 +47,7 @@ export const createTestDriver = async (signUp: (email: string, password: string,
     // Aguardar um momento para garantir que o trigger tenha tempo de criar o perfil
     await new Promise(resolve => setTimeout(resolve, 1000));
     
-    // Fix: Access user through data property on AuthResponse
+    // Access user through data property on AuthResponse
     if (authResult.data?.user) {
       console.log("Criando perfil de motorista");
       // Criar perfil de motorista
