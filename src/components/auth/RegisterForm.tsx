@@ -30,9 +30,10 @@ interface RegisterFormProps {
   }, any, undefined>;
   onSubmit: (data: RegisterFormValues) => Promise<void>;
   isSubmitting: boolean;
+  buttonText?: string;
 }
 
-const RegisterForm = ({ form, onSubmit, isSubmitting }: RegisterFormProps) => {
+const RegisterForm = ({ form, onSubmit, isSubmitting, buttonText = 'Cadastrar como motorista' }: RegisterFormProps) => {
   const { register, formState: { errors }, setValue } = form;
   
   return (
@@ -60,7 +61,7 @@ const RegisterForm = ({ form, onSubmit, isSubmitting }: RegisterFormProps) => {
             className="w-full bg-primary hover:bg-primary/90"
             disabled={isSubmitting}
           >
-            {isSubmitting ? 'Processando...' : 'Cadastrar como motorista'}
+            {isSubmitting ? 'Processando...' : buttonText}
           </Button>
         </CardFooter>
       </form>
