@@ -12,10 +12,6 @@ export const registerSchema = z.object({
   repeatEmail: z.string().email('E-mail inválido'),
   password: z.string().min(6, 'A senha deve ter pelo menos 6 caracteres'),
   phone: z.string().min(10, 'Telefone inválido'),
-  cpf: z.string().min(11, 'CPF inválido'),
-  cnh: z.string().min(9, 'CNH inválida'),
-  cnhCategory: z.string().min(1, 'Categoria da CNH é obrigatória'),
-  hasEar: z.boolean().default(false)
 }).refine((data) => data.email === data.repeatEmail, {
   message: "Os e-mails não coincidem",
   path: ["repeatEmail"],

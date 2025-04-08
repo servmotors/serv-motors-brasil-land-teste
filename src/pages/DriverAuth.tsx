@@ -40,10 +40,6 @@ const DriverAuth = () => {
     repeatEmail: string;
     password: string;
     phone: string;
-    cpf: string;
-    cnh: string;
-    cnhCategory: string;
-    hasEar: boolean;
   }>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
@@ -52,10 +48,6 @@ const DriverAuth = () => {
       repeatEmail: '',
       password: '',
       phone: '',
-      cpf: '',
-      cnh: '',
-      cnhCategory: '',
-      hasEar: false,
     },
   });
 
