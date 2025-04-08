@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Menu, X } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -22,19 +23,19 @@ const Navbar: React.FC = () => {
     <nav className="bg-white sticky top-0 z-50 shadow-sm">
       <div className="container-custom flex justify-between items-center py-4">
         <div className="flex items-center">
-          <span className="text-2xl font-display font-bold text-primary">
+          <Link to="/" className="text-2xl font-display font-bold text-primary">
             Serv<span className="text-black">Motors</span>
-          </span>
+          </Link>
         </div>
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex space-x-8 items-center">
-          <button 
-            onClick={() => scrollToSection('motoristas')} 
+          <Link 
+            to="/motorista" 
             className="font-medium hover:text-primary transition-colors"
           >
             Motoristas
-          </button>
+          </Link>
           <button 
             onClick={() => scrollToSection('passageiros')} 
             className="font-medium hover:text-primary transition-colors"
@@ -64,12 +65,13 @@ const Navbar: React.FC = () => {
       {isMenuOpen && (
         <div className="md:hidden bg-white">
           <div className="container-custom flex flex-col space-y-4 py-4">
-            <button 
-              onClick={() => scrollToSection('motoristas')} 
+            <Link 
+              to="/motorista" 
               className="font-medium py-2 hover:text-primary transition-colors"
+              onClick={() => setIsMenuOpen(false)}
             >
               Motoristas
-            </button>
+            </Link>
             <button 
               onClick={() => scrollToSection('passageiros')} 
               className="font-medium py-2 hover:text-primary transition-colors"

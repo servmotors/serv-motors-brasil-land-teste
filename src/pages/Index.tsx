@@ -2,7 +2,6 @@
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import HeroSection from '@/components/HeroSection';
-import MotoristasSection from '@/components/MotoristasSection';
 import PassageirosSection from '@/components/PassageirosSection';
 import EmpresasSection from '@/components/EmpresasSection';
 import TestimonialsSection from '@/components/TestimonialsSection';
@@ -15,7 +14,6 @@ const Index = () => {
       <Navbar />
       <main className="flex-1">
         <HeroSection />
-        <MotoristasSection />
         <PassageirosSection />
         <EmpresasSection />
         <TestimonialsSection />
