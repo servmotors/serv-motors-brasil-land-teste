@@ -39,7 +39,12 @@ export const useDriverAuth = () => {
       });
       
       if (authResult.error) {
-        return;
+        toast({
+          title: 'Erro ao criar conta',
+          description: authResult.error.message,
+          variant: 'destructive',
+        });
+        return authResult;
       }
       
       if (authResult.data?.user) {
@@ -50,12 +55,15 @@ export const useDriverAuth = () => {
         
         navigate('/driver/dashboard');
       }
+      
+      return authResult;
     } catch (error: any) {
       toast({
         title: 'Erro ao criar conta',
         description: error.message,
         variant: 'destructive',
       });
+      return { error };
     } finally {
       setIsSubmitting(false);
     }

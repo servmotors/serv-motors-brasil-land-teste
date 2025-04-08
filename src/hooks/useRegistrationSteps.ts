@@ -6,7 +6,8 @@ type RegistrationStep = 'account' | 'identity' | 'address';
 
 export const useRegistrationSteps = (
   registerForm: UseFormReturn<any>,
-  identityForm: UseFormReturn<any>
+  identityForm: UseFormReturn<any>,
+  addressForm?: UseFormReturn<any>
 ) => {
   const [currentStep, setCurrentStep] = useState<RegistrationStep>('account');
 
@@ -28,10 +29,18 @@ export const useRegistrationSteps = (
     }
   };
 
+  const resetForms = () => {
+    registerForm.reset();
+    identityForm.reset();
+    if (addressForm) addressForm.reset();
+    setCurrentStep('account');
+  };
+
   return {
     currentStep,
     setCurrentStep,
     handleNextStep,
-    handlePrevStep
+    handlePrevStep,
+    resetForms
   };
 };

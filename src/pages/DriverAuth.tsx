@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -17,6 +17,7 @@ import AddressFormStep from '@/components/auth/form-sections/AddressFormStep';
 
 const DriverAuth = () => {
   const [isRegistering, setIsRegistering] = useState(false);
+  const [registrationSuccess, setRegistrationSuccess] = useState(false);
   const navigate = useNavigate();
   
   const { 
@@ -56,6 +57,7 @@ const DriverAuth = () => {
       confirmPassword: '',
       phone: '',
     },
+    mode: 'onTouched'
   });
 
   // Identity form with zod validation (step 2)
@@ -72,6 +74,7 @@ const DriverAuth = () => {
     defaultValues: {
       hasRemuneratedActivity: false,
     },
+    mode: 'onTouched'
   });
 
   // Address form with zod validation (step 3)
@@ -94,14 +97,24 @@ const DriverAuth = () => {
       city: '',
       state: '',
     },
+    mode: 'onTouched'
   });
 
   const { 
     currentStep, 
     setCurrentStep,
     handleNextStep,
-    handlePrevStep 
-  } = useRegistrationSteps(registerForm, identityForm);
+    handlePrevStep,
+    resetForms
+  } = useRegistrationSteps(registerForm, identityForm, addressForm);
+
+  // Reset forms when registration is successful
+  useEffect(() => {
+    if (registrationSuccess) {
+      resetForms();
+      setRegistrationSuccess(false);
+    }
+  }, [registrationSuccess, resetForms]);
 
   const handleCompleteRegistration = async () => {
     const addressValid = await addressForm.trigger();
@@ -113,11 +126,16 @@ const DriverAuth = () => {
     const addressData = addressForm.getValues();
 
     // Call registration handler with all data
-    await handleRegister({
+    const result = await handleRegister({
       ...accountData,
       ...identityData,
       ...addressData,
     });
+    
+    // Set registration success if the registration was successful
+    if (result && !result.error) {
+      setRegistrationSuccess(true);
+    }
   };
 
   return (
