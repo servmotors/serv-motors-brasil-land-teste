@@ -11,10 +11,15 @@ export const registerSchema = z.object({
   email: z.string().email('E-mail inválido'),
   repeatEmail: z.string().email('E-mail inválido'),
   password: z.string().min(6, 'A senha deve ter pelo menos 6 caracteres'),
+  confirmPassword: z.string().min(6, 'A senha deve ter pelo menos 6 caracteres'),
   phone: z.string().min(10, 'Telefone inválido'),
+  profileImage: z.instanceof(File).optional(),
 }).refine((data) => data.email === data.repeatEmail, {
   message: "Os e-mails não coincidem",
   path: ["repeatEmail"],
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "As senhas não coincidem",
+  path: ["confirmPassword"],
 });
 
 export type LoginFormValues = z.infer<typeof loginSchema>;

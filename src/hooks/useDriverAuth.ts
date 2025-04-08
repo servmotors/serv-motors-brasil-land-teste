@@ -33,7 +33,9 @@ export const useDriverAuth = () => {
       const authResult = await signUp(data.email, data.password, {
         fullName: data.fullName,
         userType: 'driver',
-        phone: data.phone
+        phone: data.phone,
+        // Add profileImage to the data being passed to signUp
+        profileImage: data.profileImage
       });
       
       if (authResult.error) {

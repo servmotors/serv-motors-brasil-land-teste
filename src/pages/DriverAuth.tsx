@@ -33,13 +33,15 @@ const DriverAuth = () => {
     },
   });
 
-  // Register form with zod validation
+  // Register form with zod validation - Updated to include confirmPassword and profileImage
   const registerForm = useForm<{
     fullName: string;
     email: string;
     repeatEmail: string;
     password: string;
+    confirmPassword: string;
     phone: string;
+    profileImage?: File;
   }>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
@@ -47,6 +49,7 @@ const DriverAuth = () => {
       email: '',
       repeatEmail: '',
       password: '',
+      confirmPassword: '',
       phone: '',
     },
   });
