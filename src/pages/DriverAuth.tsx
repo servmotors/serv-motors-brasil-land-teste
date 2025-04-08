@@ -37,6 +37,7 @@ const DriverAuth = () => {
   const registerForm = useForm<{
     fullName: string;
     email: string;
+    repeatEmail: string;
     password: string;
     phone: string;
     cpf: string;
@@ -48,6 +49,7 @@ const DriverAuth = () => {
     defaultValues: {
       fullName: '',
       email: '',
+      repeatEmail: '',
       password: '',
       phone: '',
       cpf: '',

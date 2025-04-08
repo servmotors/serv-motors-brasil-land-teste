@@ -12,6 +12,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 interface RegisterFormValues {
   fullName: string;
   email: string;
+  repeatEmail: string;
   password: string;
   phone: string;
   cpf: string;
@@ -25,6 +26,7 @@ interface RegisterFormProps {
   form: UseFormReturn<{
     fullName: string;
     email: string;
+    repeatEmail: string;
     password: string;
     phone: string;
     cpf: string;
@@ -74,6 +76,22 @@ const RegisterForm = ({ form, onSubmit, isSubmitting }: RegisterFormProps) => {
             </div>
             {form.formState.errors.email && (
               <p className="text-sm text-red-500">{form.formState.errors.email.message}</p>
+            )}
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="repeatEmail">Confirmar E-mail</Label>
+            <div className="relative">
+              <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+              <Input
+                id="repeatEmail"
+                placeholder="seu@email.com"
+                className="pl-9"
+                {...form.register('repeatEmail')}
+              />
+            </div>
+            {form.formState.errors.repeatEmail && (
+              <p className="text-sm text-red-500">{form.formState.errors.repeatEmail.message}</p>
             )}
           </div>
           
