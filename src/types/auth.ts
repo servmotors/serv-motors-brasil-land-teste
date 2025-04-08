@@ -1,4 +1,3 @@
-
 import { z } from 'zod';
 
 export const loginSchema = z.object({
@@ -13,7 +12,7 @@ export const registerSchema = z.object({
   password: z.string().min(6, 'A senha deve ter pelo menos 6 caracteres'),
   confirmPassword: z.string().min(6, 'A senha deve ter pelo menos 6 caracteres'),
   phone: z.string().min(10, 'Telefone inválido'),
-  profileImage: z.instanceof(File).optional(),
+  profileImage: z.instanceof(File, { message: "Foto do motorista é obrigatória" }),
 }).refine((data) => data.email === data.repeatEmail, {
   message: "Os e-mails não coincidem",
   path: ["repeatEmail"],

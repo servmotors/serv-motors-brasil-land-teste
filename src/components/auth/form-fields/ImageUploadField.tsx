@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Camera, Upload } from 'lucide-react';
+import { Camera, Upload, AlertCircle } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -62,7 +62,10 @@ const ImageUploadField = ({ id, label, setValue, error }: ImageUploadFieldProps)
       </div>
       
       {error && (
-        <p className="text-sm text-red-500">{error}</p>
+        <div className="flex items-center text-sm text-red-500 space-x-2">
+          <AlertCircle className="h-4 w-4" />
+          <p>{error}</p>
+        </div>
       )}
     </div>
   );
