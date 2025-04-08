@@ -1,5 +1,6 @@
 
 import { z } from 'zod';
+import { validateCPF } from '@/utils/cpfValidator';
 
 export const loginSchema = z.object({
   email: z.string().email('E-mail inválido'),
@@ -22,14 +23,17 @@ export const registerSchema = z.object({
   path: ["confirmPassword"],
 });
 
-// Updated validation for minimum age, required CNH and non-expired CNH
+// Updated validation for minimum age, CPF validation, required CNH and non-expired CNH
 export const driverIdentitySchema = z.object({
   birthDate: z.date({
     required_error: "Data de nascimento é obrigatória",
   }),
-  rg: z.string().min(7, 'RG inválido'),
-  rgFrontDocument: z.instanceof(File, { message: "Documento do RG (frente) é obrigatório" }),
-  rgBackDocument: z.instanceof(File, { message: "Documento do RG (verso) é obrigatório" }),
+  cpf: z.string().min(11, 'CPF deve ter 11 dígitos').refine(
+    (cpf) => validateCPF(cpf),
+    { message: 'CPF inválido. Verifique os dígitos informados.' }
+  ),
+  rgFrontDocument: z.instanceof(File, { message: "Documento do CPF ou RG (frente) é obrigatório" }),
+  rgBackDocument: z.instanceof(File, { message: "Documento do CPF ou RG (verso) é obrigatório" }),
   cnh: z.string().min(11, 'CNH inválida'),
   cnhDocument: z.instanceof(File, { message: "Documento da CNH é obrigatório" }),
   cnhExpiry: z.date({

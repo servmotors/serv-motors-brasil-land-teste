@@ -1,11 +1,12 @@
 
 import React from 'react';
-import { FileText, CreditCard } from 'lucide-react';
+import { FileText } from 'lucide-react';
 import InputField from '../form-fields/InputField';
 import FileUploadField from '../form-fields/FileUploadField';
 import DatePickerField from '../form-fields/DatePickerField';
 import RadioFieldGroup from '../form-fields/RadioFieldGroup';
 import AlertMessage from '../form-fields/AlertMessage';
+import CPFField from '../form-fields/CPFField';
 
 interface IdentityFieldsProps {
   register: any;
@@ -68,13 +69,13 @@ const IdentityFields = ({ register, errors, setValue, watch }: IdentityFieldsPro
         disabledDates={(date) => date > new Date() || date < new Date('1930-01-01')}
       />
 
-      <InputField
-        id="rg"
-        label="CPF / RG"
-        placeholder="0000000"
-        icon={CreditCard}
+      <CPFField
+        id="cpf"
+        label="CPF"
         register={register}
-        error={errors.rg?.message}
+        error={errors.cpf?.message}
+        setValue={setValue}
+        watch={watch}
       />
 
       <FileUploadField

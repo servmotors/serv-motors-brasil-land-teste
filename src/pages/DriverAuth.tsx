@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -64,7 +63,8 @@ const DriverAuth = () => {
   const identityForm = useForm<{
     birthDate: Date;
     cpf: string;
-    cpfDocument: File;
+    rgFrontDocument: File;
+    rgBackDocument: File;
     cnh: string;
     cnhDocument: File;
     cnhExpiry: Date;
