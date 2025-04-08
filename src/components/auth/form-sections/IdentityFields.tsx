@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { format, parse } from 'date-fns';
 import { CalendarIcon, FileText, CreditCard } from 'lucide-react';
@@ -47,7 +46,6 @@ const IdentityFields = ({ register, errors, setValue, watch }: IdentityFieldsPro
     }
   };
 
-  // Function to calculate age
   const calculateAge = (birthDate: Date): number => {
     const today = new Date();
     let age = today.getFullYear() - birthDate.getFullYear();
@@ -58,19 +56,16 @@ const IdentityFields = ({ register, errors, setValue, watch }: IdentityFieldsPro
     return age;
   };
 
-  // Check if the driver is underage
   const isUnderage = birthDate ? calculateAge(birthDate) < 18 : false;
 
-  // Check if CNH is expired
   const isCnhExpired = (): boolean => {
     if (!cnhExpiry) return false;
     
     const today = new Date();
-    today.setHours(0, 0, 0, 0); // Set to start of day for accurate comparison
+    today.setHours(0, 0, 0, 0);
     return cnhExpiry < today;
   };
 
-  // Check CNH expiration status
   const cnhExpired = isCnhExpired();
 
   return (
@@ -144,7 +139,7 @@ const IdentityFields = ({ register, errors, setValue, watch }: IdentityFieldsPro
 
       <InputField
         id="rg"
-        label="RG (Registro Geral)"
+        label="CPF / RG"
         placeholder="0000000"
         icon={CreditCard}
         register={register}
@@ -153,7 +148,7 @@ const IdentityFields = ({ register, errors, setValue, watch }: IdentityFieldsPro
 
       <FileUploadField
         id="rgFrontDocument"
-        label="Anexar RG - Frente (imagem ou PDF)"
+        label="Anexar CPF ou RG - Frente (imagem ou PDF)"
         setValue={setValue}
         error={errors.rgFrontDocument?.message}
         accept=".pdf,.jpg,.jpeg,.png"
@@ -161,7 +156,7 @@ const IdentityFields = ({ register, errors, setValue, watch }: IdentityFieldsPro
 
       <FileUploadField
         id="rgBackDocument"
-        label="Anexar RG - Verso (imagem ou PDF)"
+        label="Anexar CPF ou RG - Verso (imagem ou PDF)"
         setValue={setValue}
         error={errors.rgBackDocument?.message}
         accept=".pdf,.jpg,.jpeg,.png"
@@ -207,7 +202,7 @@ const IdentityFields = ({ register, errors, setValue, watch }: IdentityFieldsPro
                 mode="single"
                 selected={cnhExpiry}
                 onSelect={(date) => setValue('cnhExpiry', date)}
-                disabled={(date) => date < new Date('2000-01-01')} // Removed restriction on past dates to allow selection
+                disabled={(date) => date < new Date('2000-01-01')}
                 initialFocus
                 className="p-3 pointer-events-auto"
               />
