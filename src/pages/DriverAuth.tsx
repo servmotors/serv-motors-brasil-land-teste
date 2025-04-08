@@ -1,21 +1,18 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Header from '@/components/auth/Header';
-import LoginForm from '@/components/auth/LoginForm';
-import RegisterForm from '@/components/auth/RegisterForm';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card } from '@/components/ui/card';
 import { loginSchema, registerSchema, driverIdentitySchema, driverAddressSchema } from '@/types/auth';
 import { useDriverAuth } from '@/hooks/useDriverAuth';
 import { useRegistrationSteps } from '@/hooks/useRegistrationSteps';
-import RegisterStepIndicator from '@/components/auth/RegisterStepIndicator';
-import IdentityFormStep from '@/components/auth/form-sections/IdentityFormStep';
-import AddressFormStep from '@/components/auth/form-sections/AddressFormStep';
+import { useAuthTabs, AuthTab } from '@/hooks/useAuthTabs';
+import LoginTab from '@/components/auth/tabs/LoginTab';
+import RegisterTab from '@/components/auth/tabs/RegisterTab';
 
 const DriverAuth = () => {
-  const [isRegistering, setIsRegistering] = useState(false);
   const [registrationSuccess, setRegistrationSuccess] = useState(false);
   const navigate = useNavigate();
   
@@ -24,6 +21,8 @@ const DriverAuth = () => {
     handleLogin, 
     handleRegister 
   } = useDriverAuth();
+
+  const { isRegistering, handleTabChange } = useAuthTabs();
 
   // Login form with zod validation
   const loginForm = useForm<{
@@ -138,64 +137,46 @@ const DriverAuth = () => {
     }
   };
 
+  const handleTabValueChange = (value: string) => {
+    handleTabChange(value as AuthTab);
+    if (value === 'register') {
+      // Reset to first step when switching to register tab
+      setCurrentStep('account');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Header navigateBack={() => navigate('/')} />
       
       <main className="flex-1 flex items-center justify-center p-4">
         <div className="w-full max-w-md">
-          <Tabs defaultValue="login" onValueChange={(value) => {
-            setIsRegistering(value === 'register');
-            if (value === 'register') {
-              // Reset to first step when switching to register tab
-              setCurrentStep('account');
-            }
-          }}>
+          <Tabs defaultValue="login" onValueChange={handleTabValueChange}>
             <TabsList className="grid w-full grid-cols-2 mb-8">
               <TabsTrigger value="login">Login</TabsTrigger>
               <TabsTrigger value="register">Cadastrar</TabsTrigger>
             </TabsList>
             
             <TabsContent value="login">
-              <Card>
-                <LoginForm 
-                  form={loginForm} 
-                  onSubmit={handleLogin}
-                  isSubmitting={isSubmitting}
-                />
-              </Card>
+              <LoginTab 
+                form={loginForm}
+                onSubmit={handleLogin}
+                isSubmitting={isSubmitting}
+              />
             </TabsContent>
             
             <TabsContent value="register">
-              <Card>
-                {isRegistering && <RegisterStepIndicator currentStep={currentStep} />}
-                
-                {currentStep === 'account' && (
-                  <RegisterForm 
-                    form={registerForm} 
-                    onSubmit={handleNextStep}
-                    isSubmitting={isSubmitting}
-                    buttonText="Próximo"
-                  />
-                )}
-                
-                {currentStep === 'identity' && (
-                  <IdentityFormStep 
-                    form={identityForm}
-                    handlePrevStep={handlePrevStep}
-                    handleNextStep={handleNextStep}
-                  />
-                )}
-                
-                {currentStep === 'address' && (
-                  <AddressFormStep 
-                    form={addressForm}
-                    handlePrevStep={handlePrevStep}
-                    handleCompleteRegistration={handleCompleteRegistration}
-                    isSubmitting={isSubmitting}
-                  />
-                )}
-              </Card>
+              <RegisterTab
+                isRegistering={isRegistering}
+                currentStep={currentStep}
+                registerForm={registerForm}
+                identityForm={identityForm}
+                addressForm={addressForm}
+                handleNextStep={handleNextStep}
+                handlePrevStep={handlePrevStep}
+                handleCompleteRegistration={handleCompleteRegistration}
+                isSubmitting={isSubmitting}
+              />
             </TabsContent>
           </Tabs>
         </div>
