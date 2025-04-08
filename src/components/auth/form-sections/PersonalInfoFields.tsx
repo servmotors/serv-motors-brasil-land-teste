@@ -2,15 +2,24 @@
 import React from 'react';
 import { User, Mail, Phone } from 'lucide-react';
 import InputField from '../form-fields/InputField';
+import ImageUploadField from '../form-fields/ImageUploadField';
 
 interface PersonalInfoFieldsProps {
   register: any;
   errors: any;
+  setValue: any;
 }
 
-const PersonalInfoFields = ({ register, errors }: PersonalInfoFieldsProps) => {
+const PersonalInfoFields = ({ register, errors, setValue }: PersonalInfoFieldsProps) => {
   return (
     <>
+      <ImageUploadField
+        id="profileImage"
+        label="Foto do Motorista"
+        setValue={setValue}
+        error={errors.profileImage?.message}
+      />
+      
       <InputField
         id="fullName"
         label="Nome completo"

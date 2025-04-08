@@ -12,7 +12,9 @@ interface RegisterFormValues {
   email: string;
   repeatEmail: string;
   password: string;
+  confirmPassword: string;
   phone: string;
+  profileImage?: File;
 }
 
 // Update the form prop to explicitly match what useForm returns
@@ -22,14 +24,16 @@ interface RegisterFormProps {
     email: string;
     repeatEmail: string;
     password: string;
+    confirmPassword: string;
     phone: string;
+    profileImage?: File;
   }, any, undefined>;
   onSubmit: (data: RegisterFormValues) => Promise<void>;
   isSubmitting: boolean;
 }
 
 const RegisterForm = ({ form, onSubmit, isSubmitting }: RegisterFormProps) => {
-  const { register, formState: { errors } } = form;
+  const { register, formState: { errors }, setValue } = form;
   
   return (
     <>
@@ -41,7 +45,8 @@ const RegisterForm = ({ form, onSubmit, isSubmitting }: RegisterFormProps) => {
         <CardContent className="space-y-4">
           <PersonalInfoFields 
             register={register} 
-            errors={errors} 
+            errors={errors}
+            setValue={setValue}
           />
           
           <SecurityFields 
