@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -98,6 +98,7 @@ const DriverAuth = () => {
 
   const { 
     currentStep, 
+    setCurrentStep,
     handleNextStep,
     handlePrevStep 
   } = useRegistrationSteps(registerForm, identityForm);
@@ -129,7 +130,7 @@ const DriverAuth = () => {
             setIsRegistering(value === 'register');
             if (value === 'register') {
               // Reset to first step when switching to register tab
-              currentStep = 'account';
+              setCurrentStep('account');
             }
           }}>
             <TabsList className="grid w-full grid-cols-2 mb-8">
