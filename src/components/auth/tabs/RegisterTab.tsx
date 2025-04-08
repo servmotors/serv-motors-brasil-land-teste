@@ -32,6 +32,12 @@ const RegisterTab = ({
   handleCompleteRegistration,
   isSubmitting
 }: RegisterTabProps) => {
+  // Wrap the handleNextStep function to return a Promise
+  const handleFormSubmit = async (data: any) => {
+    handleNextStep();
+    return Promise.resolve();
+  };
+
   return (
     <Card>
       {isRegistering && <RegisterStepIndicator currentStep={currentStep} />}
@@ -39,7 +45,7 @@ const RegisterTab = ({
       {currentStep === 'account' && (
         <RegisterForm 
           form={registerForm} 
-          onSubmit={handleNextStep}
+          onSubmit={handleFormSubmit}
           isSubmitting={isSubmitting}
           buttonText="Próximo"
         />
