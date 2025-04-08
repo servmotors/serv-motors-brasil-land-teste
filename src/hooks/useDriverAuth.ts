@@ -4,12 +4,10 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { checkIfTestDriverExists, createTestDriver, loginWithTestDriver } from '@/services/testDriverService';
 import { LoginFormValues, RegisterFormValues } from '@/types/auth';
 
 export const useDriverAuth = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isTestLoading, setIsTestLoading] = useState(false);
   const navigate = useNavigate();
   const { signIn, signUp } = useAuth();
   const { toast } = useToast();
@@ -42,9 +40,9 @@ export const useDriverAuth = () => {
         return;
       }
       
-      if (authResult.user) {
+      if (authResult.data?.user) {
         const driverData = {
-          user_id: authResult.user.id,
+          user_id: authResult.data.user.id,
           full_name: data.fullName,
           phone: data.phone,
           cpf: data.cpf,
@@ -84,70 +82,9 @@ export const useDriverAuth = () => {
     }
   };
 
-  const handleTestDriverLogin = async () => {
-    setIsTestLoading(true);
-    try {
-      console.log("Iniciando login como motorista de teste");
-      
-      // Verificar se o usuário já existe
-      const userExists = await checkIfTestDriverExists();
-      
-      if (userExists) {
-        console.log("Usuário de teste encontrado, fazendo login");
-        // Usuário existe, fazer login
-        const result = await loginWithTestDriver(signIn);
-        
-        if (!result.error) {
-          toast({
-            title: 'Login como motorista de teste',
-            description: 'Você entrou como motorista de teste.',
-          });
-          navigate('/driver/dashboard');
-        } else {
-          console.error("Erro ao fazer login:", result.error);
-          toast({
-            title: 'Erro ao fazer login',
-            description: result.error.message,
-            variant: 'destructive',
-          });
-        }
-      } else {
-        console.log("Usuário de teste não encontrado, criando novo usuário");
-        // Se não existe, criar o usuário de teste
-        await createTestDriver(signUp);
-        
-        console.log("Fazendo login após criação");
-        // Fazer login com as credenciais criadas
-        const loginResult = await loginWithTestDriver(signIn);
-        
-        if (!loginResult.error) {
-          toast({
-            title: 'Motorista de teste criado',
-            description: 'Você entrou como motorista de teste.',
-          });
-          navigate('/driver/dashboard');
-        } else {
-          console.error("Erro ao fazer login após criação:", loginResult.error);
-          throw new Error(loginResult.error.message);
-        }
-      }
-    } catch (error: any) {
-      console.error("Erro no processo de login de teste:", error);
-      toast({
-        title: 'Erro ao entrar como motorista de teste',
-        description: error.message || 'Tente novamente mais tarde.',
-        variant: 'destructive',
-      });
-    } finally {
-      setIsTestLoading(false);
-    }
-  };
-
   return {
     isSubmitting,
-    isTestLoading,
     handleLogin,
-    handleRegister,
-    handleTestDriverLogin
+    handleRegister
   };
 };

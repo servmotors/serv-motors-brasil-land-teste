@@ -3,11 +3,9 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { supabase } from '@/integrations/supabase/client';
 import Header from '@/components/auth/Header';
 import LoginForm from '@/components/auth/LoginForm';
 import RegisterForm from '@/components/auth/RegisterForm';
-import TestDriverButton from '@/components/auth/TestDriverButton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card } from '@/components/ui/card';
 import { loginSchema, registerSchema } from '@/types/auth';
@@ -19,10 +17,8 @@ const DriverAuth = () => {
   
   const { 
     isSubmitting, 
-    isTestLoading, 
     handleLogin, 
-    handleRegister, 
-    handleTestDriverLogin 
+    handleRegister 
   } = useDriverAuth();
 
   // Login form with zod validation
@@ -67,11 +63,6 @@ const DriverAuth = () => {
       
       <main className="flex-1 flex items-center justify-center p-4">
         <div className="w-full max-w-md">
-          <TestDriverButton 
-            onClick={handleTestDriverLogin}
-            isLoading={isTestLoading}
-          />
-          
           <Tabs defaultValue="login" onValueChange={(value) => setIsRegistering(value === 'register')}>
             <TabsList className="grid w-full grid-cols-2 mb-8">
               <TabsTrigger value="login">Login</TabsTrigger>
