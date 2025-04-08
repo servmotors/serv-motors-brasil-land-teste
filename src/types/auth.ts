@@ -1,3 +1,4 @@
+
 import { z } from 'zod';
 
 export const loginSchema = z.object({
@@ -21,6 +22,7 @@ export const registerSchema = z.object({
   path: ["confirmPassword"],
 });
 
+// Updated validation for minimum age and required CNH
 export const driverIdentitySchema = z.object({
   birthDate: z.date({
     required_error: "Data de nascimento é obrigatória",
@@ -33,6 +35,19 @@ export const driverIdentitySchema = z.object({
     required_error: "Data de vencimento da CNH é obrigatória",
   }),
   hasRemuneratedActivity: z.boolean(),
+}).refine((data) => {
+  // Calculate age based on birth date
+  const today = new Date();
+  const birthDate = new Date(data.birthDate);
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const m = today.getMonth() - birthDate.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+    age--;
+  }
+  return age >= 18;
+}, {
+  message: "Você deve ter pelo menos 18 anos para se cadastrar como motorista",
+  path: ["birthDate"],
 });
 
 export const driverAddressSchema = z.object({

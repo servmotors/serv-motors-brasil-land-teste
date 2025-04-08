@@ -17,6 +17,9 @@ export const useRegistrationSteps = (
       if (valid) setCurrentStep('identity');
     } else if (currentStep === 'identity') {
       const valid = await identityForm.trigger();
+      
+      // Only proceed if all validations pass, including age check and CNH validation
+      // The zod schema will handle these validations
       if (valid) setCurrentStep('address');
     }
   };

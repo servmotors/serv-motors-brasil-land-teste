@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { format, parse } from 'date-fns';
 import { CalendarIcon, FileText, CreditCard } from 'lucide-react';
@@ -10,6 +11,8 @@ import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import InputField from '../form-fields/InputField';
 import FileUploadField from '../form-fields/FileUploadField';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { AlertCircle } from 'lucide-react';
 
 interface IdentityFieldsProps {
   register: any;
@@ -44,8 +47,31 @@ const IdentityFields = ({ register, errors, setValue, watch }: IdentityFieldsPro
     }
   };
 
+  // Function to calculate age
+  const calculateAge = (birthDate: Date): number => {
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const m = today.getMonth() - birthDate.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    return age;
+  };
+
+  // Check if the driver is underage
+  const isUnderage = birthDate ? calculateAge(birthDate) < 18 : false;
+
   return (
     <>
+      {isUnderage && (
+        <Alert variant="destructive" className="mb-4">
+          <AlertCircle className="h-4 w-4 mr-2" />
+          <AlertDescription>
+            Você deve ter pelo menos 18 anos para se cadastrar como motorista
+          </AlertDescription>
+        </Alert>
+      )}
+
       <div className="space-y-2">
         <Label htmlFor="birthDate">Data de Nascimento</Label>
         <div className="flex items-center space-x-2">
@@ -56,7 +82,8 @@ const IdentityFields = ({ register, errors, setValue, watch }: IdentityFieldsPro
                 variant="outline"
                 className={cn(
                   "w-1/2 justify-start text-left font-normal",
-                  !birthDate && "text-muted-foreground"
+                  !birthDate && "text-muted-foreground",
+                  isUnderage && "border-red-500 text-red-500"
                 )}
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
@@ -78,13 +105,19 @@ const IdentityFields = ({ register, errors, setValue, watch }: IdentityFieldsPro
             type="text"
             placeholder="DD/MM/AAAA"
             maxLength={10}
-            className="w-1/2"
+            className={cn(
+              "w-1/2",
+              isUnderage && "border-red-500 text-red-500"
+            )}
             onChange={handleDateChange('birthDate')}
             defaultValue={birthDate ? format(birthDate, 'dd/MM/yyyy') : ''}
           />
         </div>
         {errors.birthDate && (
           <p className="text-sm text-red-500">{errors.birthDate.message}</p>
+        )}
+        {birthDate && !isUnderage && (
+          <p className="text-sm text-green-500">Idade: {calculateAge(birthDate)} anos</p>
         )}
       </div>
 
