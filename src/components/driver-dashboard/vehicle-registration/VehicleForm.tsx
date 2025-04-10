@@ -11,6 +11,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { PlateVerifier } from './PlateVerifier';
 import { useVehicleLicensePlate } from '@/hooks/useVehicleLicensePlate';
+import TransportTypeSelector from './TransportTypeSelector';
 
 // Define the form schema for vehicle registration
 const vehicleFormSchema = z.object({
@@ -20,7 +21,8 @@ const vehicleFormSchema = z.object({
   plate: z.string()
     .min(7, "Placa deve ter no mínimo 7 caracteres")
     .max(8, "Placa deve ter no máximo 8 caracteres")
-    .regex(/^[A-Z]{3}[0-9][0-9A-Z][0-9]{2}$/, "Placa deve estar no formato ABC1234 ou ABC1D23")
+    .regex(/^[A-Z]{3}[0-9][0-9A-Z][0-9]{2}$/, "Placa deve estar no formato ABC1234 ou ABC1D23"),
+  transportType: z.string().min(1, "Selecione um tipo de transporte")
 });
 
 type VehicleFormValues = z.infer<typeof vehicleFormSchema>;
@@ -37,6 +39,7 @@ const VehicleForm = () => {
       model: driverProfile?.vehicle_model || '',
       year: driverProfile?.vehicle_year || undefined,
       plate: driverProfile?.vehicle_plate || '',
+      transportType: driverProfile?.transport_type || ''
     },
   });
 
@@ -84,6 +87,7 @@ const VehicleForm = () => {
           vehicle_model: data.model,
           vehicle_year: data.year,
           vehicle_plate: formattedPlate,
+          transport_type: data.transportType,
           updated_at: new Date().toISOString()
         })
         .eq('user_id', user.id);
@@ -114,7 +118,13 @@ const VehicleForm = () => {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <TransportTypeSelector 
+          control={form.control}
+          name="transportType"
+          error={form.formState.errors.transportType?.message}
+        />
+
         <FormField
           control={form.control}
           name="plate"
@@ -131,45 +141,47 @@ const VehicleForm = () => {
           )}
         />
 
-        <FormField
-          control={form.control}
-          name="make"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Marca</FormLabel>
-              <FormControl>
-                <Input placeholder="Ex: Toyota" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="model"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Modelo</FormLabel>
-              <FormControl>
-                <Input placeholder="Ex: Corolla" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="year"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Ano</FormLabel>
-              <FormControl>
-                <Input type="number" placeholder="Ex: 2020" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          <FormField
+            control={form.control}
+            name="make"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Marca</FormLabel>
+                <FormControl>
+                  <Input placeholder="Ex: Toyota" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="model"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Modelo</FormLabel>
+                <FormControl>
+                  <Input placeholder="Ex: Corolla" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="year"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Ano</FormLabel>
+                <FormControl>
+                  <Input type="number" placeholder="Ex: 2020" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
         
         <Button 
           type="submit" 
