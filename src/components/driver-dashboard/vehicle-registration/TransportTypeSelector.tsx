@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Users, Truck, Dog } from 'lucide-react';
+import { Users, Truck, Dog, Info } from 'lucide-react';
 import { FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form';
 import { RadioGroup } from '@/components/ui/radio-group';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -12,6 +12,7 @@ export interface TransportType {
   name: string;
   icon: React.ReactNode;
   tooltip: string;
+  hintText?: string;
 }
 
 export const transportTypes: TransportType[] = [
@@ -19,7 +20,8 @@ export const transportTypes: TransportType[] = [
     id: 'passengers',
     name: 'Passageiros',
     icon: <Users className="h-6 w-6" />,
-    tooltip: 'Transporte de passageiros para corridas urbanas'
+    tooltip: 'Transporte de passageiros para corridas urbanas',
+    hintText: 'Essa opção é para quem deseja transportar passageiros de carro ou moto.'
   },
   {
     id: 'packages',
@@ -82,7 +84,19 @@ const TransportTypeSelector = ({ control, name, error }: TransportTypeSelectorPr
                           onChange={() => field.onChange(type.id)}
                         />
                         <div className="mb-3 text-center">{type.icon}</div>
-                        <div className="text-center text-sm font-medium">{type.name}</div>
+                        <div className="text-center text-sm font-medium">
+                          {type.name}
+                          {type.hintText && (
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Info className="h-4 w-4 ml-1 inline-block text-muted-foreground cursor-help" />
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p className="max-w-xs">{type.hintText}</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          )}
+                        </div>
                       </label>
                     </TooltipTrigger>
                     <TooltipContent>
