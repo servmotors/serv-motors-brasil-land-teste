@@ -39,7 +39,8 @@ const VehicleForm = () => {
       model: driverProfile?.vehicle_model || '',
       year: driverProfile?.vehicle_year || undefined,
       plate: driverProfile?.vehicle_plate || '',
-      transportType: driverProfile?.transport_type || ''
+      // Handle the case where transport_type might not exist in driverProfile
+      transportType: driverProfile?.transport_type as string || ''
     },
   });
 
