@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Loader2, Navigation } from 'lucide-react';
@@ -22,7 +22,9 @@ const DriverMap = ({ className }: DriverMapProps) => {
     googleApiKey,
     setGoogleApiKey,
     markers,
-    loadGoogleMapsApi
+    loadGoogleMapsApi,
+    currentAddress,
+    isLoadingAddress
   } = useGoogleMaps();
 
   // Load Google Maps when API key and location are available
@@ -57,7 +59,11 @@ const DriverMap = ({ className }: DriverMapProps) => {
         ) : (
           <>
             <div className="space-y-4">
-              <LocationDisplay currentLocation={currentLocation} />
+              <LocationDisplay 
+                currentLocation={currentLocation} 
+                currentAddress={currentAddress}
+                isLoadingAddress={isLoadingAddress}
+              />
               
               {/* Google Map */}
               <GoogleMapDisplay 
@@ -91,7 +97,7 @@ const DriverMap = ({ className }: DriverMapProps) => {
             </div>
             
             <div className="pt-2 text-xs text-gray-400">
-              <p>Clique nos marcadores para ver detalhes.</p>
+              <p>Sua localização em tempo real.</p>
             </div>
           </>
         )}

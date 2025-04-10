@@ -1,25 +1,48 @@
 
 import React from 'react';
-import { MapPin } from 'lucide-react';
+import { MapPin, Navigation } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface LocationDisplayProps {
   currentLocation: { lat: number, lng: number } | null;
+  currentAddress?: string | null;
+  isLoadingAddress?: boolean;
 }
 
-const LocationDisplay: React.FC<LocationDisplayProps> = ({ currentLocation }) => {
+const LocationDisplay: React.FC<LocationDisplayProps> = ({ 
+  currentLocation, 
+  currentAddress, 
+  isLoadingAddress = false 
+}) => {
   return (
-    <div className="flex flex-col space-y-2">
-      <label className="text-xs font-medium text-gray-500">Sua Localização:</label>
-      {currentLocation ? (
-        <div className="flex items-center text-sm">
-          <MapPin className="h-4 w-4 mr-1 text-primary" />
-          <span>
-            {currentLocation.lat.toFixed(5)}, {currentLocation.lng.toFixed(5)}
-          </span>
-        </div>
-      ) : (
-        <div className="text-sm text-gray-500">Obtendo localização...</div>
-      )}
+    <div className="flex flex-col space-y-3">
+      <div>
+        <label className="text-xs font-medium text-gray-500">Coordenadas:</label>
+        {currentLocation ? (
+          <div className="flex items-center text-sm">
+            <MapPin className="h-4 w-4 mr-1 text-primary" />
+            <span>
+              {currentLocation.lat.toFixed(5)}, {currentLocation.lng.toFixed(5)}
+            </span>
+          </div>
+        ) : (
+          <div className="text-sm text-gray-500">Obtendo localização...</div>
+        )}
+      </div>
+      
+      <div>
+        <label className="text-xs font-medium text-gray-500">Endereço atual:</label>
+        {isLoadingAddress ? (
+          <Skeleton className="h-5 w-full mt-1" />
+        ) : currentAddress ? (
+          <div className="flex items-start text-sm">
+            <Navigation className="h-4 w-4 mr-1 mt-0.5 text-primary" />
+            <span>{currentAddress}</span>
+          </div>
+        ) : (
+          <div className="text-sm text-gray-500">Endereço não disponível</div>
+        )}
+      </div>
     </div>
   );
 };

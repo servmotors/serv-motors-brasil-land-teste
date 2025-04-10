@@ -1,5 +1,5 @@
 
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { Marker } from '@/types/map';
 
 interface GoogleMapsState {
@@ -7,11 +7,15 @@ interface GoogleMapsState {
   setGoogleApiKey: (key: string) => void;
   markers: Marker[];
   loadGoogleMapsApi: (center: { lat: number, lng: number }) => void;
+  currentAddress: string | null;
+  isLoadingAddress: boolean;
 }
 
 export const useGoogleMaps = (): GoogleMapsState => {
   const [googleApiKey, setGoogleApiKey] = useState<string>('');
   const [markers, setMarkers] = useState<Marker[]>([]);
+  const [currentAddress, setCurrentAddress] = useState<string | null>(null);
+  const [isLoadingAddress, setIsLoadingAddress] = useState<boolean>(false);
   const geocoderRef = useRef<google.maps.Geocoder | null>(null);
 
   // Initialize Google Maps with API key
@@ -30,6 +34,7 @@ export const useGoogleMaps = (): GoogleMapsState => {
 
     // Load Google Maps API if not already loaded
     if (!window.google?.maps) {
+      setIsLoadingAddress(true);
       const script = document.createElement('script');
       script.src = `https://maps.googleapis.com/maps/api/js?key=${googleApiKey}&libraries=places`;
       script.defer = true;
@@ -37,18 +42,52 @@ export const useGoogleMaps = (): GoogleMapsState => {
       script.onload = () => {
         // Initialize geocoder after API is loaded
         geocoderRef.current = new window.google.maps.Geocoder();
+        // Get address for initial location
+        getAddressFromCoords(center);
       };
       document.head.appendChild(script);
     } else {
       // If API is already loaded, initialize geocoder
       geocoderRef.current = new window.google.maps.Geocoder();
+      // Get address for location
+      getAddressFromCoords(center);
     }
   }, [googleApiKey]);
+
+  // Get street address from coordinates using reverse geocoding
+  const getAddressFromCoords = useCallback((coords: { lat: number, lng: number }) => {
+    if (!geocoderRef.current) return;
+    
+    setIsLoadingAddress(true);
+    setCurrentAddress(null);
+    
+    geocoderRef.current.geocode({ location: coords }, (results, status) => {
+      if (status === 'OK' && results && results[0]) {
+        setCurrentAddress(results[0].formatted_address);
+      } else {
+        console.error('Geocoder failed due to: ' + status);
+        setCurrentAddress('Endereço não encontrado');
+      }
+      setIsLoadingAddress(false);
+    });
+  }, []);
+
+  // Update address when markers change
+  useEffect(() => {
+    if (markers.length > 0 && geocoderRef.current) {
+      const driverMarker = markers.find(m => m.title === 'Sua localização');
+      if (driverMarker) {
+        getAddressFromCoords(driverMarker.position);
+      }
+    }
+  }, [markers, getAddressFromCoords]);
 
   return {
     googleApiKey,
     setGoogleApiKey,
     markers,
-    loadGoogleMapsApi
+    loadGoogleMapsApi,
+    currentAddress,
+    isLoadingAddress
   };
 };
