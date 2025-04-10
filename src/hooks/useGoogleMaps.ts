@@ -12,7 +12,11 @@ interface GoogleMapsState {
 }
 
 export const useGoogleMaps = (): GoogleMapsState => {
-  const [googleApiKey, setGoogleApiKey] = useState<string>('');
+  // Load API key from localStorage when hook initializes
+  const [googleApiKey, setGoogleApiKey] = useState<string>(() => {
+    return localStorage.getItem('google_maps_api_key') || '';
+  });
+  
   const [markers, setMarkers] = useState<Marker[]>([]);
   const [currentAddress, setCurrentAddress] = useState<string | null>(null);
   const [isLoadingAddress, setIsLoadingAddress] = useState<boolean>(false);
@@ -81,6 +85,15 @@ export const useGoogleMaps = (): GoogleMapsState => {
       }
     }
   }, [markers, getAddressFromCoords]);
+
+  // Auto-load map when we have both API key and location
+  useEffect(() => {
+    // Load saved API key on mount
+    const savedApiKey = localStorage.getItem('google_maps_api_key');
+    if (savedApiKey && savedApiKey !== googleApiKey) {
+      setGoogleApiKey(savedApiKey);
+    }
+  }, []);
 
   return {
     googleApiKey,

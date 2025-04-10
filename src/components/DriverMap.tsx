@@ -34,6 +34,14 @@ const DriverMap = ({ className }: DriverMapProps) => {
     }
   }, [googleApiKey, currentLocation, loadGoogleMapsApi]);
 
+  // Initial setup to auto-locate on component mount
+  useEffect(() => {
+    // If we have an API key but not a location, get the location
+    if (googleApiKey && !currentLocation) {
+      getCurrentPosition();
+    }
+  }, [googleApiKey, currentLocation, getCurrentPosition]);
+
   const handleUpdateMap = () => {
     if (!currentLocation) {
       getCurrentPosition();

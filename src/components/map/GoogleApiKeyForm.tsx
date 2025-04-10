@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 
@@ -13,13 +13,14 @@ const GoogleApiKeyForm: React.FC<GoogleApiKeyFormProps> = ({
   setGoogleApiKey 
 }) => {
   const { toast } = useToast();
+  const [inputKey, setInputKey] = useState(googleApiKey || '');
 
   const handleApiKeyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setGoogleApiKey(e.target.value);
+    setInputKey(e.target.value);
   };
 
   const handleApiKeySubmit = () => {
-    if (!googleApiKey) {
+    if (!inputKey) {
       toast({
         variant: "destructive",
         title: "Chave API inválida",
@@ -28,9 +29,15 @@ const GoogleApiKeyForm: React.FC<GoogleApiKeyFormProps> = ({
       return;
     }
     
+    // Save API key to localStorage
+    localStorage.setItem('google_maps_api_key', inputKey);
+    
+    // Update state
+    setGoogleApiKey(inputKey);
+    
     toast({
       title: "Chave API Google Atualizada",
-      description: "A chave foi configurada com sucesso."
+      description: "A chave foi configurada e salva com sucesso."
     });
   };
 
@@ -42,7 +49,7 @@ const GoogleApiKeyForm: React.FC<GoogleApiKeyFormProps> = ({
       <div className="flex gap-2">
         <input 
           type="text" 
-          value={googleApiKey}
+          value={inputKey}
           onChange={handleApiKeyChange}
           placeholder="Insira a chave API Google Maps"
           className="flex-1 p-2 text-sm border rounded-md"
