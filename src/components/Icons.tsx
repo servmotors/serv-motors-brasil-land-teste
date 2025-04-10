@@ -21,29 +21,29 @@ export const TowTruckIcon: React.FC<{ className?: string }> = ({ className }) =>
   return (
     <svg
       className={className}
-      width="24"
-      height="24"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth="2"
+      strokeWidth="1.5"
       strokeLinecap="round"
       strokeLinejoin="round"
       xmlns="http://www.w3.org/2000/svg"
     >
-      {/* Tow truck wheels */}
-      <circle cx="6" cy="18" r="2" />
-      <circle cx="14" cy="18" r="2" />
+      {/* Tow truck cab */}
+      <path d="M16 18h3c1 0 2-1 2-2v-2c0-1.5-1-3-2-3h-1.5" />
+      <path d="M15 11h-2V8c0-1 1-2 2-2h1c1 0 2 1 2 2v1" />
+      <path d="M17.5 18c0 .8-.7 1.5-1.5 1.5s-1.5-.7-1.5-1.5.7-1.5 1.5-1.5 1.5.7 1.5 1.5z" />
       
-      {/* Tow truck body */}
-      <path d="M5 18H3c-.5-1.5-1-3-1-5 0-1 0-2 1-2h4l1 3h9l2 4H5z" />
-      <path d="M7 14h7" />
-      <path d="M16 6h1c1 0 2 1 3 3l1 3h-3" />
+      {/* Flatbed platform */}
+      <path d="M2 18h12" />
+      <path d="M14 18V8H2v10" />
+      <path d="M4.5 18c0 .8-.7 1.5-1.5 1.5s-1.5-.7-1.5-1.5.7-1.5 1.5-1.5 1.5.7 1.5 1.5z" />
       
-      {/* Car being towed/carried on platform */}
-      <path d="M9 9h6l1 2h-8z" />  {/* car body */}
-      <circle cx="9.5" cy="11" r="0.5" />  {/* front wheel */}
-      <circle cx="14.5" cy="11" r="0.5" />  {/* rear wheel */}
+      {/* Car on flatbed */}
+      <path d="M11 11H5v3h6v-3z" />  {/* car body */}
+      <path d="M11 11l-1-2H6l-1 2" />  {/* car windshield/hood */}
+      <path d="M6 14c0 .3-.2.5-.5.5S5 14.3 5 14s.2-.5.5-.5.5.2.5.5z" />  {/* left wheel */}
+      <path d="M10 14c0 .3-.2.5-.5.5S9 14.3 9 14s.2-.5.5-.5.5.2.5.5z" />  {/* right wheel */}
     </svg>
   );
 };
