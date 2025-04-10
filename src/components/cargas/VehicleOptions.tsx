@@ -1,8 +1,24 @@
-
 import React from 'react';
 import { Car, Info, Truck } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { transportTypes } from '@/components/driver-dashboard/vehicle-registration/transportTypes';
+
+// Custom Hatch Car Icon using the uploaded image
+const HatchCarIcon: React.FC<{ className?: string }> = ({ className }) => {
+  return (
+    <svg 
+      xmlns="http://www.w3.org/2000/svg" 
+      viewBox="0 0 24 24" 
+      className={className}
+      fill="currentColor"
+    >
+      <path d="M4 16.5V12a8 8 0 1 1 16 0v4.5m-16 0H2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2h-2m-16 0c0 1.1.9 2 2 2h12a2 2 0 0 0 2-2m-16 0v-4a9.63 9.63 0 0 1 2.49-6.61" />
+      <circle cx="6" cy="16" r="2" />
+      <circle cx="18" cy="16" r="2" />
+      <path d="M4 12V8a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v4" />
+    </svg>
+  );
+};
 
 // Custom motorcycle icon component for better representation
 const MotorcycleIcon: React.FC<{ className?: string }> = ({ className }) => {
@@ -93,7 +109,7 @@ const VehicleOptions: React.FC = () => {
     {
       title: "Carro Hatch",
       description: "Para pequenos volumes e entregas rápidas na cidade",
-      icon: <Car className="h-10 w-10 text-primary" />,
+      icon: <HatchCarIcon className="h-10 w-10 text-primary" />,
       tooltip: "Ideal para documentos e pequenos pacotes urbanos"
     },
     {
