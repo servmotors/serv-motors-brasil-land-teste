@@ -1,7 +1,7 @@
-
 import React, { useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { useDriverAvailability } from '@/hooks/useDriverAvailability';
 import {
   Car,
   History,
@@ -30,7 +30,7 @@ import {
 
 const DriverDashboard = () => {
   const { user, profile, signOut } = useAuth();
-  const [isAvailable, setIsAvailable] = useState(false);
+  const { isAvailable, toggleAvailability } = useDriverAvailability(false);
   const [activeSection, setActiveSection] = useState('dashboard');
   
   // If not logged in, redirect to auth page
@@ -104,7 +104,7 @@ const DriverDashboard = () => {
                 <span className="text-sm text-gray-500">Disponível:</span>
                 <Switch 
                   checked={isAvailable} 
-                  onCheckedChange={setIsAvailable} 
+                  onCheckedChange={toggleAvailability} 
                   aria-label="Toggle disponibilidade"
                 />
                 <span className="text-sm font-medium">
@@ -160,9 +160,8 @@ const DriverDashboard = () => {
                   <span className="text-sm text-gray-500">Disponível:</span>
                   <Switch 
                     checked={isAvailable} 
-                    onCheckedChange={setIsAvailable} 
+                    onCheckedChange={toggleAvailability} 
                     aria-label="Toggle disponibilidade"
-                    size="sm"
                   />
                 </div>
                 
