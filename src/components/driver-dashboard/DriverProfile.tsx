@@ -21,14 +21,16 @@ const DriverProfile = ({ profile }: DriverProfileProps) => {
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center gap-4">
-        <Avatar className="h-14 w-14">
-          <AvatarImage src={profile?.avatar_url || ''} alt={profile?.full_name || ''} />
-          <AvatarFallback>{getInitials(profile?.full_name || '')}</AvatarFallback>
+      <CardHeader className="flex flex-col items-center text-center pb-2">
+        <Avatar className="h-24 w-24 mb-4">
+          <AvatarImage 
+            src={profile?.avatar_url || ''} 
+            alt={profile?.full_name || ''} 
+            className="object-cover"
+          />
+          <AvatarFallback className="text-lg">{getInitials(profile?.full_name || '')}</AvatarFallback>
         </Avatar>
-        <div>
-          <CardTitle>Perfil do Motorista</CardTitle>
-        </div>
+        <CardTitle>Perfil do Motorista</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="grid gap-2">
