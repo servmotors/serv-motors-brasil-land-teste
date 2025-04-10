@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -10,7 +11,8 @@ import {
   Wallet,
   Menu,
   X,
-  Send
+  Send,
+  MapPin
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
@@ -27,6 +29,7 @@ import {
   SidebarHeader,
   SidebarFooter
 } from '@/components/ui/sidebar';
+import DriverMap from '@/components/DriverMap';
 
 const DriverDashboard = () => {
   const { user, profile, signOut } = useAuth();
@@ -76,7 +79,7 @@ const DriverDashboard = () => {
   const renderContent = () => {
     switch (activeSection) {
       case 'dashboard':
-        return <DriverProfile profile={profile} />;
+        return <DriverDashboardSection profile={profile} />;
       case 'balance':
         return <BalanceSection />;
       case 'history':
@@ -86,7 +89,7 @@ const DriverDashboard = () => {
       case 'withdraw':
         return <WithdrawSection />;
       default:
-        return <DriverProfile profile={profile} />;
+        return <DriverDashboardSection profile={profile} />;
     }
   };
 
@@ -224,6 +227,16 @@ const DriverDashboard = () => {
         </div>
       </div>
     </SidebarProvider>
+  );
+};
+
+// Dashboard Section with Profile and Map
+const DriverDashboardSection = ({ profile }: { profile: any }) => {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <DriverProfile profile={profile} />
+      <DriverMap className="h-full" />
+    </div>
   );
 };
 
