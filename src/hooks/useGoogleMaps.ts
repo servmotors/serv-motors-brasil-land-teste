@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { Marker } from '@/types/map';
 
 interface GoogleMapsState {
@@ -7,7 +7,6 @@ interface GoogleMapsState {
   setGoogleApiKey: (key: string) => void;
   markers: Marker[];
   loadGoogleMapsApi: (center: { lat: number, lng: number }) => void;
-  geocodeAddresses: (addresses: string[], center: { lat: number, lng: number }) => void;
 }
 
 export const useGoogleMaps = (): GoogleMapsState => {
@@ -46,54 +45,10 @@ export const useGoogleMaps = (): GoogleMapsState => {
     }
   }, [googleApiKey]);
 
-  // Effect to initialize geocoder when API or location changes
-  useEffect(() => {
-    if (googleApiKey && window.google?.maps && !geocoderRef.current) {
-      geocoderRef.current = new window.google.maps.Geocoder();
-    }
-  }, [googleApiKey]);
-
-  // Geocode destination addresses and add markers
-  const geocodeAddresses = useCallback((addresses: string[], center: { lat: number, lng: number }) => {
-    if (!geocoderRef.current) return;
-    
-    // First, make sure driver marker exists
-    const hasDriverMarker = markers.some(m => m.title === 'Sua localização');
-    
-    // If not, add it first
-    if (!hasDriverMarker) {
-      setMarkers(prev => [...prev, {
-        position: center,
-        title: 'Sua localização',
-        icon: 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png'
-      }]);
-    }
-    
-    // Geocode each address
-    addresses.forEach(address => {
-      if (!address.trim()) return; // Skip empty addresses
-      
-      geocoderRef.current?.geocode({ address }, (results, status) => {
-        if (status === 'OK' && results && results[0]) {
-          const position = results[0].geometry.location.toJSON();
-          
-          setMarkers(prev => [...prev, {
-            position,
-            title: address,
-            icon: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png'
-          }]);
-        } else {
-          console.error(`Geocoding error for address: ${address}`, status);
-        }
-      });
-    });
-  }, [markers]);
-
   return {
     googleApiKey,
     setGoogleApiKey,
     markers,
-    loadGoogleMapsApi,
-    geocodeAddresses
+    loadGoogleMapsApi
   };
 };

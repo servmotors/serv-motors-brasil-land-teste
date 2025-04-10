@@ -8,16 +8,9 @@ import { useGoogleMaps } from '@/hooks/useGoogleMaps';
 import GoogleMapDisplay from '@/components/map/GoogleMapDisplay';
 import GoogleApiKeyForm from '@/components/map/GoogleApiKeyForm';
 import LocationDisplay from '@/components/map/LocationDisplay';
-import DestinationsList from '@/components/map/DestinationsList';
 import { DriverMapProps } from '@/types/map';
 
 const DriverMap = ({ className }: DriverMapProps) => {
-  const [destinations, setDestinations] = useState<string[]>([
-    'Av. Paulista, São Paulo', 
-    'Estação da Luz, São Paulo',
-    'Shopping Ibirapuera, São Paulo'
-  ]);
-
   const { 
     currentLocation, 
     error, 
@@ -29,8 +22,7 @@ const DriverMap = ({ className }: DriverMapProps) => {
     googleApiKey,
     setGoogleApiKey,
     markers,
-    loadGoogleMapsApi,
-    geocodeAddresses
+    loadGoogleMapsApi
   } = useGoogleMaps();
 
   // Load Google Maps when API key and location are available
@@ -40,16 +32,6 @@ const DriverMap = ({ className }: DriverMapProps) => {
     }
   }, [googleApiKey, currentLocation, loadGoogleMapsApi]);
 
-  const handleAddDestination = () => {
-    setDestinations([...destinations, '']);
-  };
-
-  const handleDestinationChange = (index: number, value: string) => {
-    const newDestinations = [...destinations];
-    newDestinations[index] = value;
-    setDestinations(newDestinations);
-  };
-
   const handleUpdateMap = () => {
     if (!currentLocation) {
       getCurrentPosition();
@@ -58,7 +40,6 @@ const DriverMap = ({ className }: DriverMapProps) => {
     
     if (googleApiKey) {
       loadGoogleMapsApi(currentLocation);
-      geocodeAddresses(destinations.filter(d => d.trim()), currentLocation);
     }
   };
 
@@ -82,12 +63,6 @@ const DriverMap = ({ className }: DriverMapProps) => {
               <GoogleMapDisplay 
                 center={currentLocation || undefined} 
                 markers={markers}
-              />
-              
-              <DestinationsList
-                destinations={destinations}
-                onDestinationChange={handleDestinationChange}
-                onAddDestination={handleAddDestination}
               />
               
               <Button 
