@@ -36,6 +36,12 @@ const Navbar: React.FC = () => {
           >
             Motoristas
           </Link>
+          <Link 
+            to="/cargas" 
+            className="font-medium hover:text-primary transition-colors"
+          >
+            Cargas / Pacotes
+          </Link>
           <button 
             onClick={() => scrollToSection('passageiros')} 
             className="font-medium hover:text-primary transition-colors"
@@ -71,6 +77,13 @@ const Navbar: React.FC = () => {
               onClick={() => setIsMenuOpen(false)}
             >
               Motoristas
+            </Link>
+            <Link 
+              to="/cargas" 
+              className="font-medium py-2 hover:text-primary transition-colors"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Cargas / Pacotes
             </Link>
             <button 
               onClick={() => scrollToSection('passageiros')} 
