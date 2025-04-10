@@ -9,12 +9,11 @@ const VehicleRegistrationSection = () => {
   const { driverProfile } = useAuth();
 
   // Check if vehicle is already registered
-  // Add a type assertion to handle the missing transport_type property
   const isVehicleRegistered = driverProfile && 
     driverProfile.vehicle_make && 
     driverProfile.vehicle_model && 
     driverProfile.vehicle_plate &&
-    (driverProfile as any).transport_type;
+    driverProfile.transport_type;
 
   return (
     <Card>

@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -39,8 +38,7 @@ const VehicleForm = () => {
       model: driverProfile?.vehicle_model || '',
       year: driverProfile?.vehicle_year || undefined,
       plate: driverProfile?.vehicle_plate || '',
-      // Handle the case where transport_type might not exist in driverProfile
-      transportType: driverProfile?.transport_type as string || ''
+      transportType: driverProfile?.transport_type || ''
     },
   });
 

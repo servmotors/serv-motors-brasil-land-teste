@@ -20,6 +20,7 @@ export type Database = {
           id: string
           is_approved: boolean | null
           phone: string
+          transport_type: string | null
           updated_at: string
           user_id: string
           vehicle_make: string | null
@@ -37,6 +38,7 @@ export type Database = {
           id?: string
           is_approved?: boolean | null
           phone: string
+          transport_type?: string | null
           updated_at?: string
           user_id: string
           vehicle_make?: string | null
@@ -54,6 +56,7 @@ export type Database = {
           id?: string
           is_approved?: boolean | null
           phone?: string
+          transport_type?: string | null
           updated_at?: string
           user_id?: string
           vehicle_make?: string | null
