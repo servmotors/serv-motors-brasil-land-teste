@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { FormLabel } from '@/components/ui/form';
 import { RadioGroup } from '@/components/ui/radio-group';
@@ -19,7 +18,7 @@ const SubtypeSelector = ({ transportType, selectedSubtype, onSubtypeSelect, name
 
   return (
     <div className="mt-4">
-      <FormLabel className="mb-2 block">Escolha uma opção de {transportType.name}</FormLabel>
+      <FormLabel className="mb-2 block">Escolha uma opção para transportar {transportType.name}</FormLabel>
       <RadioGroup
         value={selectedSubtype || ''}
         onValueChange={(value) => onSubtypeSelect(transportType.id, value)}
