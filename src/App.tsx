@@ -25,7 +25,6 @@ const App = () => (
             <Route path="/motorista" element={<Motorista />} />
             <Route path="/motorista/auth" element={<DriverAuth />} />
             <Route path="/motorista/dashboard" element={<DriverDashboard />} />
-            <Route path="/driver/dashboard" element={<DriverDashboard />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
