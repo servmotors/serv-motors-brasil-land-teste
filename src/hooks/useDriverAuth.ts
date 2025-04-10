@@ -20,7 +20,7 @@ export const useDriverAuth = () => {
           title: 'Login realizado com sucesso!',
           description: 'Bem-vindo de volta.',
         });
-        navigate('/driver/dashboard');
+        navigate('/motorista/dashboard');
       }
     } finally {
       setIsSubmitting(false);
@@ -53,7 +53,7 @@ export const useDriverAuth = () => {
           description: 'Você foi cadastrado como motorista.',
         });
         
-        navigate('/driver/dashboard');
+        navigate('/motorista/dashboard');
       }
       
       return authResult;
