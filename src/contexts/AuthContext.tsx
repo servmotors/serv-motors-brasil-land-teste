@@ -17,6 +17,7 @@ type AuthContextType = {
   signIn: (email: string, password: string) => Promise<any>;
   signUp: (email: string, password: string, userData: any) => Promise<any>;
   signOut: () => Promise<void>;
+  refreshDriverProfile: () => Promise<void>; // Added this line
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -104,6 +105,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const refreshDriverProfile = async () => {
+    if (user) {
+      await fetchDriverProfile(user.id);
+    }
+  };
+
   const signIn = async (email: string, password: string) => {
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
@@ -179,6 +186,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         signIn,
         signUp,
         signOut,
+        refreshDriverProfile, // Added this line
       }}
     >
       {children}
