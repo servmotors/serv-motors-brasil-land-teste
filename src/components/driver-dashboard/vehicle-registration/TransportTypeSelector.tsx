@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Users, Package, Truck, Dog } from 'lucide-react';
+import { Users, Truck, Winch, Dog } from 'lucide-react';
 import { FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form';
 import { RadioGroup } from '@/components/ui/radio-group';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -23,13 +23,13 @@ export const transportTypes: TransportType[] = [
   {
     id: 'packages',
     name: 'Cargas / Pacotes',
-    icon: <Package className="h-6 w-6" />,
+    icon: <Truck className="h-6 w-6" />,
     tooltip: 'Entrega de pacotes e pequenas cargas'
   },
   {
     id: 'tow',
     name: 'Guincho',
-    icon: <Truck className="h-6 w-6" />,
+    icon: <Winch className="h-6 w-6" />,
     tooltip: 'Serviço de reboque para veículos'
   },
   {
