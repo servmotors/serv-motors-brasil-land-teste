@@ -1,3 +1,4 @@
+
 import React from 'react';
 
 export const AppleIcon: React.FC<{ className?: string }> = ({ className }) => {
@@ -30,12 +31,19 @@ export const TowTruckIcon: React.FC<{ className?: string }> = ({ className }) =>
       strokeLinejoin="round"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <path d="M10 17a2 2 0 1 0 4 0 2 2 0 0 0-4 0z" />
-      <path d="M4 17a2 2 0 1 0 4 0 2 2 0 0 0-4 0z" />
-      <path d="M12 17h6l2-4h-10" />
-      <path d="M8 17H3L1.5 9H7" />
-      <path d="M15 7v3h4l1 3" />
-      <path d="M6.5 11H13" />
+      {/* Tow truck wheels */}
+      <circle cx="6" cy="18" r="2" />
+      <circle cx="14" cy="18" r="2" />
+      
+      {/* Tow truck body */}
+      <path d="M5 18H3c-.5-1.5-1-3-1-5 0-1 0-2 1-2h4l1 3h9l2 4H5z" />
+      <path d="M7 14h7" />
+      <path d="M16 6h1c1 0 2 1 3 3l1 3h-3" />
+      
+      {/* Car being towed/carried on platform */}
+      <path d="M9 9h6l1 2h-8z" />  {/* car body */}
+      <circle cx="9.5" cy="11" r="0.5" />  {/* front wheel */}
+      <circle cx="14.5" cy="11" r="0.5" />  {/* rear wheel */}
     </svg>
   );
 };
