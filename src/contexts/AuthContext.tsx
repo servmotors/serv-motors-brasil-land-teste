@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -29,14 +30,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { toast } = useToast();
 
   useEffect(() => {
+    // Set up auth state listener before checking for existing session
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, currentSession) => {
+        console.log('Auth state changed:', event);
         setSession(currentSession);
         setUser(currentSession?.user ?? null);
         
         if (currentSession?.user) {
-          fetchProfile(currentSession.user.id);
-          fetchDriverProfile(currentSession.user.id);
+          // Use setTimeout to prevent Supabase deadlocks
+          setTimeout(() => {
+            fetchProfile(currentSession.user.id);
+            fetchDriverProfile(currentSession.user.id);
+          }, 0);
         } else {
           setProfile(null);
           setDriverProfile(null);
@@ -44,7 +50,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     );
 
+    // Check for existing session
     supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
+      console.log('Session retrieved:', currentSession ? 'active' : 'none');
       setSession(currentSession);
       setUser(currentSession?.user ?? null);
       
