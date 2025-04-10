@@ -19,7 +19,7 @@ import { MenuItem } from '@/types/dashboard';
 import DashboardSection from '@/components/driver-dashboard/DashboardSection';
 import BalanceSection from '@/components/driver-dashboard/BalanceSection';
 import HistorySection from '@/components/driver-dashboard/HistorySection';
-import VehicleRegistrationSection from '@/components/driver-dashboard/VehicleRegistrationSection';
+import VehicleRegistrationSection from '@/components/driver-dashboard/vehicle-registration';
 import WithdrawSection from '@/components/driver-dashboard/WithdrawSection';
 import MobileHeader from '@/components/driver-dashboard/MobileHeader';
 import DesktopSidebar from '@/components/driver-dashboard/DesktopSidebar';

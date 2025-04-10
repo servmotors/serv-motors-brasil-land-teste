@@ -1,35 +1,43 @@
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { Session, User } from '@supabase/supabase-js';
+import React, { createContext, useState, useEffect, useContext } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
-import { AuthContextType, ProfileType, DriverType } from './types';
+import { Session, User, AuthError } from '@supabase/supabase-js';
 import { fetchProfile, fetchDriverProfile } from './profileUtils';
-import { signIn as authSignIn, signUp as authSignUp, signOut as authSignOut } from './authUtils';
+import { signIn, signUp, signOut } from './authUtils';
+import { AuthContextType, ProfileType, DriverType } from './types';
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const initialState: AuthContextType = {
+  session: null,
+  user: null,
+  profile: null,
+  driverProfile: null,
+  loading: true,
+  signIn: async () => ({ user: null, session: null }),
+  signUp: async () => ({ user: null, session: null }),
+  signOut: async () => {},
+  refreshDriverProfile: async () => {},
+};
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
+export const AuthContext = createContext<AuthContextType>(initialState);
+
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<ProfileType | null>(null);
   const [driverProfile, setDriverProfile] = useState<DriverType | null>(null);
   const [loading, setLoading] = useState(true);
-  const { toast } = useToast();
 
   useEffect(() => {
-    // Set up auth state listener before checking for existing session
+    // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, currentSession) => {
-        console.log('Auth state changed:', event);
-        setSession(currentSession);
-        setUser(currentSession?.user ?? null);
+      (_event, session) => {
+        setSession(session);
+        setUser(session?.user ?? null);
         
-        if (currentSession?.user) {
-          // Use setTimeout to prevent Supabase deadlocks
+        // Defer Supabase calls with setTimeout
+        if (session?.user) {
           setTimeout(() => {
-            handleFetchProfile(currentSession.user.id);
-            handleFetchDriverProfile(currentSession.user.id);
+            fetchUserData(session.user.id);
           }, 0);
         } else {
           setProfile(null);
@@ -38,111 +46,88 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     );
 
-    // Check for existing session
-    supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
-      console.log('Session retrieved:', currentSession ? 'active' : 'none');
-      setSession(currentSession);
-      setUser(currentSession?.user ?? null);
+    // THEN check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
       
-      if (currentSession?.user) {
-        handleFetchProfile(currentSession.user.id);
-        handleFetchDriverProfile(currentSession.user.id);
+      if (session?.user) {
+        fetchUserData(session.user.id);
       }
       setLoading(false);
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
-  const handleFetchProfile = async (userId: string) => {
-    const data = await fetchProfile(userId);
-    setProfile(data);
-  };
-
-  const handleFetchDriverProfile = async (userId: string) => {
-    const data = await fetchDriverProfile(userId);
-    setDriverProfile(data);
+  const fetchUserData = async (userId: string) => {
+    try {
+      const [profileData, driverProfileData] = await Promise.all([
+        fetchProfile(userId),
+        fetchDriverProfile(userId)
+      ]);
+      
+      setProfile(profileData);
+      setDriverProfile(driverProfileData);
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    }
   };
 
   const refreshDriverProfile = async () => {
     if (user) {
-      await handleFetchDriverProfile(user.id);
+      const driverProfileData = await fetchDriverProfile(user.id);
+      setDriverProfile(driverProfileData);
     }
   };
 
-  const signIn = async (email: string, password: string) => {
-    try {
-      const data = await authSignIn(email, password);
-      
-      if (data.error) {
-        toast({
-          title: 'Erro ao fazer login',
-          description: data.error.message,
-          variant: 'destructive',
-        });
-      }
-      
-      return data;
-    } catch (error: any) {
-      toast({
-        title: 'Erro ao fazer login',
-        description: error.message,
-        variant: 'destructive',
-      });
-      return { error };
+  const handleSignIn = async (email: string, password: string) => {
+    const response = await signIn(email, password);
+    
+    if ('error' in response) {
+      console.error('Sign in error:', response.error);
+      return { error: response.error };
     }
+    
+    return response;
   };
 
-  const signUp = async (email: string, password: string, userData: any) => {
-    try {
-      const data = await authSignUp(email, password, userData);
-      
-      if (data.error) {
-        toast({
-          title: 'Erro ao criar conta',
-          description: data.error.message,
-          variant: 'destructive',
-        });
-      }
-      
-      return data;
-    } catch (error: any) {
-      toast({
-        title: 'Erro ao criar conta',
-        description: error.message,
-        variant: 'destructive',
-      });
-      return { error };
+  const handleSignUp = async (email: string, password: string, userData: any) => {
+    const response = await signUp(email, password, userData);
+    
+    if ('error' in response) {
+      console.error('Sign up error:', response.error);
+      return { error: response.error };
     }
+    
+    return response;
   };
 
-  const signOut = async () => {
-    await authSignOut();
+  const contextValue: AuthContextType = {
+    session,
+    user,
+    profile,
+    driverProfile,
+    loading,
+    signIn: handleSignIn,
+    signUp: handleSignUp,
+    signOut,
+    refreshDriverProfile,
   };
 
   return (
-    <AuthContext.Provider
-      value={{
-        session,
-        user,
-        profile,
-        driverProfile,
-        loading,
-        signIn,
-        signUp,
-        signOut,
-        refreshDriverProfile,
-      }}
-    >
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );
-}
+};
 
-export function useAuth() {
+export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
-}
+};
