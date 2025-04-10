@@ -9,7 +9,7 @@ import NotFound from "./pages/NotFound";
 import DriverAuth from "./pages/DriverAuth";
 import DriverDashboard from "./pages/DriverDashboard";
 import Motorista from "./pages/Motorista";
-import { AuthProvider } from "./contexts/AuthContext";
+import { AuthProvider } from "./contexts/auth";
 
 const queryClient = new QueryClient();
 
