@@ -12,7 +12,8 @@ const VehicleRegistrationSection = () => {
   const isVehicleRegistered = driverProfile && 
     driverProfile.vehicle_make && 
     driverProfile.vehicle_model && 
-    driverProfile.vehicle_plate;
+    driverProfile.vehicle_plate &&
+    driverProfile.transport_type;
 
   return (
     <Card>
