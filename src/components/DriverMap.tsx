@@ -5,6 +5,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Loader2, MapPin } from 'lucide-react';
+import { useToast } from '@/components/ui/use-toast';
 
 interface DriverMapProps {
   className?: string;
@@ -17,6 +18,7 @@ const DriverMap = ({ className }: DriverMapProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [currentLocation, setCurrentLocation] = useState<[number, number] | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const { toast } = useToast();
 
   // Function to get current position
   const getCurrentPosition = () => {
@@ -81,26 +83,34 @@ const DriverMap = ({ className }: DriverMapProps) => {
     
     // Initialize map
     if (!map.current) {
-      mapboxgl.accessToken = mapboxToken;
-      
-      map.current = new mapboxgl.Map({
-        container: mapContainer.current,
-        style: 'mapbox://styles/mapbox/streets-v11',
-        center: currentLocation,
-        zoom: 14,
-        attributionControl: false
-      });
-      
-      // Add marker for driver location
-      new mapboxgl.Marker({ color: '#FCCE0D' })
-        .setLngLat(currentLocation)
-        .addTo(map.current);
-      
-      // Add navigation controls
-      map.current.addControl(
-        new mapboxgl.NavigationControl({ showCompass: false }),
-        'top-right'
-      );
+      try {
+        mapboxgl.accessToken = mapboxToken;
+        
+        map.current = new mapboxgl.Map({
+          container: mapContainer.current,
+          style: 'mapbox://styles/mapbox/streets-v11',
+          center: currentLocation,
+          zoom: 14,
+          attributionControl: false
+        });
+        
+        // Add marker for driver location
+        new mapboxgl.Marker({ color: '#FCCE0D' })
+          .setLngLat(currentLocation)
+          .addTo(map.current);
+        
+        // Add navigation controls
+        map.current.addControl(
+          new mapboxgl.NavigationControl({ showCompass: false }),
+          'top-right'
+        );
+      } catch (err) {
+        toast({
+          variant: "destructive",
+          title: "Erro ao inicializar Mapbox",
+          description: "Verifique se o token é válido."
+        });
+      }
     }
     
     // Clean up on unmount
@@ -110,10 +120,36 @@ const DriverMap = ({ className }: DriverMapProps) => {
         map.current = null;
       }
     };
-  }, [currentLocation, mapboxToken]);
+  }, [currentLocation, mapboxToken, toast]);
 
   const handleTokenChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMapboxToken(e.target.value);
+  };
+
+  const handleTokenSubmit = () => {
+    if (!mapboxToken) {
+      toast({
+        variant: "destructive",
+        title: "Token inválido",
+        description: "Por favor, insira um token Mapbox válido."
+      });
+      return;
+    }
+    
+    // Verify token validity
+    try {
+      mapboxgl.accessToken = mapboxToken;
+      toast({
+        title: "Token Mapbox Atualizado",
+        description: "O token foi configurado com sucesso."
+      });
+    } catch (err) {
+      toast({
+        variant: "destructive",
+        title: "Erro no Token",
+        description: "O token inserido parece ser inválido."
+      });
+    }
   };
 
   return (
@@ -136,7 +172,7 @@ const DriverMap = ({ className }: DriverMapProps) => {
                 className="flex-1 p-2 text-sm border rounded-md"
               />
               <Button 
-                onClick={() => setMapboxToken(mapboxToken)}
+                onClick={handleTokenSubmit}
                 size="sm"
               >
                 Aplicar
