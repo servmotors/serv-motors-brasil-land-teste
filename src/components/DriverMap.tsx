@@ -17,7 +17,8 @@ const DriverMap = ({ className }: DriverMapProps) => {
     currentLocation, 
     error, 
     isLoading, 
-    getCurrentPosition 
+    getCurrentPosition,
+    startWatchingPosition
   } = useGeolocation();
 
   const {
@@ -40,7 +41,7 @@ const DriverMap = ({ className }: DriverMapProps) => {
   useEffect(() => {
     // If the user is logged in, attempt to get their location
     if (user) {
-      // If we have an API key but not a location, get the location
+      // Se não tivermos uma localização atual, obtenha-a
       if (!currentLocation) {
         getCurrentPosition();
       } else if (googleApiKey) {
