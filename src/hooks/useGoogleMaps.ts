@@ -1,6 +1,7 @@
 
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { Marker } from '@/types/map';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface GoogleMapsState {
   googleApiKey: string;
@@ -12,6 +13,7 @@ interface GoogleMapsState {
 }
 
 export const useGoogleMaps = (): GoogleMapsState => {
+  const { user } = useAuth();
   // Load API key from localStorage when hook initializes
   const [googleApiKey, setGoogleApiKey] = useState<string>(() => {
     return localStorage.getItem('google_maps_api_key') || '';
@@ -21,6 +23,13 @@ export const useGoogleMaps = (): GoogleMapsState => {
   const [currentAddress, setCurrentAddress] = useState<string | null>(null);
   const [isLoadingAddress, setIsLoadingAddress] = useState<boolean>(false);
   const geocoderRef = useRef<google.maps.Geocoder | null>(null);
+
+  // Store API key in localStorage when it changes
+  useEffect(() => {
+    if (googleApiKey) {
+      localStorage.setItem('google_maps_api_key', googleApiKey);
+    }
+  }, [googleApiKey]);
 
   // Initialize Google Maps with API key
   const loadGoogleMapsApi = useCallback((center: { lat: number, lng: number }) => {
@@ -86,7 +95,7 @@ export const useGoogleMaps = (): GoogleMapsState => {
     }
   }, [markers, getAddressFromCoords]);
 
-  // Auto-load map when we have both API key and location
+  // Auto-load map when user is logged in and we have the API key
   useEffect(() => {
     // Load saved API key on mount
     const savedApiKey = localStorage.getItem('google_maps_api_key');

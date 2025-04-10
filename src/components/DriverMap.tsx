@@ -9,8 +9,10 @@ import GoogleMapDisplay from '@/components/map/GoogleMapDisplay';
 import GoogleApiKeyForm from '@/components/map/GoogleApiKeyForm';
 import LocationDisplay from '@/components/map/LocationDisplay';
 import { DriverMapProps } from '@/types/map';
+import { useAuth } from '@/contexts/AuthContext';
 
 const DriverMap = ({ className }: DriverMapProps) => {
+  const { user } = useAuth();
   const { 
     currentLocation, 
     error, 
@@ -34,13 +36,19 @@ const DriverMap = ({ className }: DriverMapProps) => {
     }
   }, [googleApiKey, currentLocation, loadGoogleMapsApi]);
 
-  // Initial setup to auto-locate on component mount
+  // Initial setup to auto-locate when user is logged in or component mounts
   useEffect(() => {
-    // If we have an API key but not a location, get the location
-    if (googleApiKey && !currentLocation) {
-      getCurrentPosition();
+    // If the user is logged in, attempt to get their location
+    if (user) {
+      // If we have an API key but not a location, get the location
+      if (!currentLocation) {
+        getCurrentPosition();
+      } else if (googleApiKey) {
+        // If we have both API key and location, update the map
+        loadGoogleMapsApi(currentLocation);
+      }
     }
-  }, [googleApiKey, currentLocation, getCurrentPosition]);
+  }, [user, googleApiKey, currentLocation, getCurrentPosition, loadGoogleMapsApi]);
 
   const handleUpdateMap = () => {
     if (!currentLocation) {
