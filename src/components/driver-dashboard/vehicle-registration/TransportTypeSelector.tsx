@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { Users, Truck, Winch, Dog } from 'lucide-react';
+import { Users, Truck, Wrench, Dog } from 'lucide-react';
 import { FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form';
 import { RadioGroup } from '@/components/ui/radio-group';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -29,7 +28,7 @@ export const transportTypes: TransportType[] = [
   {
     id: 'tow',
     name: 'Guincho',
-    icon: <Winch className="h-6 w-6" />,
+    icon: <Wrench className="h-6 w-6" />,
     tooltip: 'Serviço de reboque para veículos'
   },
   {
