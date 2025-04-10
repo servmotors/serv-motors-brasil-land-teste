@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -30,6 +31,11 @@ const VehicleForm = () => {
   const { toast } = useToast();
   const { user, driverProfile, refreshDriverProfile } = useAuth();
   
+  // Handle the type issue with transport_type by using a type assertion
+  const driverTransportType = driverProfile ? 
+    (driverProfile as any).transport_type || '' : 
+    '';
+  
   // Initialize form with existing values if available
   const form = useForm<VehicleFormValues>({
     resolver: zodResolver(vehicleFormSchema),
@@ -38,7 +44,7 @@ const VehicleForm = () => {
       model: driverProfile?.vehicle_model || '',
       year: driverProfile?.vehicle_year || undefined,
       plate: driverProfile?.vehicle_plate || '',
-      transportType: driverProfile?.transport_type || ''
+      transportType: driverTransportType
     },
   });
 

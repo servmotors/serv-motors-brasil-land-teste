@@ -8,12 +8,12 @@ import VehicleForm from './VehicleForm';
 const VehicleRegistrationSection = () => {
   const { driverProfile } = useAuth();
 
-  // Check if vehicle is already registered
+  // Check if vehicle is already registered using type assertion to handle the missing transport_type
   const isVehicleRegistered = driverProfile && 
     driverProfile.vehicle_make && 
     driverProfile.vehicle_model && 
     driverProfile.vehicle_plate &&
-    driverProfile.transport_type;
+    (driverProfile as any).transport_type;
 
   return (
     <Card>
