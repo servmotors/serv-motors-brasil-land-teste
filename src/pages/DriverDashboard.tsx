@@ -25,7 +25,7 @@ import MobileHeader from '@/components/driver-dashboard/MobileHeader';
 import DesktopSidebar from '@/components/driver-dashboard/DesktopSidebar';
 
 const DriverDashboard = () => {
-  const { user, profile, signOut } = useAuth();
+  const { user, profile, driverProfile, signOut } = useAuth();
   const { isAvailable, toggleAvailability } = useDriverAvailability(false);
   const [activeSection, setActiveSection] = useState('dashboard');
   
@@ -72,7 +72,7 @@ const DriverDashboard = () => {
   const renderContent = () => {
     switch (activeSection) {
       case 'dashboard':
-        return <DashboardSection profile={profile} />;
+        return <DashboardSection profile={profile} driverProfile={driverProfile} />;
       case 'balance':
         return <BalanceSection />;
       case 'history':
@@ -82,7 +82,7 @@ const DriverDashboard = () => {
       case 'withdraw':
         return <WithdrawSection />;
       default:
-        return <DashboardSection profile={profile} />;
+        return <DashboardSection profile={profile} driverProfile={driverProfile} />;
     }
   };
 

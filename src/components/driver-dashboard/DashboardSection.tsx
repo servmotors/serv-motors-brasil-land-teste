@@ -5,12 +5,19 @@ import DriverMap from '@/components/DriverMap';
 
 interface DashboardSectionProps {
   profile: any;
+  driverProfile: any;
 }
 
-const DashboardSection = ({ profile }: DashboardSectionProps) => {
+const DashboardSection = ({ profile, driverProfile }: DashboardSectionProps) => {
+  // Merge profile and driverProfile data
+  const combinedProfile = {
+    ...profile,
+    ...driverProfile
+  };
+  
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <DriverProfile profile={profile} />
+      <DriverProfile profile={combinedProfile} />
       <DriverMap className="h-full" />
     </div>
   );

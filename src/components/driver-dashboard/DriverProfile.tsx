@@ -1,16 +1,34 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
 interface DriverProfileProps {
   profile: any;
 }
 
 const DriverProfile = ({ profile }: DriverProfileProps) => {
+  // Get first letters of name for avatar fallback
+  const getInitials = (name: string) => {
+    if (!name) return '';
+    return name
+      .split(' ')
+      .map(part => part[0])
+      .join('')
+      .toUpperCase()
+      .substring(0, 2);
+  };
+
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Perfil do Motorista</CardTitle>
+      <CardHeader className="flex flex-row items-center gap-4">
+        <Avatar className="h-14 w-14">
+          <AvatarImage src={profile?.avatar_url || ''} alt={profile?.full_name || ''} />
+          <AvatarFallback>{getInitials(profile?.full_name || '')}</AvatarFallback>
+        </Avatar>
+        <div>
+          <CardTitle>Perfil do Motorista</CardTitle>
+        </div>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="grid gap-2">
