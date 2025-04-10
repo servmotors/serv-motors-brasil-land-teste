@@ -1,34 +1,35 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Loader2, MapPin, Navigation } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
-import { Client } from '@googlemaps/google-maps-services-js';
 
 interface DriverMapProps {
   className?: string;
 }
 
-interface DistanceData {
-  origin: string;
-  destination: string;
-  distance: string;
-  duration: string;
+interface Marker {
+  position: { lat: number, lng: number };
+  title: string;
+  icon?: string;
 }
 
 const DriverMap = ({ className }: DriverMapProps) => {
   const [googleApiKey, setGoogleApiKey] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
-  const [currentLocation, setCurrentLocation] = useState<[number, number] | null>(null);
+  const [currentLocation, setCurrentLocation] = useState<{ lat: number, lng: number } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [destinations, setDestinations] = useState<string[]>([
     'Av. Paulista, São Paulo', 
     'Estação da Luz, São Paulo',
     'Shopping Ibirapuera, São Paulo'
   ]);
-  const [distanceResults, setDistanceResults] = useState<DistanceData[]>([]);
+  const [markers, setMarkers] = useState<Marker[]>([]);
   const { toast } = useToast();
+  const mapRef = useRef<HTMLDivElement>(null);
+  const googleMapRef = useRef<google.maps.Map | null>(null);
+  const geocoderRef = useRef<google.maps.Geocoder | null>(null);
 
   // Function to get current position
   const getCurrentPosition = () => {
@@ -38,13 +39,13 @@ const DriverMap = ({ className }: DriverMapProps) => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          const { longitude, latitude } = position.coords;
-          setCurrentLocation([longitude, latitude]);
+          const { latitude, longitude } = position.coords;
+          setCurrentLocation({ lat: latitude, lng: longitude });
           setIsLoading(false);
           
-          // If we have an API key, calculate distances
+          // If we have an API key, initialize the map
           if (googleApiKey && latitude && longitude) {
-            calculateDistances(`${latitude},${longitude}`);
+            initializeGoogleMap({ lat: latitude, lng: longitude });
           }
         },
         (err) => {
@@ -68,70 +69,102 @@ const DriverMap = ({ className }: DriverMapProps) => {
     getCurrentPosition();
   }, []);
 
-  // Calculate distances when we have both API key and location
+  // Initialize Google Maps with API key
+  const initializeGoogleMap = useCallback((center: { lat: number, lng: number }) => {
+    if (!googleApiKey || !mapRef.current) return;
+
+    // Load Google Maps API if not already loaded
+    if (!window.google?.maps) {
+      const script = document.createElement('script');
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${googleApiKey}&libraries=places`;
+      script.defer = true;
+      script.async = true;
+      script.onload = () => {
+        createMap(center);
+      };
+      document.head.appendChild(script);
+    } else {
+      createMap(center);
+    }
+  }, [googleApiKey]);
+
+  // Create the map
+  const createMap = (center: { lat: number, lng: number }) => {
+    if (!mapRef.current || !window.google?.maps) return;
+
+    googleMapRef.current = new window.google.maps.Map(mapRef.current, {
+      center,
+      zoom: 13,
+      mapTypeControl: false,
+      fullscreenControl: false,
+      streetViewControl: false,
+      zoomControl: true,
+    });
+
+    geocoderRef.current = new window.google.maps.Geocoder();
+    
+    // Add driver marker
+    addMarker({
+      position: center,
+      title: 'Sua localização',
+      icon: 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png'
+    });
+
+    // Geocode destination addresses and add markers
+    geocodeAddresses();
+  };
+
+  // Geocode destination addresses
+  const geocodeAddresses = () => {
+    if (!geocoderRef.current || !googleMapRef.current) return;
+    
+    destinations.forEach(address => {
+      geocoderRef.current?.geocode({ address }, (results, status) => {
+        if (status === 'OK' && results && results[0]) {
+          const position = results[0].geometry.location.toJSON();
+          
+          addMarker({
+            position,
+            title: address,
+            icon: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png'
+          });
+        } else {
+          console.error(`Geocoding error for address: ${address}`, status);
+        }
+      });
+    });
+  };
+
+  // Add a marker to the map
+  const addMarker = (marker: Marker) => {
+    if (!googleMapRef.current) return;
+    
+    const newMarker = new window.google.maps.Marker({
+      position: marker.position,
+      map: googleMapRef.current,
+      title: marker.title,
+      icon: marker.icon
+    });
+
+    // Add info window
+    const infoWindow = new window.google.maps.InfoWindow({
+      content: `<div style="font-weight: bold;">${marker.title}</div>`
+    });
+
+    newMarker.addListener('click', () => {
+      infoWindow.open(googleMapRef.current, newMarker);
+    });
+
+    // Update markers state for reference
+    setMarkers(prev => [...prev, marker]);
+  };
+
+  // Effect to initialize map when API key or location changes
   useEffect(() => {
     if (googleApiKey && currentLocation) {
-      const origin = `${currentLocation[1]},${currentLocation[0]}`;
-      calculateDistances(origin);
+      initializeGoogleMap(currentLocation);
     }
-  }, [googleApiKey, currentLocation]);
-
-  const calculateDistances = async (origin: string) => {
-    if (!googleApiKey || destinations.length === 0) return;
-
-    setIsLoading(true);
-    const client = new Client({});
-    
-    try {
-      const newResults: DistanceData[] = [];
-      
-      for (const destination of destinations) {
-        try {
-          const response = await client.distancematrix({
-            params: {
-              origins: [origin],
-              destinations: [destination],
-              key: googleApiKey
-            }
-          });
-          
-          if (
-            response.data.rows[0] && 
-            response.data.rows[0].elements[0] && 
-            response.data.rows[0].elements[0].status === 'OK'
-          ) {
-            const element = response.data.rows[0].elements[0];
-            newResults.push({
-              origin: response.data.origin_addresses[0],
-              destination: response.data.destination_addresses[0],
-              distance: element.distance.text,
-              duration: element.duration.text
-            });
-          }
-        } catch (error) {
-          console.error("Error calculating distance for", destination, error);
-        }
-      }
-      
-      setDistanceResults(newResults);
-      setIsLoading(false);
-      
-      if (newResults.length === 0) {
-        toast({
-          variant: "destructive",
-          title: "Nenhum resultado encontrado",
-          description: "Não foi possível calcular as distâncias para os destinos informados."
-        });
-      }
-    } catch (err) {
-      setIsLoading(false);
-      toast({
-        variant: "destructive",
-        title: "Erro ao calcular distâncias",
-        description: "Verifique se a chave API do Google é válida."
-      });
-    }
-  };
+  }, [googleApiKey, currentLocation, initializeGoogleMap]);
 
   const handleApiKeyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setGoogleApiKey(e.target.value);
@@ -153,7 +186,7 @@ const DriverMap = ({ className }: DriverMapProps) => {
     });
     
     if (currentLocation) {
-      calculateDistances(`${currentLocation[1]},${currentLocation[0]}`);
+      initializeGoogleMap(currentLocation);
     }
   };
 
@@ -167,26 +200,29 @@ const DriverMap = ({ className }: DriverMapProps) => {
     setDestinations(newDestinations);
   };
 
-  const handleCalculateDistances = () => {
+  const handleUpdateMap = () => {
     if (!currentLocation) {
       getCurrentPosition();
       return;
     }
     
-    const origin = `${currentLocation[1]},${currentLocation[0]}`;
-    calculateDistances(origin);
+    // Reset markers and reinitialize map
+    setMarkers([]);
+    if (mapRef.current && googleMapRef.current) {
+      initializeGoogleMap(currentLocation);
+    }
   };
 
   return (
     <Card className={className}>
       <CardHeader>
-        <CardTitle>Distâncias e Tempos</CardTitle>
+        <CardTitle>Mapa de Localização</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         {!googleApiKey ? (
           <div className="space-y-4">
             <p className="text-sm text-gray-500 mb-2">
-              Para calcular distâncias, insira sua chave API do Google Maps:
+              Para visualizar o mapa, insira sua chave API do Google Maps:
             </p>
             <div className="flex gap-2">
               <input 
@@ -216,13 +252,19 @@ const DriverMap = ({ className }: DriverMapProps) => {
                   <div className="flex items-center text-sm">
                     <MapPin className="h-4 w-4 mr-1 text-primary" />
                     <span>
-                      {currentLocation[1].toFixed(5)}, {currentLocation[0].toFixed(5)}
+                      {currentLocation.lat.toFixed(5)}, {currentLocation.lng.toFixed(5)}
                     </span>
                   </div>
                 ) : (
                   <div className="text-sm text-gray-500">Obtendo localização...</div>
                 )}
               </div>
+              
+              {/* Google Map */}
+              <div 
+                ref={mapRef} 
+                className="w-full h-64 rounded-md border overflow-hidden bg-gray-100"
+              ></div>
               
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
@@ -249,45 +291,22 @@ const DriverMap = ({ className }: DriverMapProps) => {
               </div>
               
               <Button 
-                onClick={handleCalculateDistances} 
+                onClick={handleUpdateMap} 
                 className="w-full"
                 disabled={isLoading}
               >
                 {isLoading ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Calculando...
+                    Carregando...
                   </>
                 ) : (
                   <>
                     <Navigation className="h-4 w-4 mr-2" />
-                    Calcular Distâncias
+                    Atualizar Mapa
                   </>
                 )}
               </Button>
-              
-              {distanceResults.length > 0 && (
-                <div className="mt-4 border rounded-md overflow-hidden">
-                  <table className="w-full text-sm">
-                    <thead className="bg-gray-50">
-                      <tr>
-                        <th className="px-4 py-2 text-left font-medium text-gray-500">Destino</th>
-                        <th className="px-4 py-2 text-left font-medium text-gray-500">Distância</th>
-                        <th className="px-4 py-2 text-left font-medium text-gray-500">Tempo</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y">
-                      {distanceResults.map((result, index) => (
-                        <tr key={index}>
-                          <td className="px-4 py-2 truncate max-w-[150px]">{result.destination}</td>
-                          <td className="px-4 py-2">{result.distance}</td>
-                          <td className="px-4 py-2">{result.duration}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
               
               {error && (
                 <div className="p-2 bg-red-50 border border-red-200 rounded-md text-sm text-red-600">
@@ -297,7 +316,7 @@ const DriverMap = ({ className }: DriverMapProps) => {
             </div>
             
             <div className="pt-2 text-xs text-gray-400">
-              <p>Os tempos de viagem são estimativas baseadas no tráfego atual.</p>
+              <p>Clique nos marcadores para ver detalhes.</p>
             </div>
           </>
         )}
@@ -305,5 +324,20 @@ const DriverMap = ({ className }: DriverMapProps) => {
     </Card>
   );
 };
+
+// Add Google Maps types
+declare global {
+  interface Window {
+    google?: {
+      maps: {
+        Map: typeof google.maps.Map;
+        Marker: typeof google.maps.Marker;
+        InfoWindow: typeof google.maps.InfoWindow;
+        Geocoder: typeof google.maps.Geocoder;
+        LatLng: typeof google.maps.LatLng;
+      };
+    };
+  }
+}
 
 export default DriverMap;
