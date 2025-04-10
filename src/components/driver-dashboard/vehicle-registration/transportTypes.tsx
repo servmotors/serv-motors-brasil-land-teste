@@ -1,11 +1,7 @@
-
 import React from 'react';
-import { Users, Truck, Dog, Info, Car } from 'lucide-react';
+import { Users, Truck, Dog, Info, Car, Bike } from 'lucide-react';
 import { TowTruckIcon } from '@/components/Icons';
 import { TransportType } from './types';
-
-// Import MotorcycleIcon directly from lucide-react
-import { Motorcycle as MotorcycleIcon } from 'lucide-react';
 
 export const transportTypes: TransportType[] = [
   {
@@ -23,7 +19,7 @@ export const transportTypes: TransportType[] = [
       {
         id: 'motorcycle',
         name: 'Moto táxi',
-        icon: <MotorcycleIcon className="h-5 w-5" />
+        icon: <Bike className="h-5 w-5" /> // Changed from Motorcycle to Bike
       }
     ]
   },
