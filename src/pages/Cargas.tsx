@@ -135,13 +135,13 @@ const Cargas: React.FC = () => {
     {
       title: "Guincho",
       description: "Transporte de veículos avariados",
-      icon: <transportTypes.find(t => t.id === "tow")?.icon || null} className="h-10 w-10 text-primary" />,
+      icon: transportTypes.find(t => t.id === "tow")?.icon,
       tooltip: "Remoção de veículos com problemas mecânicos"
     },
     {
       title: "Pet",
       description: "Transporte especializado para animais",
-      icon: <transportTypes.find(t => t.id === "pet")?.icon || null} className="h-10 w-10 text-primary" />,
+      icon: transportTypes.find(t => t.id === "pet")?.icon,
       tooltip: "Veículos adaptados para o conforto e segurança dos animais"
     }
   ];
