@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { FormControl, FormDescription, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Search, Loader2, CheckCircle2 } from 'lucide-react';
-import { Control, FieldValues, Path, PathValue } from 'react-hook-form';
+import { Control, FieldValues, Path, useController } from 'react-hook-form';
 
 interface PlateVerifierProps<T extends FieldValues> {
   control: Control<T>;
@@ -26,6 +26,11 @@ export function PlateVerifier<T extends FieldValues>({
   onVerifyPlate,
   watchedPlate
 }: PlateVerifierProps<T>) {
+  const { field } = useController({
+    name,
+    control
+  });
+
   return (
     <FormItem>
       <FormLabel>Placa</FormLabel>
@@ -34,9 +39,11 @@ export function PlateVerifier<T extends FieldValues>({
           <Input 
             placeholder="Ex: ABC1234" 
             className={plateVerified ? "border-green-500" : ""}
+            {...field}
             onChange={(e) => {
-              // We'll handle this in the parent component
+              field.onChange(e.target.value.toUpperCase());
             }}
+            value={field.value || ''}
           />
         </FormControl>
         <Button 

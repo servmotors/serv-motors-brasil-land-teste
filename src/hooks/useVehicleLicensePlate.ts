@@ -2,17 +2,17 @@
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { UseFormReturn } from 'react-hook-form';
+import { UseFormReturn, Path, PathValue } from 'react-hook-form';
 
-interface UseLicensePlateVerificationProps<T> {
+interface UseLicensePlateVerificationProps<T extends Record<string, any>> {
   form: UseFormReturn<T>;
-  makePath: keyof T;
-  modelPath: keyof T;
-  yearPath: keyof T;
-  platePath: keyof T;
+  makePath: Path<T>;
+  modelPath: Path<T>;
+  yearPath: Path<T>;
+  platePath: Path<T>;
 }
 
-export function useVehicleLicensePlate<T>({
+export function useVehicleLicensePlate<T extends Record<string, any>>({
   form,
   makePath,
   modelPath,
@@ -24,10 +24,10 @@ export function useVehicleLicensePlate<T>({
   const [plateVerified, setPlateVerified] = useState(false);
   const [plateVerificationError, setPlateVerificationError] = useState<string | null>(null);
   
-  const watchedPlate = form.watch(platePath as any);
+  const watchedPlate = form.watch(platePath);
 
   const verifyLicensePlate = async () => {
-    const plate = form.getValues(platePath as any);
+    const plate = form.getValues(platePath) as string;
     
     // Validate the plate format first
     if (!/^[A-Z]{3}[0-9][0-9A-Z][0-9]{2}$/.test(plate)) {
@@ -63,11 +63,12 @@ export function useVehicleLicensePlate<T>({
         const vehicleData = data.data;
         
         // Auto-fill the form with data from the API
-        form.setValue(makePath as any, vehicleData.marca || form.getValues(makePath as any), { shouldDirty: true });
-        form.setValue(modelPath as any, vehicleData.modelo || form.getValues(modelPath as any), { shouldDirty: true });
+        form.setValue(makePath, vehicleData.marca || form.getValues(makePath) as string, { shouldDirty: true });
+        form.setValue(modelPath, vehicleData.modelo || form.getValues(modelPath) as string, { shouldDirty: true });
         
         if (vehicleData.ano) {
-          form.setValue(yearPath as any, parseInt(vehicleData.ano) || form.getValues(yearPath as any), { shouldDirty: true });
+          const year = parseInt(vehicleData.ano);
+          form.setValue(yearPath, (isNaN(year) ? form.getValues(yearPath) : year) as PathValue<T, Path<T>>, { shouldDirty: true });
         }
         
         toast({

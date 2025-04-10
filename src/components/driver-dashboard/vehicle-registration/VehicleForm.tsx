@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
@@ -10,6 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { PlateVerifier } from './PlateVerifier';
+import { useVehicleLicensePlate } from '@/hooks/useVehicleLicensePlate';
 
 // Define the form schema for vehicle registration
 const vehicleFormSchema = z.object({
@@ -27,9 +28,6 @@ type VehicleFormValues = z.infer<typeof vehicleFormSchema>;
 const VehicleForm = () => {
   const { toast } = useToast();
   const { user, driverProfile, refreshDriverProfile } = useAuth();
-  const [isVerifyingPlate, setIsVerifyingPlate] = useState(false);
-  const [plateVerified, setPlateVerified] = useState(false);
-  const [plateVerificationError, setPlateVerificationError] = useState<string | null>(null);
   
   // Initialize form with existing values if available
   const form = useForm<VehicleFormValues>({
@@ -43,73 +41,26 @@ const VehicleForm = () => {
   });
 
   const { isSubmitting, isDirty } = form.formState;
-  const watchedPlate = form.watch('plate');
+  
+  const {
+    isVerifyingPlate,
+    plateVerified,
+    plateVerificationError,
+    watchedPlate,
+    verifyLicensePlate,
+    resetVerification
+  } = useVehicleLicensePlate({
+    form,
+    makePath: 'make',
+    modelPath: 'model',
+    yearPath: 'year',
+    platePath: 'plate'
+  });
 
   // Reset verification when plate is changed
   useEffect(() => {
-    setPlateVerified(false);
-    setPlateVerificationError(null);
-  }, [watchedPlate]);
-
-  const verifyLicensePlate = async () => {
-    const plate = form.getValues('plate');
-    
-    // Validate the plate format first
-    if (!/^[A-Z]{3}[0-9][0-9A-Z][0-9]{2}$/.test(plate)) {
-      setPlateVerificationError("Formato de placa inválido");
-      setPlateVerified(false);
-      return;
-    }
-
-    setIsVerifyingPlate(true);
-    setPlateVerificationError(null);
-    
-    try {
-      // Call our Supabase edge function
-      const { data, error } = await supabase.functions.invoke('check-plate', {
-        body: { plate },
-      });
-
-      if (error) {
-        console.error('Error verifying plate:', error);
-        setPlateVerificationError("Erro ao verificar a placa");
-        setPlateVerified(false);
-        return;
-      }
-
-      if (data.error) {
-        setPlateVerificationError(data.error);
-        setPlateVerified(false);
-        return;
-      }
-
-      // If we have vehicle data, auto-fill the form fields
-      if (data.success && data.data) {
-        const vehicleData = data.data;
-        
-        // Auto-fill the form with data from the API
-        form.setValue('make', vehicleData.marca || form.getValues('make'), { shouldDirty: true });
-        form.setValue('model', vehicleData.modelo || form.getValues('model'), { shouldDirty: true });
-        
-        if (vehicleData.ano) {
-          form.setValue('year', parseInt(vehicleData.ano) || form.getValues('year'), { shouldDirty: true });
-        }
-        
-        toast({
-          title: "Placa verificada",
-          description: "Informações do veículo preenchidas automaticamente",
-        });
-        
-        setPlateVerified(true);
-      }
-    } catch (error) {
-      console.error('Error verifying plate:', error);
-      setPlateVerificationError("Erro ao conectar com o serviço de verificação de placas");
-      setPlateVerified(false);
-    } finally {
-      setIsVerifyingPlate(false);
-    }
-  };
+    resetVerification();
+  }, [watchedPlate, resetVerification]);
 
   const onSubmit = async (data: VehicleFormValues) => {
     if (!user) {
@@ -150,7 +101,7 @@ const VehicleForm = () => {
       });
       
       // Reset verification status
-      setPlateVerified(false);
+      resetVerification();
     } catch (error) {
       console.error('Error saving vehicle information:', error);
       toast({
@@ -175,7 +126,7 @@ const VehicleForm = () => {
               plateVerified={plateVerified}
               plateVerificationError={plateVerificationError}
               onVerifyPlate={verifyLicensePlate}
-              watchedPlate={watchedPlate}
+              watchedPlate={watchedPlate as string}
             />
           )}
         />
