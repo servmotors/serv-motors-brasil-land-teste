@@ -10,6 +10,7 @@ import DriverAuth from "./pages/DriverAuth";
 import DriverDashboard from "./pages/DriverDashboard";
 import Motorista from "./pages/Motorista";
 import Cargas from "./pages/Cargas";
+import Admin from "./pages/Admin";
 import { AuthProvider } from "./contexts/auth";
 
 const queryClient = new QueryClient();
@@ -27,6 +28,7 @@ const App = () => (
             <Route path="/cargas" element={<Cargas />} />
             <Route path="/motorista/auth" element={<DriverAuth />} />
             <Route path="/motorista/dashboard" element={<DriverDashboard />} />
+            <Route path="/admin" element={<Admin />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
