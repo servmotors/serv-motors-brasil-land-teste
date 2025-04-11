@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Check, X, Search, UserCheck, Clock, Filter, ChevronDown } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
@@ -32,12 +31,14 @@ import {
 
 import type { DriverType } from '@/contexts/auth/types';
 
+type ProfileData = {
+  email: string;
+  full_name: string | null;
+  avatar_url: string | null;
+};
+
 type DriverWithProfile = DriverType & {
-  profiles: {
-    email: string;
-    full_name: string;
-    avatar_url: string | null;
-  } | null;
+  profiles: ProfileData | null;
 };
 
 type FilterStatus = 'all' | 'pending' | 'approved';
@@ -68,16 +69,16 @@ const AdminDrivers: React.FC = () => {
         throw error;
       }
 
-      return data as DriverWithProfile[];
+      return data as unknown as DriverWithProfile[];
     },
   });
 
   const filteredDrivers = drivers.filter(driver => {
     const matchesSearch = 
       driver.full_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      driver.transport_type?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      driver.vehicle_plate?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      driver.profiles?.email.toLowerCase().includes(searchQuery.toLowerCase());
+      (driver.transport_type && driver.transport_type.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (driver.vehicle_plate && driver.vehicle_plate.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (driver.profiles?.email && driver.profiles.email.toLowerCase().includes(searchQuery.toLowerCase()));
     
     if (filterStatus === 'all') return matchesSearch;
     if (filterStatus === 'pending') return !driver.is_approved && matchesSearch;
@@ -206,7 +207,7 @@ const AdminDrivers: React.FC = () => {
                       </div>
                       <div>
                         <div className="font-medium">{driver.full_name}</div>
-                        <div className="text-sm text-gray-500">{driver.profiles?.email}</div>
+                        <div className="text-sm text-gray-500">{driver.profiles?.email || "Email não disponível"}</div>
                       </div>
                     </div>
                   </TableCell>
@@ -268,7 +269,7 @@ const AdminDrivers: React.FC = () => {
                   {selectedDriver.full_name.charAt(0)}
                 </div>
                 <h3 className="text-lg font-semibold">{selectedDriver.full_name}</h3>
-                <p className="text-gray-500">{selectedDriver.profiles?.email}</p>
+                <p className="text-gray-500">{selectedDriver.profiles?.email || "Email não disponível"}</p>
                 
                 {selectedDriver.is_approved ? (
                   <span className="mt-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">

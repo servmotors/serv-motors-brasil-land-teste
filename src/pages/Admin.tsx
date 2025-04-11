@@ -16,7 +16,12 @@ const Admin = () => {
   }, [user, profile, loading, navigate]);
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center">Carregando...</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mr-3"></div>
+        <p>Carregando...</p>
+      </div>
+    );
   }
 
   if (!user || profile?.user_type !== 'admin') {
