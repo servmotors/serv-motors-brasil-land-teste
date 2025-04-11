@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import {
   Car, MapPin, Clock, CreditCard, Search,
-  Users, Plus, Minus
+  Users, Plus, Minus, Calendar
 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from '@/hooks/use-toast';
@@ -154,7 +154,5 @@ const BookingPanel: React.FC<BookingPanelProps> = ({
     </div>
   );
 };
-
-import { Calendar } from 'lucide-react';
 
 export default BookingPanel;
