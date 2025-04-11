@@ -71,16 +71,9 @@ const Passageiro = () => {
           toggleBookingPanel={toggleBookingPanel} 
         />
 
-        {/* Map and booking interface - Swapped order */}
-        <div className="flex flex-col md:flex-row h-[calc(100vh-64px)] md:h-[500px]">
-          {/* Booking panel - Now comes first */}
-          <BookingPanel 
-            onBookRide={handleBookRide}
-            showBookingPanel={showBookingPanel}
-            toggleBookingPanel={toggleBookingPanel}
-          />
-          
-          {/* Map area - Now comes second */}
+        {/* Map and booking interface */}
+        <div className="flex flex-col-reverse md:flex-row h-[calc(100vh-64px)] md:h-[500px]">
+          {/* Map area */}
           <div className="flex-1 bg-gray-100 flex flex-col items-center justify-center p-4">
             {!googleApiKey ? (
               <div className="w-full max-w-md p-4 bg-white rounded-lg shadow-md">
@@ -107,6 +100,13 @@ const Passageiro = () => {
               </div>
             )}
           </div>
+          
+          {/* Booking panel */}
+          <BookingPanel 
+            onBookRide={handleBookRide}
+            showBookingPanel={showBookingPanel}
+            toggleBookingPanel={toggleBookingPanel}
+          />
         </div>
         
         {/* Toggle button for app info sections (mobile only) */}

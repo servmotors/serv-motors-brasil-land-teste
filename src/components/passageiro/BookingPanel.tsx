@@ -130,11 +130,11 @@ const BookingPanel: React.FC<BookingPanelProps> = ({
           </TabsContent>
           
           <TabsContent value="reserve" className="mt-4">
-            <div className="space-y-4">
-              <Calendar className="h-5 w-5 text-gray-500" />
+            <div className="space-y-4 flex items-center">
+              <Calendar className="h-5 w-5 text-gray-500 mr-2" />
               <span>Agendar para mais tarde</span>
             </div>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-600 mt-2">
               Reserve uma viagem com antecedência para garantir seu deslocamento.
             </p>
           </TabsContent>
