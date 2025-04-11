@@ -1,7 +1,7 @@
 
 import React from 'react';
 import AdminOverview from '../AdminOverview';
-import AdminDrivers from '../AdminDrivers';
+import AdminDrivers from '../drivers/AdminDrivers';
 import { ClipboardList } from 'lucide-react';
 
 type TabType = 'overview' | 'drivers' | 'rides';
