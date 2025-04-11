@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import {
@@ -8,6 +7,8 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from '@/hooks/use-toast';
 import { RideOption } from '@/types/ride';
+import VehicleOptions from './VehicleOptions';
+import PassengerSelector from './PassengerSelector';
 
 interface BookingPanelProps {
   onBookRide: () => void;
@@ -71,7 +72,6 @@ const BookingPanel: React.FC<BookingPanelProps> = ({
 
   return (
     <div className={`absolute inset-x-0 bottom-0 md:relative md:w-96 bg-white shadow-lg rounded-t-3xl md:rounded-none transition-transform duration-300 ${!showBookingPanel && 'translate-y-[calc(100%-60px)] md:translate-y-0'}`}>
-      {/* Panel header (visible when collapsed on mobile) */}
       <div className="md:hidden px-4 py-3 flex items-center justify-between" onClick={toggleBookingPanel}>
         <div className="mx-auto w-12 h-1 bg-gray-300 rounded-full"></div>
       </div>
@@ -154,8 +154,6 @@ const BookingPanel: React.FC<BookingPanelProps> = ({
   );
 };
 
-// This component needs the Calendar icon which we don't have in the imports
-// Let's add it here
 import { Calendar } from 'lucide-react';
 
 export default BookingPanel;
