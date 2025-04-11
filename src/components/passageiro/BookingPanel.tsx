@@ -48,7 +48,7 @@ const BookingPanel: React.FC<BookingPanelProps> = ({
       description: 'Transporte rápido e econômico',
       price: 'R$ 18-24',
       time: '3 min',
-      image: 'https://images.unsplash.com/photo-1469041797191-50ace28483c3'
+      image: '/lovable-uploads/63dfba26-8ded-4964-bc7d-10b54f370f56.png'
     },
     {
       id: 'serv-comfort',
