@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Car, Info, Truck } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -106,7 +107,7 @@ const VehicleOptions: React.FC = () => {
     {
       title: "Carro Hatch",
       description: "Para pequenos volumes e entregas rápidas na cidade",
-      icon: <img src="/lovable-uploads/6ff72bb6-f463-4814-84e0-f8d35140a32b.png" alt="Hatch Car" className={`h-10 w-10 text-primary ${className}`} />,
+      icon: <img src="/lovable-uploads/6ff72bb6-f463-4814-84e0-f8d35140a32b.png" alt="Hatch Car" className="h-10 w-10 text-primary" />,
       tooltip: "Ideal para documentos e pequenos pacotes urbanos"
     },
     {
