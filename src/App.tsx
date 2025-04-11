@@ -10,6 +10,7 @@ import DriverAuth from "./pages/DriverAuth";
 import DriverDashboard from "./pages/DriverDashboard";
 import Motorista from "./pages/Motorista";
 import Cargas from "./pages/Cargas";
+import Passageiro from "./pages/Passageiro";
 import Admin from "./pages/Admin";
 import { AuthProvider } from "./contexts/auth";
 
@@ -26,6 +27,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/motorista" element={<Motorista />} />
             <Route path="/cargas" element={<Cargas />} />
+            <Route path="/passageiro" element={<Passageiro />} />
             <Route path="/motorista/auth" element={<DriverAuth />} />
             <Route path="/motorista/dashboard" element={<DriverDashboard />} />
             <Route path="/admin" element={<Admin />} />

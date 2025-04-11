@@ -42,12 +42,12 @@ const Navbar: React.FC = () => {
           >
             Cargas / Pacotes
           </Link>
-          <button 
-            onClick={() => scrollToSection('passageiros')} 
+          <Link 
+            to="/passageiro" 
             className="font-medium hover:text-primary transition-colors"
           >
             Passageiros
-          </button>
+          </Link>
           <button 
             onClick={() => scrollToSection('empresas')} 
             className="font-medium hover:text-primary transition-colors"
@@ -85,12 +85,13 @@ const Navbar: React.FC = () => {
             >
               Cargas / Pacotes
             </Link>
-            <button 
-              onClick={() => scrollToSection('passageiros')} 
+            <Link 
+              to="/passageiro" 
               className="font-medium py-2 hover:text-primary transition-colors"
+              onClick={() => setIsMenuOpen(false)}
             >
               Passageiros
-            </button>
+            </Link>
             <button 
               onClick={() => scrollToSection('empresas')} 
               className="font-medium py-2 hover:text-primary transition-colors"
