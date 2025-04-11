@@ -117,9 +117,9 @@ const VehicleOptions: React.FC = () => {
       tooltip: "Capacidade ampliada em relação ao hatch"
     },
     {
-      title: "Moto Baú / Bag",
+      title: "Moto entrega",
       description: "Entregas expressas com agilidade no trânsito",
-      icon: <MotorcycleIcon className="h-10 w-10 text-primary" />,
+      icon: <img src="/lovable-uploads/7b5cfcb6-0bfd-4abd-ba39-ccec9ae9e915.png" alt="Delivery Motorcycle" className="h-10 w-10 text-primary" />,
       tooltip: "Rápido para documentos e pequenos volumes"
     },
     {
