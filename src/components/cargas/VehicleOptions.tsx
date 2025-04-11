@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Info, Truck } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -131,7 +130,7 @@ const VehicleOptions: React.FC = () => {
     {
       title: "Van",
       description: "Capacidade para móveis e volumes maiores",
-      icon: <VanIcon className="h-10 w-10 text-primary" />,
+      icon: <img src="/lovable-uploads/c575748d-7e2d-401f-9fb8-c4e2d6edc6a7.png" alt="Van" className="h-10 w-10 text-primary" />,
       tooltip: "Ideal para mudanças pequenas e entregas volumosas"
     },
     {
