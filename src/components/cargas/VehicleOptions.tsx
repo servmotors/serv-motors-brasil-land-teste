@@ -125,7 +125,7 @@ const VehicleOptions: React.FC = () => {
     {
       title: "Utilitário (Fiorino, Kangoo)",
       description: "Volume médio com custo-benefício",
-      icon: <UtilityVehicleIcon className="h-10 w-10 text-primary" />,
+      icon: <img src="/lovable-uploads/05b4b0e6-4d1e-4ab7-a689-e2e907ec89d0.png" alt="Utility Vehicle" className="h-10 w-10 text-primary" />,
       tooltip: "Equilibra espaço e custo para entregas comerciais"
     },
     {
