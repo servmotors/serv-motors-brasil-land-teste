@@ -175,8 +175,8 @@ const Cargas: React.FC = () => {
                   <Card className="border-0 shadow-lg h-full">
                     <CardContent className="p-6 flex flex-col items-center justify-center h-full">
                       <GoogleApiKeyForm 
-                        apiKey={googleApiKey} 
-                        setApiKey={setGoogleApiKey} 
+                        googleApiKey={googleApiKey} 
+                        setGoogleApiKey={setGoogleApiKey} 
                       />
                     </CardContent>
                   </Card>
