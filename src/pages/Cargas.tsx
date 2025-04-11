@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Truck, MapPin, Package, Clock, ArrowRight, Calendar, Info } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Link } from 'react-router-dom';
+import VehicleOptions from '@/components/cargas/VehicleOptions';
 
 const Cargas: React.FC = () => {
   const [deliveryType, setDeliveryType] = useState<'standard' | 'scheduled'>('standard');
@@ -182,7 +183,7 @@ const Cargas: React.FC = () => {
           </div>
         </div>
         
-        {/* Vehicle Types */}
+        {/* Vehicle Types - Updated to include new vehicle types */}
         <div className="py-16 bg-white">
           <div className="container-custom">
             <h2 className="text-3xl font-bold text-center mb-12">Escolha o veículo ideal para sua entrega</h2>
@@ -333,7 +334,7 @@ const Cargas: React.FC = () => {
   );
 };
 
-// Sample data for vehicle types
+// Sample data for vehicle types - Updated to include Carro sedan, Carga Pequena, Guincho, and Pet
 const vehicleTypes = [
   {
     id: 1,
@@ -355,6 +356,15 @@ const vehicleTypes = [
   },
   {
     id: 3,
+    name: "Carro Sedan",
+    description: "Maior capacidade para pacotes e bagagens",
+    capacity: "Até 80kg",
+    maxDistance: "30km",
+    price: "A partir de R$30",
+    image: "/lovable-uploads/522bc4a1-767c-4dc2-a971-df05a5242d45.png"
+  },
+  {
+    id: 4,
     name: "Utilitário",
     description: "Para cargas médias e volumes maiores",
     capacity: "Até 300kg",
@@ -363,13 +373,40 @@ const vehicleTypes = [
     image: "/lovable-uploads/05b4b0e6-4d1e-4ab7-a689-e2e907ec89d0.png"
   },
   {
-    id: 4,
+    id: 5,
     name: "Van",
     description: "Transporte de volumes grandes e mudanças",
     capacity: "Até 1 tonelada",
     maxDistance: "100km",
     price: "A partir de R$120",
     image: "/lovable-uploads/c575748d-7e2d-401f-9fb8-c4e2d6edc6a7.png"
+  },
+  {
+    id: 6,
+    name: "Carga Pequena",
+    description: "Caminhonetes e veículos para cargas específicas",
+    capacity: "Até 1.5 toneladas",
+    maxDistance: "150km",
+    price: "A partir de R$180",
+    image: "/lovable-uploads/53142368-3ac2-4484-af9b-f3a27ebf711f.png"
+  },
+  {
+    id: 7,
+    name: "Guincho",
+    description: "Transporte de veículos avariados",
+    capacity: "1 veículo",
+    maxDistance: "80km",
+    price: "A partir de R$200",
+    image: "/lovable-uploads/e2e92df2-d9ab-40ca-8299-f6319abe5a72.png"
+  },
+  {
+    id: 8,
+    name: "Pet",
+    description: "Transporte especializado para animais",
+    capacity: "Conforme o animal",
+    maxDistance: "40km",
+    price: "A partir de R$50",
+    image: "/lovable-uploads/00dd29ce-4771-4d47-891c-d8e65c91be85.png"
   }
 ];
 
