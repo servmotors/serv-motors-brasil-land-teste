@@ -7,7 +7,7 @@ export const vehicleTypes: VehicleType[] = [
     id: 1,
     name: "Moto",
     description: "Para entregas rápidas de pequenos volumes",
-    capacity: "Até 5kg",
+    capacity: "Até 20kg",
     maxDistance: "15km",
     price: "A partir de R$15",
     image: "/lovable-uploads/7b5cfcb6-0bfd-4abd-ba39-ccec9ae9e915.png"
