@@ -8,14 +8,16 @@ const HatchCarIcon: React.FC<{ className?: string }> = ({ className }) => {
   return (
     <svg 
       xmlns="http://www.w3.org/2000/svg" 
-      viewBox="0 0 24 24" 
+      viewBox="0 0 512 512" 
       className={className}
       fill="currentColor"
     >
-      <path d="M4 16.5V12a8 8 0 1 1 16 0v4.5m-16 0H2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2h-2m-16 0c0 1.1.9 2 2 2h12a2 2 0 0 0 2-2m-16 0v-4a9.63 9.63 0 0 1 2.49-6.61" />
-      <circle cx="6" cy="16" r="2" />
-      <circle cx="18" cy="16" r="2" />
-      <path d="M4 12V8a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v4" />
+      <path d="M64 256c0 105.87 86.13 192 192 192s192-86.13 192-192S361.87 64 256 64 64 150.13 64 256zm330.49-81.51a128 128 0 0 0-180.98 0m-78.53 180.98a128 128 0 0 0 180.98 0M256 160v96h64" 
+            fill="none" 
+            stroke="currentColor" 
+            strokeLinecap="round" 
+            strokeLinejoin="round" 
+            strokeWidth="32"/>
     </svg>
   );
 };
