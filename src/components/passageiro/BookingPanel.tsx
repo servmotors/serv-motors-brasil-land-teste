@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import {
@@ -46,10 +45,10 @@ const BookingPanel: React.FC<BookingPanelProps> = ({
       id: 'serv-x',
       name: 'Moto Táxi',
       icon: <Car className="h-5 w-5" />,
-      description: 'Carros econômicos para 4 pessoas',
+      description: 'Transporte rápido e econômico',
       price: 'R$ 18-24',
       time: '3 min',
-      image: 'https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80'
+      image: 'https://images.unsplash.com/photo-1469041797191-50ace28483c3'
     },
     {
       id: 'serv-comfort',
