@@ -59,17 +59,17 @@ const Passageiro = () => {
           toggleBookingPanel={toggleBookingPanel} 
         />
 
-        {/* Map and booking interface */}
+        {/* Map and booking interface - Swapped order */}
         <div className="flex flex-col md:flex-row h-[calc(100vh-64px)] md:h-[600px]">
-          {/* Map area */}
-          <MapArea handleInitMap={handleInitMap} />
-
-          {/* Booking panel */}
+          {/* Booking panel - Now comes first */}
           <BookingPanel 
             onBookRide={handleBookRide}
             showBookingPanel={showBookingPanel}
             toggleBookingPanel={toggleBookingPanel}
           />
+          
+          {/* Map area - Now comes second */}
+          <MapArea handleInitMap={handleInitMap} />
         </div>
         
         {/* Toggle button for app info sections (mobile only) */}

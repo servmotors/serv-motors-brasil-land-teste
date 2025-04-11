@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import {
@@ -71,7 +72,7 @@ const BookingPanel: React.FC<BookingPanelProps> = ({
   ];
 
   return (
-    <div className={`absolute inset-x-0 bottom-0 md:relative md:w-96 bg-white shadow-lg rounded-t-3xl md:rounded-none transition-transform duration-300 ${!showBookingPanel && 'translate-y-[calc(100%-60px)] md:translate-y-0'}`}>
+    <div className={`md:w-96 bg-white shadow-lg md:shadow-xl transition-all duration-300 ${!showBookingPanel && 'translate-y-[calc(100%-60px)] md:translate-y-0'} z-10`}>
       <div className="md:hidden px-4 py-3 flex items-center justify-between" onClick={toggleBookingPanel}>
         <div className="mx-auto w-12 h-1 bg-gray-300 rounded-full"></div>
       </div>
