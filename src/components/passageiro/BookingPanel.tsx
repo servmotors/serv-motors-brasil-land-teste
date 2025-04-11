@@ -72,12 +72,12 @@ const BookingPanel: React.FC<BookingPanelProps> = ({
   ];
 
   return (
-    <div className={`md:w-96 bg-white shadow-lg md:shadow-xl transition-all duration-300 ${!showBookingPanel && 'translate-y-[calc(100%-60px)] md:translate-y-0'} z-10`}>
+    <div className={`h-full bg-white shadow-lg transition-all duration-300 ${!showBookingPanel && 'translate-y-[calc(100%-60px)] md:translate-y-0'} z-10`}>
       <div className="md:hidden px-4 py-3 flex items-center justify-between" onClick={toggleBookingPanel}>
         <div className="mx-auto w-12 h-1 bg-gray-300 rounded-full"></div>
       </div>
       
-      <div className="px-6 py-4">
+      <div className="px-6 py-4 h-full overflow-y-auto">
         <h2 className="text-2xl font-bold mb-6">Solicitar viagem</h2>
         
         <Tabs defaultValue="ride" className="mb-6">

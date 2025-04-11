@@ -24,8 +24,16 @@ const VehicleOptions: React.FC<VehicleOptionsProps> = ({
             onClick={() => onSelect(option.id)}
             className={`flex items-center p-3 border rounded-xl cursor-pointer transition-all ${selectedType === option.id ? 'border-primary bg-primary/5' : 'border-gray-200 hover:bg-gray-50'}`}
           >
-            <div className="w-16 h-12 rounded overflow-hidden mr-3">
-              <img src={option.image} alt={option.name} className="w-full h-full object-cover" />
+            <div className="w-16 h-12 rounded overflow-hidden mr-3 flex-shrink-0 bg-gray-100">
+              <img 
+                src={option.image} 
+                alt={option.name} 
+                className="w-full h-full object-cover" 
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.src = '/placeholder.svg';
+                }}
+              />
             </div>
             <div className="flex-1">
               <div className="flex justify-between">
