@@ -2,6 +2,7 @@
 import React from 'react';
 import AdminOverview from '../AdminOverview';
 import AdminDrivers from '../drivers/AdminDrivers';
+import AdminRides from '../rides/AdminRides';
 import { ClipboardList } from 'lucide-react';
 
 type TabType = 'overview' | 'drivers' | 'rides';
@@ -24,13 +25,7 @@ const AdminMainContent: React.FC<AdminMainContentProps> = ({ activeTab }) => {
       case 'drivers':
         return <AdminDrivers />;
       case 'rides':
-        return (
-          <div className="flex flex-col items-center justify-center h-64">
-            <ClipboardList className="h-16 w-16 text-gray-300 mb-4" />
-            <h3 className="text-xl font-medium text-gray-600">Gerenciamento de Corridas</h3>
-            <p className="text-gray-500 mt-2">Esta funcionalidade será implementada em breve.</p>
-          </div>
-        );
+        return <AdminRides />;
       default:
         return <AdminOverview />;
     }
