@@ -20,15 +20,15 @@ interface VehicleTypeCardProps {
 
 const VehicleTypeCard: React.FC<VehicleTypeCardProps> = ({ vehicle }) => {
   return (
-    <Card className="hover:shadow-lg transition-shadow border-2 border-transparent hover:border-primary/20">
-      <CardContent className="p-6">
+    <Card className="hover:shadow-lg transition-shadow border-2 border-transparent hover:border-primary/20 h-full flex flex-col">
+      <CardContent className="p-6 flex flex-col flex-grow">
         <div className="mb-4">
           <img src={vehicle.image} alt={vehicle.name} className="h-16 w-16 text-primary" />
         </div>
         <h3 className="text-xl font-semibold mb-2">{vehicle.name}</h3>
-        <p className="text-gray-600 mb-3">{vehicle.description}</p>
+        <p className="text-gray-600 mb-3 flex-grow">{vehicle.description}</p>
         
-        <div className="space-y-2">
+        <div className="space-y-2 mb-4">
           <div className="flex justify-between text-sm">
             <span>Capacidade:</span>
             <span className="font-medium">{vehicle.capacity}</span>
@@ -43,7 +43,7 @@ const VehicleTypeCard: React.FC<VehicleTypeCardProps> = ({ vehicle }) => {
           </div>
         </div>
         
-        <Button variant="outline" className="mt-4 w-full">
+        <Button variant="outline" className="mt-auto w-full">
           <span>Selecionar</span>
           <ArrowRight size={16} className="ml-2" />
         </Button>
