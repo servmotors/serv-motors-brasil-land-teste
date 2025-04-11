@@ -149,7 +149,7 @@ const VehicleOptions: React.FC = () => {
     {
       title: "Pet",
       description: "Transporte especializado para animais",
-      icon: transportTypes.find(t => t.id === "pet")?.icon,
+      icon: <img src="/lovable-uploads/00dd29ce-4771-4d47-891c-d8e65c91be85.png" alt="Pet Transport" className="h-10 w-10 text-primary" />,
       tooltip: "Veículos adaptados para o conforto e segurança dos animais"
     }
   ];
