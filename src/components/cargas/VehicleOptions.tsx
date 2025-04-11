@@ -8,16 +8,11 @@ const HatchCarIcon: React.FC<{ className?: string }> = ({ className }) => {
   return (
     <svg 
       xmlns="http://www.w3.org/2000/svg" 
-      viewBox="0 0 512 512" 
+      viewBox="0 0 24 24" 
       className={className}
       fill="currentColor"
     >
-      <path d="M64 256c0 105.87 86.13 192 192 192s192-86.13 192-192S361.87 64 256 64 64 150.13 64 256zm330.49-81.51a128 128 0 0 0-180.98 0m-78.53 180.98a128 128 0 0 0 180.98 0M256 160v96h64" 
-            fill="none" 
-            stroke="currentColor" 
-            strokeLinecap="round" 
-            strokeLinejoin="round" 
-            strokeWidth="32"/>
+      <path d="M20 8.69V4a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v4.69a4 4 0 0 0-2 3.31v6a1 1 0 0 0 1 1h1v1a1 1 0 0 0 2 0v-1h12v1a1 1 0 0 0 2 0v-1h1a1 1 0 0 0 1-1v-6a4 4 0 0 0-2-3.31zM7 5h10v3H7V5zm13 9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v4z" />
     </svg>
   );
 };
@@ -111,7 +106,7 @@ const VehicleOptions: React.FC = () => {
     {
       title: "Carro Hatch",
       description: "Para pequenos volumes e entregas rápidas na cidade",
-      icon: <HatchCarIcon className="h-10 w-10 text-primary" />,
+      icon: <img src="/lovable-uploads/6ff72bb6-f463-4814-84e0-f8d35140a32b.png" alt="Hatch Car" className={`h-10 w-10 text-primary ${className}`} />,
       tooltip: "Ideal para documentos e pequenos pacotes urbanos"
     },
     {
