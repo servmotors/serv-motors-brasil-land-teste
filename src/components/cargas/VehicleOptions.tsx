@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Car, Info, Truck } from 'lucide-react';
+import { Info, Truck } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { transportTypes } from '@/components/driver-dashboard/vehicle-registration/transportTypes';
 
@@ -113,7 +113,7 @@ const VehicleOptions: React.FC = () => {
     {
       title: "Carro Sedan",
       description: "Maior espaço para bagagens e pacotes médios",
-      icon: <Car className="h-10 w-10 text-primary" />,
+      icon: <img src="/lovable-uploads/522bc4a1-767c-4dc2-a971-df05a5242d45.png" alt="Sedan Car" className="h-10 w-10 text-primary" />,
       tooltip: "Capacidade ampliada em relação ao hatch"
     },
     {
