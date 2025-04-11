@@ -43,7 +43,7 @@ const BookingPanel: React.FC<BookingPanelProps> = ({
   const rideOptions: RideOption[] = [
     {
       id: 'serv-x',
-      name: 'Serv X',
+      name: 'Moto Táxi',
       icon: <Car className="h-5 w-5" />,
       description: 'Carros econômicos para 4 pessoas',
       price: 'R$ 18-24',
@@ -52,7 +52,7 @@ const BookingPanel: React.FC<BookingPanelProps> = ({
     },
     {
       id: 'serv-comfort',
-      name: 'Comfort',
+      name: 'Carro',
       icon: <Car className="h-5 w-5" />,
       description: 'Carros mais espaçosos para 4 pessoas',
       price: 'R$ 25-30',
@@ -61,7 +61,7 @@ const BookingPanel: React.FC<BookingPanelProps> = ({
     },
     {
       id: 'serv-black',
-      name: 'Serv Black',
+      name: 'Executivo',
       icon: <Car className="h-5 w-5" />,
       description: 'Carros premium com motoristas top',
       price: 'R$ 35-42',
