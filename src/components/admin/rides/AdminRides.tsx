@@ -1,60 +1,84 @@
 
 import React, { useState } from 'react';
-import { 
-  Table, 
-  TableHeader, 
-  TableBody, 
-  TableRow, 
-  TableHead, 
-  TableCell 
-} from '@/components/ui/table';
-import { 
-  Form, 
-  FormField, 
-  FormItem, 
-  FormLabel, 
-  FormControl, 
-  FormMessage 
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 import { useForm } from 'react-hook-form';
-import { 
-  DollarSign, 
-  Plus, 
-  Save, 
-  Clock, 
-  PercentSquare 
-} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Form } from '@/components/ui/form';
+import { Save } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import PricingTable from './PricingTable';
+import TaxAndFeeSettings from './TaxAndFeeSettings';
+import VehicleTypeSelector from './VehicleTypeSelector';
 
 type PricingType = 'perMinute' | 'percentage';
+type VehicleType = 'car' | 'motorcycle';
 
 interface RidePricingFormValues {
-  minRidePrice: string;
-  pricePerKm: string;
-  additionalKmPrice: string;
-  additionalStopPrice: string;
-  additionalStopPricingType: PricingType;
+  // Car pricing
+  carMinRidePrice: string;
+  carPricePerKm: string;
+  carAdditionalKmPrice: string;
+  carAdditionalStopPrice: string;
+  carAdditionalStopPricingType: PricingType;
+  
+  // Motorcycle pricing
+  motorcycleMinRidePrice: string;
+  motorcyclePricePerKm: string;
+  motorcycleAdditionalKmPrice: string;
+  motorcycleAdditionalStopPrice: string;
+  motorcycleAdditionalStopPricingType: PricingType;
+  
+  // Tax and fees
+  taxRate: string;
+  paymentPartnerFee: string;
 }
 
 const AdminRides = () => {
   const { toast } = useToast();
-  const [pricingData, setPricingData] = useState<RidePricingFormValues>({
-    minRidePrice: '15.00',
-    pricePerKm: '2.50',
-    additionalKmPrice: '3.00',
-    additionalStopPrice: '2.00',
-    additionalStopPricingType: 'perMinute'
-  });
+  const [activeVehicleType, setActiveVehicleType] = useState<VehicleType>('car');
   
+  // Initialize form with default values
   const form = useForm<RidePricingFormValues>({
-    defaultValues: pricingData
+    defaultValues: {
+      // Car pricing defaults
+      carMinRidePrice: '15.00',
+      carPricePerKm: '2.50',
+      carAdditionalKmPrice: '3.00',
+      carAdditionalStopPrice: '2.00',
+      carAdditionalStopPricingType: 'perMinute',
+      
+      // Motorcycle pricing defaults
+      motorcycleMinRidePrice: '10.00',
+      motorcyclePricePerKm: '1.80',
+      motorcycleAdditionalKmPrice: '2.20',
+      motorcycleAdditionalStopPrice: '1.50',
+      motorcycleAdditionalStopPricingType: 'perMinute',
+      
+      // Tax and fees defaults
+      taxRate: '7.5',
+      paymentPartnerFee: '0.80'
+    }
   });
 
+  const handleStopPricingTypeChange = (type: PricingType) => {
+    if (activeVehicleType === 'car') {
+      form.setValue('carAdditionalStopPricingType', type);
+    } else {
+      form.setValue('motorcycleAdditionalStopPricingType', type);
+    }
+  };
+
+  const handleDeletePrice = (priceId: string) => {
+    form.setValue(priceId as any, '0.00');
+    toast({
+      title: "Valor removido",
+      description: `O valor para ${priceId} foi removido do sistema.`,
+    });
+  };
+
   const onSubmit = (data: RidePricingFormValues) => {
-    setPricingData(data);
     // Here we would save to the database in a real implementation
+    console.log('Form data to save:', data);
+    
     toast({
       title: "Valores atualizados",
       description: "Os preços das corridas foram atualizados com sucesso!",
@@ -73,167 +97,31 @@ const AdminRides = () => {
       
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <div className="bg-white rounded-md shadow-sm">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[250px]">Tipo de Cobrança</TableHead>
-                  <TableHead>Valor</TableHead>
-                  <TableHead className="w-[300px]">Descrição</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                <TableRow>
-                  <TableCell className="font-medium">
-                    <div className="flex items-center">
-                      <DollarSign className="h-4 w-4 mr-2 text-primary" />
-                      Valor Mínimo
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <FormField
-                      control={form.control}
-                      name="minRidePrice"
-                      render={({ field }) => (
-                        <FormItem className="flex flex-col">
-                          <FormControl>
-                            <div className="relative">
-                              <span className="absolute left-3 top-1/2 -translate-y-1/2">R$</span>
-                              <Input {...field} className="pl-8" />
-                            </div>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </TableCell>
-                  <TableCell className="text-gray-500 text-sm">
-                    Valor mínimo cobrado por corridas de até 3km
-                  </TableCell>
-                </TableRow>
-
-                <TableRow>
-                  <TableCell className="font-medium">
-                    <div className="flex items-center">
-                      <DollarSign className="h-4 w-4 mr-2 text-primary" />
-                      Valor por Km
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <FormField
-                      control={form.control}
-                      name="pricePerKm"
-                      render={({ field }) => (
-                        <FormItem className="flex flex-col">
-                          <FormControl>
-                            <div className="relative">
-                              <span className="absolute left-3 top-1/2 -translate-y-1/2">R$</span>
-                              <Input {...field} className="pl-8" />
-                            </div>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </TableCell>
-                  <TableCell className="text-gray-500 text-sm">
-                    Valor cobrado por quilômetro percorrido
-                  </TableCell>
-                </TableRow>
-
-                <TableRow>
-                  <TableCell className="font-medium">
-                    <div className="flex items-center">
-                      <Plus className="h-4 w-4 mr-2 text-primary" />
-                      Km Adicional
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <FormField
-                      control={form.control}
-                      name="additionalKmPrice"
-                      render={({ field }) => (
-                        <FormItem className="flex flex-col">
-                          <FormControl>
-                            <div className="relative">
-                              <span className="absolute left-3 top-1/2 -translate-y-1/2">R$</span>
-                              <Input {...field} className="pl-8" />
-                            </div>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </TableCell>
-                  <TableCell className="text-gray-500 text-sm">
-                    Valor por quilômetro excedente ao estimado inicialmente
-                  </TableCell>
-                </TableRow>
-
-                <TableRow>
-                  <TableCell className="font-medium">
-                    <div className="flex items-center">
-                      <Clock className="h-4 w-4 mr-2 text-primary" />
-                      Parada Adicional
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex space-x-2 items-center">
-                      <FormField
-                        control={form.control}
-                        name="additionalStopPrice"
-                        render={({ field }) => (
-                          <FormItem className="flex-1">
-                            <FormControl>
-                              <div className="relative">
-                                <span className="absolute left-3 top-1/2 -translate-y-1/2">
-                                  {form.watch('additionalStopPricingType') === 'percentage' ? '%' : 'R$'}
-                                </span>
-                                <Input {...field} className="pl-8" />
-                              </div>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <div className="flex space-x-1">
-                        <Button
-                          type="button"
-                          size="sm"
-                          variant={form.watch('additionalStopPricingType') === 'perMinute' ? 'default' : 'outline'}
-                          onClick={() => form.setValue('additionalStopPricingType', 'perMinute')}
-                        >
-                          <Clock className="h-4 w-4 mr-1" />
-                          Por minuto
-                        </Button>
-                        <Button
-                          type="button"
-                          size="sm"
-                          variant={form.watch('additionalStopPricingType') === 'percentage' ? 'default' : 'outline'}
-                          onClick={() => form.setValue('additionalStopPricingType', 'percentage')}
-                        >
-                          <PercentSquare className="h-4 w-4 mr-1" />
-                          Percentual
-                        </Button>
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-gray-500 text-sm">
-                    {form.watch('additionalStopPricingType') === 'perMinute' 
-                      ? 'Valor por minuto em paradas solicitadas pelo passageiro' 
-                      : 'Percentual do valor da corrida para paradas solicitadas'}
-                  </TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
-          </div>
+          <VehicleTypeSelector 
+            selectedType={activeVehicleType} 
+            onChange={setActiveVehicleType} 
+          />
+          
+          <PricingTable 
+            control={form.control}
+            vehicleType={activeVehicleType}
+            additionalStopPricingType={
+              activeVehicleType === 'car' 
+                ? form.watch('carAdditionalStopPricingType') 
+                : form.watch('motorcycleAdditionalStopPricingType')
+            }
+            onStopPricingTypeChange={handleStopPricingTypeChange}
+            onDeletePrice={handleDeletePrice}
+          />
+          
+          <TaxAndFeeSettings control={form.control} />
 
           <div className="bg-gray-50 p-4 rounded-md border border-gray-200">
             <h4 className="text-sm font-medium mb-2">Informações sobre Preços de Corridas</h4>
             <p className="text-sm text-gray-600">
               Os valores configurados aqui serão utilizados para calcular o preço das corridas solicitadas pelos passageiros.
               O sistema escolherá o valor mais adequado considerando distância, horário e condições de trânsito.
+              Os valores de imposto e taxa do parceiro de pagamento serão incluídos no cálculo final.
             </p>
           </div>
         </form>
