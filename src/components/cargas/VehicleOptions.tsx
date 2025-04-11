@@ -143,7 +143,7 @@ const VehicleOptions: React.FC = () => {
     {
       title: "Guincho",
       description: "Transporte de veículos avariados",
-      icon: transportTypes.find(t => t.id === "tow")?.icon,
+      icon: <img src="/lovable-uploads/e2e92df2-d9ab-40ca-8299-f6319abe5a72.png" alt="Guincho" className="h-10 w-10 text-primary" />,
       tooltip: "Remoção de veículos com problemas mecânicos"
     },
     {
