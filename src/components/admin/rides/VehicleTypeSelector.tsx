@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Car, Motorcycle } from 'lucide-react';
+import { Car, Bike } from 'lucide-react';
 
 interface VehicleTypeSelectorProps {
   selectedType: 'car' | 'motorcycle';
@@ -29,7 +29,7 @@ const VehicleTypeSelector: React.FC<VehicleTypeSelectorProps> = ({
         className="flex items-center"
         onClick={() => onChange('motorcycle')}
       >
-        <Motorcycle className="h-4 w-4 mr-2" />
+        <Bike className="h-4 w-4 mr-2" />
         Moto
       </Button>
     </div>
