@@ -63,7 +63,7 @@ const AdminDashboard = () => {
             <div className="bg-primary h-8 w-8 rounded-md flex items-center justify-center">
               <span className="text-primary-foreground font-bold">A</span>
             </div>
-            <h1 className="ml-3 text-xl font-bold">Admin Panel</h1>
+            <h1 className="ml-3 text-xl font-bold">Admin Sistema</h1>
           </div>
         </div>
         <nav className="flex-1 p-4">
@@ -105,7 +105,7 @@ const AdminDashboard = () => {
               <div className="bg-primary h-8 w-8 rounded-md flex items-center justify-center">
                 <span className="text-primary-foreground font-bold">A</span>
               </div>
-              <h1 className="ml-3 text-xl font-bold">Admin Panel</h1>
+              <h1 className="ml-3 text-xl font-bold">Admin Sistema</h1>
             </div>
           </div>
           <nav className="flex-1 p-4">
@@ -166,7 +166,7 @@ const AdminDashboard = () => {
                 </svg>
               </Button>
             </SheetTrigger>
-            <h1 className="text-lg font-bold">Admin Panel</h1>
+            <h1 className="text-lg font-bold">Admin Sistema</h1>
           </div>
         </header>
 
