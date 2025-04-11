@@ -67,7 +67,7 @@ const BookingPanel: React.FC<BookingPanelProps> = ({
       description: 'Carros premium com motoristas top',
       price: 'R$ 35-42',
       time: '8 min',
-      image: 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80'
+      image: '/lovable-uploads/b894cf04-c110-4f11-8149-d6caa7b00f5f.png'
     }
   ];
 
