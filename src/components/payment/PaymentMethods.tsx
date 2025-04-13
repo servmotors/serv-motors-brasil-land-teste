@@ -1,15 +1,15 @@
 
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { useToast } from '@/hooks/use-toast';
+import { RideData } from '@/components/passageiro/booking/BookingPanel';
 import CreditCardPaymentForm from './methods/CreditCardPaymentForm';
 import PixPaymentForm from './methods/PixPaymentForm';
 import CashPaymentDialog from './dialogs/CashPaymentDialog';
 import WalletBalanceDialog from './dialogs/WalletBalanceDialog';
 import AddBalanceDialog from './dialogs/AddBalanceDialog';
-import { RideData } from '@/components/passageiro/booking/BookingPanel';
 import RideSummary from './RideSummary';
 import PaymentMethodSelector from './PaymentMethodSelector';
+import { usePaymentDialogs } from '@/hooks/usePaymentDialogs';
 
 interface PaymentMethodsProps {
   rideData?: RideData;
@@ -21,49 +21,28 @@ const PaymentMethods: React.FC<PaymentMethodsProps> = ({
   onPaymentComplete
 }) => {
   const [paymentMethod, setPaymentMethod] = useState('wallet');
-  const [showForm, setShowForm] = useState(false);
-  const [showCashDialog, setShowCashDialog] = useState(false);
-  const [showBalanceDialog, setShowBalanceDialog] = useState(false);
-  const [showAddBalanceDialog, setShowAddBalanceDialog] = useState(false);
-  const { toast } = useToast();
-
   const walletBalance = 50.75; // Exemplo - será obtido da API
   const rideAmount = rideData?.fare ? parseFloat(rideData.fare.replace('R$ ', '')) : 35.50;
+
+  const { 
+    showForm, 
+    setShowForm, 
+    showCashDialog, 
+    setShowCashDialog, 
+    showBalanceDialog, 
+    setShowBalanceDialog, 
+    showAddBalanceDialog, 
+    setShowAddBalanceDialog, 
+    handleProceedPayment, 
+    handleAddBalance 
+  } = usePaymentDialogs({
+    walletBalance,
+    rideAmount
+  });
 
   const handlePaymentSelection = (value: string) => {
     setPaymentMethod(value);
     setShowForm(false);
-  };
-
-  const handleProceedPayment = () => {
-    switch (paymentMethod) {
-      case 'credit':
-        setShowForm(true);
-        break;
-      case 'pix':
-        setShowForm(true);
-        break;
-      case 'cash':
-        setShowCashDialog(true);
-        break;
-      case 'wallet':
-        if (walletBalance >= rideAmount) {
-          setShowBalanceDialog(true);
-        } else {
-          toast({
-            title: "Saldo insuficiente",
-            description: "Seu saldo em carteira é insuficiente para esta corrida.",
-            variant: "destructive"
-          });
-        }
-        break;
-      default:
-        break;
-    }
-  };
-
-  const handleAddBalance = () => {
-    setShowAddBalanceDialog(true);
   };
 
   const handlePaymentCompleted = (method: string) => {
@@ -99,7 +78,7 @@ const PaymentMethods: React.FC<PaymentMethodsProps> = ({
         <Button 
           className="w-full" 
           size="lg"
-          onClick={handleProceedPayment}
+          onClick={() => handleProceedPayment(paymentMethod, handlePaymentCompleted)}
         >
           Continuar
         </Button>
