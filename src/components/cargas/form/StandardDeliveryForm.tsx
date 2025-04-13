@@ -10,7 +10,7 @@ import {
   ContactFields, 
   InfoBox,
   ErrorAlert
-} from './FormFields';
+} from './fields';
 import CargoDetailsSection from './CargoDetailsSection';
 import { 
   DeliveryFormValues, 

@@ -6,7 +6,7 @@ import {
   QuantityField, 
   WeightField, 
   DimensionFields 
-} from './FormFields';
+} from './fields';
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 
 interface CargoDetailsSectionProps {
@@ -30,6 +30,7 @@ const CargoDetailsSection: React.FC<CargoDetailsSectionProps> = ({
                 <Textarea 
                   placeholder="Detalhes adicionais sobre a carga (opcional)" 
                   className="mt-2 h-20"
+                  {...field}
                 />
               </FormControl>
             </div>
