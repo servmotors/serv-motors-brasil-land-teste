@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import {
@@ -38,21 +37,16 @@ const BookingPanel: React.FC<BookingPanelProps> = ({
     getCurrentPosition
   } = useGeolocation();
 
-  // Get current location when component mounts
   useEffect(() => {
     getCurrentPosition();
   }, [getCurrentPosition]);
 
-  // Set pickup location automatically when currentLocation changes
   useEffect(() => {
     if (currentLocation && !pickup) {
-      // Convert coords to address (reverse geocoding) would go here
-      // For now, just set the coordinates as pickup
       setPickup(`${currentLocation.lat.toFixed(6)}, ${currentLocation.lng.toFixed(6)}`);
     }
   }, [currentLocation, pickup]);
 
-  // Calculate fare based on distance and vehicle type
   useEffect(() => {
     if (distance) {
       let baseFare = 0;
@@ -79,13 +73,12 @@ const BookingPanel: React.FC<BookingPanelProps> = ({
       const calculatedFare = baseFare + (distance * ratePerKm);
       setFare(`R$ ${calculatedFare.toFixed(2)}`);
       
-      // Update the ride options with the calculated fare
       updateRideOptionFares(distance);
     }
   }, [distance, carType]);
 
   const updateRideOptionFares = (distanceInKm: number) => {
-    const updatedOptions = [...rideOptions].map(option => {
+    const updatedOptions = [...rideOptionsState].map(option => {
       let baseFare = 0;
       let ratePerKm = 0;
       
@@ -131,12 +124,10 @@ const BookingPanel: React.FC<BookingPanelProps> = ({
       },
       (result, status) => {
         if (status === window.google.maps.DirectionsStatus.OK && result) {
-          // Get distance in kilometers
           const distanceValue = result.routes[0]?.legs[0]?.distance?.value || 0;
           const distanceInKm = distanceValue / 1000;
           setDistance(distanceInKm);
           
-          // Get duration in minutes
           const durationValue = result.routes[0]?.legs[0]?.duration?.value || 0;
           const durationInMinutes = Math.round(durationValue / 60);
           setDuration(durationInMinutes);
@@ -186,7 +177,6 @@ const BookingPanel: React.FC<BookingPanelProps> = ({
     onBookRide();
   };
 
-  // Function to get the button text based on the selected vehicle type
   const getButtonText = () => {
     switch (carType) {
       case 'serv-x':
