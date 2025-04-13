@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { MapPin, Navigation } from 'lucide-react';
+import { Navigation } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 
 interface LocationDisplayProps {
@@ -16,20 +16,6 @@ const LocationDisplay: React.FC<LocationDisplayProps> = ({
 }) => {
   return (
     <div className="flex flex-col space-y-3">
-      <div>
-        <label className="text-xs font-medium text-gray-500">Coordenadas:</label>
-        {currentLocation ? (
-          <div className="flex items-center text-sm">
-            <MapPin className="h-4 w-4 mr-1 text-primary" />
-            <span>
-              {currentLocation.lat.toFixed(5)}, {currentLocation.lng.toFixed(5)}
-            </span>
-          </div>
-        ) : (
-          <div className="text-sm text-gray-500">Obtendo localização...</div>
-        )}
-      </div>
-      
       <div>
         <label className="text-xs font-medium text-gray-500">Endereço atual:</label>
         {isLoadingAddress ? (

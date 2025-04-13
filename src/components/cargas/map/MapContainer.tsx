@@ -40,8 +40,8 @@ const MapContainer: React.FC = () => {
         <>
           <GoogleMapDisplay
             center={currentLocation || { lat: -23.55052, lng: -46.633309 }}
-            zoom={13}
-            markers={markers}
+            zoom={15}
+            markers={markers.filter(marker => marker.title === 'Sua localização')}
             className="h-full"
           />
           {currentLocation && (
