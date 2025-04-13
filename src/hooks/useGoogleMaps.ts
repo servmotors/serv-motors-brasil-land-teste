@@ -103,10 +103,10 @@ export const useGoogleMaps = (): GoogleMapsState => {
           {
             origin,
             destination,
-            travelMode: window.google.maps.TravelMode.DRIVING,
+            travelMode: google.maps.TravelMode.DRIVING,
           },
           (result, status) => {
-            if (status === window.google.maps.DirectionsStatus.OK && result) {
+            if (status === google.maps.DirectionsStatus.OK && result) {
               // Get distance in kilometers
               const distanceValue = result.routes[0]?.legs[0]?.distance?.value || 0;
               const distanceInKm = distanceValue / 1000;
