@@ -38,11 +38,11 @@ const BookingForm: React.FC<BookingFormProps> = ({ deliveryType, setDeliveryType
               </TabsTrigger>
             </TabsList>
             
-            <TabsContent value="standard">
+            <TabsContent value="standard" className="space-y-6">
               <StandardDeliveryForm />
             </TabsContent>
             
-            <TabsContent value="scheduled">
+            <TabsContent value="scheduled" className="space-y-6">
               <ScheduledDeliveryForm />
             </TabsContent>
           </Tabs>

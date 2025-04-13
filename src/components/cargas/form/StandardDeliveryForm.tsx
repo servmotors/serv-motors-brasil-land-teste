@@ -37,18 +37,20 @@ const StandardDeliveryForm: React.FC = () => {
   };
 
   return (
-    <form onSubmit={standardForm.handleSubmit(handleStandardSubmit)} className="space-y-5">
-      <AddressField 
-        label="Endereço de coleta"
-        placeholder="Digite o endereço de coleta"
-        register={(options) => standardForm.register('pickupAddress', options)}
-      />
-      
-      <AddressField 
-        label="Endereço de entrega"
-        placeholder="Digite o endereço de entrega"
-        register={(options) => standardForm.register('deliveryAddress', options)}
-      />
+    <form onSubmit={standardForm.handleSubmit(handleStandardSubmit)} className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <AddressField 
+          label="Endereço de coleta"
+          placeholder="Digite o endereço de coleta"
+          register={(options) => standardForm.register('pickupAddress', options)}
+        />
+        
+        <AddressField 
+          label="Endereço de entrega"
+          placeholder="Digite o endereço de entrega"
+          register={(options) => standardForm.register('deliveryAddress', options)}
+        />
+      </div>
       
       <CargoDetailsSection
         cargoDescriptionRegister={(options) => standardForm.register('cargoDescription', options)}
