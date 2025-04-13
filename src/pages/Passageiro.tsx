@@ -12,7 +12,7 @@ import { useGeolocation } from '@/hooks/useGeolocation';
 import { useToast } from '@/hooks/use-toast';
 import MobileHeader from '@/components/passageiro/MobileHeader';
 import MapArea from '@/components/passageiro/MapArea';
-import BookingPanel from '@/components/passageiro/BookingPanel';
+import BookingPanel from '@/components/passageiro/booking/BookingPanel';
 import GoogleMapDisplay from '@/components/map/GoogleMapDisplay';
 import GoogleApiKeyForm from '@/components/map/GoogleApiKeyForm';
 import LocationDisplay from '@/components/map/LocationDisplay';
