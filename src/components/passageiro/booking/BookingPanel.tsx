@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { useNavigate } from 'react-router-dom';
@@ -236,6 +237,16 @@ const BookingPanel: React.FC<BookingPanelProps> = ({
     setPaymentComplete(false);
     setPaymentMethod(null);
     sessionStorage.removeItem('paymentMethod');
+    
+    // Clear address fields after calling for a driver
+    setPickup('');
+    setDestination('');
+    
+    // Reset route information
+    setDistance(null);
+    setDuration(null);
+    setFare(null);
+    
     onBookRide();
   };
 
