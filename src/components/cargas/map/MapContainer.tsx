@@ -35,7 +35,7 @@ const MapContainer: React.FC = () => {
   };
 
   return (
-    <div className="bg-gray-200 rounded-lg h-[400px] mb-6 flex flex-col overflow-hidden">
+    <div className="bg-gray-200 rounded-lg h-[400px] mb-3 flex flex-col overflow-hidden">
       {googleApiKey ? (
         <>
           <GoogleMapDisplay
