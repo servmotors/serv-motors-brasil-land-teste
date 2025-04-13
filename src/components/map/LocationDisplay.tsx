@@ -4,7 +4,7 @@ import { Navigation } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 
 interface LocationDisplayProps {
-  currentLocation: { lat: number, lng: number } | null;
+  currentLocation?: { lat: number, lng: number } | null; // Make it optional with ?
   currentAddress?: string | null;
   isLoadingAddress?: boolean;
 }
