@@ -1,6 +1,6 @@
 
 import { useState, useCallback, useRef, useEffect } from 'react';
-import { Marker } from '@/types/map';
+import { Marker, RouteDetails } from '@/types/map';
 import { useAuth } from '@/contexts/AuthContext';
 
 interface GoogleMapsState {
@@ -10,6 +10,7 @@ interface GoogleMapsState {
   loadGoogleMapsApi: (center: { lat: number, lng: number }) => void;
   currentAddress: string | null;
   isLoadingAddress: boolean;
+  calculateRoute: (origin: string, destination: string) => Promise<RouteDetails | null>;
 }
 
 export const useGoogleMaps = (): GoogleMapsState => {
@@ -23,6 +24,7 @@ export const useGoogleMaps = (): GoogleMapsState => {
   const [currentAddress, setCurrentAddress] = useState<string | null>(null);
   const [isLoadingAddress, setIsLoadingAddress] = useState<boolean>(false);
   const geocoderRef = useRef<google.maps.Geocoder | null>(null);
+  const directionsServiceRef = useRef<google.maps.DirectionsService | null>(null);
 
   // Store API key in localStorage when it changes
   useEffect(() => {
@@ -55,6 +57,7 @@ export const useGoogleMaps = (): GoogleMapsState => {
       script.onload = () => {
         // Initialize geocoder after API is loaded
         geocoderRef.current = new window.google.maps.Geocoder();
+        directionsServiceRef.current = new window.google.maps.DirectionsService();
         // Get address for initial location
         getAddressFromCoords(center);
       };
@@ -62,6 +65,7 @@ export const useGoogleMaps = (): GoogleMapsState => {
     } else {
       // If API is already loaded, initialize geocoder
       geocoderRef.current = new window.google.maps.Geocoder();
+      directionsServiceRef.current = new window.google.maps.DirectionsService();
       // Get address for location
       getAddressFromCoords(center);
     }
@@ -83,6 +87,61 @@ export const useGoogleMaps = (): GoogleMapsState => {
       }
       setIsLoadingAddress(false);
     });
+  }, []);
+
+  // Calculate route and fare between origin and destination
+  const calculateRoute = useCallback(async (origin: string, destination: string): Promise<RouteDetails | null> => {
+    if (!directionsServiceRef.current || !window.google?.maps) {
+      console.error('Google Maps not initialized');
+      return null;
+    }
+    
+    try {
+      // Calculate route
+      return new Promise((resolve, reject) => {
+        directionsServiceRef.current?.route(
+          {
+            origin,
+            destination,
+            travelMode: window.google.maps.TravelMode.DRIVING,
+          },
+          (result, status) => {
+            if (status === window.google.maps.DirectionsStatus.OK && result) {
+              // Get distance in kilometers
+              const distanceValue = result.routes[0]?.legs[0]?.distance?.value || 0;
+              const distanceInKm = distanceValue / 1000;
+              
+              // Get duration in minutes
+              const durationValue = result.routes[0]?.legs[0]?.duration?.value || 0;
+              const durationInMinutes = Math.round(durationValue / 60);
+              
+              // Calculate fare (simplified formula)
+              const fare = 5 + (distanceInKm * 2.5);
+              
+              // Trigger route calculation on the map
+              window.dispatchEvent(
+                new CustomEvent('calculateRoute', {
+                  detail: { origin, destination }
+                })
+              );
+              
+              resolve({
+                distance: distanceInKm,
+                duration: durationInMinutes,
+                fare,
+                origin,
+                destination
+              });
+            } else {
+              reject(new Error(`Direction service failed: ${status}`));
+            }
+          }
+        );
+      });
+    } catch (error) {
+      console.error('Error calculating route:', error);
+      return null;
+    }
   }, []);
 
   // Update address when markers change
@@ -110,6 +169,7 @@ export const useGoogleMaps = (): GoogleMapsState => {
     markers,
     loadGoogleMapsApi,
     currentAddress,
-    isLoadingAddress
+    isLoadingAddress,
+    calculateRoute
   };
 };

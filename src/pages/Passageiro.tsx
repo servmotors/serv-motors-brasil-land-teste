@@ -8,12 +8,14 @@ import PassageirosSection from '@/components/PassageirosSection';
 import TestimonialsSection from '@/components/TestimonialsSection';
 import DownloadSection from '@/components/DownloadSection';
 import { useGoogleMaps } from '@/hooks/useGoogleMaps';
+import { useGeolocation } from '@/hooks/useGeolocation';
 import { useToast } from '@/hooks/use-toast';
 import MobileHeader from '@/components/passageiro/MobileHeader';
 import MapArea from '@/components/passageiro/MapArea';
 import BookingPanel from '@/components/passageiro/BookingPanel';
 import GoogleMapDisplay from '@/components/map/GoogleMapDisplay';
 import GoogleApiKeyForm from '@/components/map/GoogleApiKeyForm';
+import LocationDisplay from '@/components/map/LocationDisplay';
 
 const Passageiro = () => {
   const [showBookingPanel, setShowBookingPanel] = useState(true);
@@ -26,21 +28,50 @@ const Passageiro = () => {
     setGoogleApiKey, 
     currentAddress, 
     loadGoogleMapsApi,
-    markers 
+    markers,
+    isLoadingAddress
   } = useGoogleMaps();
+  
+  const {
+    currentLocation,
+    error: locationError,
+    isLoading: isLoadingLocation,
+    getCurrentPosition,
+    startWatchingPosition,
+    stopWatchingPosition
+  } = useGeolocation();
 
-  // Initialize map when component mounts if API key exists
+  // Start watching position when component mounts
   useEffect(() => {
     if (googleApiKey) {
-      handleInitMap();
+      startWatchingPosition();
     }
-  }, [googleApiKey]);
+    
+    // Clean up when component unmounts
+    return () => {
+      stopWatchingPosition();
+    };
+  }, [googleApiKey, startWatchingPosition, stopWatchingPosition]);
+
+  // Initialize map when component mounts if API key and location exist
+  useEffect(() => {
+    if (googleApiKey && currentLocation) {
+      loadGoogleMapsApi(currentLocation);
+      setMapLoaded(true);
+    }
+  }, [googleApiKey, currentLocation, loadGoogleMapsApi]);
 
   const handleInitMap = () => {
     if (googleApiKey) {
-      // São Paulo coordinates
-      loadGoogleMapsApi({ lat: -23.5505, lng: -46.6333 });
+      if (currentLocation) {
+        loadGoogleMapsApi(currentLocation);
+      } else {
+        // If we don't have the user's location yet, use default coordinates (São Paulo)
+        loadGoogleMapsApi({ lat: -23.5505, lng: -46.6333 });
+      }
       setMapLoaded(true);
+      // Start tracking user location
+      startWatchingPosition();
     } else {
       toast({
         title: "API Key Missing",
@@ -96,16 +127,19 @@ const Passageiro = () => {
             ) : (
               <div className="w-full h-full flex flex-col">
                 <GoogleMapDisplay 
-                  center={{ lat: -23.5505, lng: -46.6333 }}
+                  center={currentLocation || { lat: -23.5505, lng: -46.6333 }}
                   markers={markers}
                   zoom={14}
                   className="w-full h-full rounded-lg shadow-md"
+                  withDirections={true}
                 />
-                {currentAddress && (
-                  <div className="mt-2 p-2 bg-white rounded-md shadow text-sm">
-                    <strong>Localização atual:</strong> {currentAddress}
-                  </div>
-                )}
+                <div className="mt-2 p-2 bg-white rounded-md shadow">
+                  <LocationDisplay
+                    currentLocation={currentLocation}
+                    currentAddress={currentAddress}
+                    isLoadingAddress={isLoadingAddress}
+                  />
+                </div>
               </div>
             )}
           </div>

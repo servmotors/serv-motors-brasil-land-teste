@@ -1,15 +1,16 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import {
   Car, MapPin, Clock, CreditCard, Search,
-  Users, Plus, Minus, Calendar
+  Users, Plus, Minus, Calendar, Navigation
 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from '@/hooks/use-toast';
 import { RideOption } from '@/types/ride';
 import VehicleOptions from './VehicleOptions';
 import PassengerSelector from './PassengerSelector';
+import { useGeolocation } from '@/hooks/useGeolocation';
 
 interface BookingPanelProps {
   onBookRide: () => void;
@@ -26,7 +27,142 @@ const BookingPanel: React.FC<BookingPanelProps> = ({
   const [pickup, setPickup] = useState('');
   const [carType, setCarType] = useState('serv-x');
   const [passengers, setPassengers] = useState(1);
+  const [distance, setDistance] = useState<number | null>(null);
+  const [duration, setDuration] = useState<number | null>(null);
+  const [fare, setFare] = useState<string | null>(null);
   const { toast } = useToast();
+  const { 
+    currentLocation, 
+    error: locationError,
+    isLoading: isLoadingLocation,
+    getCurrentPosition
+  } = useGeolocation();
+
+  // Get current location when component mounts
+  useEffect(() => {
+    getCurrentPosition();
+  }, [getCurrentPosition]);
+
+  // Set pickup location automatically when currentLocation changes
+  useEffect(() => {
+    if (currentLocation && !pickup) {
+      // Convert coords to address (reverse geocoding) would go here
+      // For now, just set the coordinates as pickup
+      setPickup(`${currentLocation.lat.toFixed(6)}, ${currentLocation.lng.toFixed(6)}`);
+    }
+  }, [currentLocation, pickup]);
+
+  // Calculate fare based on distance and vehicle type
+  useEffect(() => {
+    if (distance) {
+      let baseFare = 0;
+      let ratePerKm = 0;
+      
+      switch (carType) {
+        case 'serv-x':
+          baseFare = 5;
+          ratePerKm = 2;
+          break;
+        case 'serv-comfort':
+          baseFare = 7;
+          ratePerKm = 2.5;
+          break;
+        case 'serv-black':
+          baseFare = 10;
+          ratePerKm = 3.5;
+          break;
+        default:
+          baseFare = 5;
+          ratePerKm = 2;
+      }
+      
+      const calculatedFare = baseFare + (distance * ratePerKm);
+      setFare(`R$ ${calculatedFare.toFixed(2)}`);
+      
+      // Update the ride options with the calculated fare
+      updateRideOptionFares(distance);
+    }
+  }, [distance, carType]);
+
+  const updateRideOptionFares = (distanceInKm: number) => {
+    const updatedOptions = [...rideOptions].map(option => {
+      let baseFare = 0;
+      let ratePerKm = 0;
+      
+      switch (option.id) {
+        case 'serv-x':
+          baseFare = 5;
+          ratePerKm = 2;
+          break;
+        case 'serv-comfort':
+          baseFare = 7;
+          ratePerKm = 2.5;
+          break;
+        case 'serv-black':
+          baseFare = 10;
+          ratePerKm = 3.5;
+          break;
+      }
+      
+      const minFare = baseFare + (distanceInKm * ratePerKm * 0.9);
+      const maxFare = baseFare + (distanceInKm * ratePerKm * 1.1);
+      
+      return {
+        ...option,
+        price: `R$ ${minFare.toFixed(0)}-${maxFare.toFixed(0)}`
+      };
+    });
+    
+    setRideOptionsState(updatedOptions);
+  };
+
+  const calculateRoute = () => {
+    if (!pickup || !destination || !window.google?.maps) {
+      return;
+    }
+
+    const directionsService = new window.google.maps.DirectionsService();
+    
+    directionsService.route(
+      {
+        origin: pickup,
+        destination,
+        travelMode: window.google.maps.TravelMode.DRIVING,
+      },
+      (result, status) => {
+        if (status === window.google.maps.DirectionsStatus.OK && result) {
+          // Get distance in kilometers
+          const distanceValue = result.routes[0]?.legs[0]?.distance?.value || 0;
+          const distanceInKm = distanceValue / 1000;
+          setDistance(distanceInKm);
+          
+          // Get duration in minutes
+          const durationValue = result.routes[0]?.legs[0]?.duration?.value || 0;
+          const durationInMinutes = Math.round(durationValue / 60);
+          setDuration(durationInMinutes);
+          
+          toast({
+            title: "Rota calculada",
+            description: `Distância: ${distanceInKm.toFixed(1)}km - Tempo estimado: ${durationInMinutes} min`,
+          });
+        } else {
+          toast({
+            title: "Erro ao calcular rota",
+            description: "Verifique os endereços informados e tente novamente",
+            variant: "destructive"
+          });
+        }
+      }
+    );
+  };
+
+  const handleDestinationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setDestination(e.target.value);
+  };
+
+  const handlePickupChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPickup(e.target.value);
+  };
 
   const handleBookRide = () => {
     if (!pickup || !destination) {
@@ -34,6 +170,15 @@ const BookingPanel: React.FC<BookingPanelProps> = ({
         title: "Campos incompletos",
         description: "Por favor, preencha os locais de partida e destino",
         variant: "destructive"
+      });
+      return;
+    }
+    
+    if (!distance || !fare) {
+      calculateRoute();
+      toast({
+        title: "Calculando rota",
+        description: "Aguarde enquanto calculamos o valor da corrida",
       });
       return;
     }
@@ -55,7 +200,7 @@ const BookingPanel: React.FC<BookingPanelProps> = ({
     }
   };
 
-  const rideOptions: RideOption[] = [
+  const [rideOptionsState, setRideOptionsState] = useState<RideOption[]>([
     {
       id: 'serv-x',
       name: 'Moto Táxi',
@@ -83,7 +228,7 @@ const BookingPanel: React.FC<BookingPanelProps> = ({
       time: '8 min',
       image: '/lovable-uploads/b894cf04-c110-4f11-8149-d6caa7b00f5f.png'
     }
-  ];
+  ]);
 
   return (
     <div className={`h-full bg-white shadow-lg transition-all duration-300 ${!showBookingPanel && 'translate-y-[calc(100%-60px)] md:translate-y-0'} z-10`}>
@@ -115,7 +260,7 @@ const BookingPanel: React.FC<BookingPanelProps> = ({
                       type="text"
                       placeholder="Local de partida"
                       value={pickup}
-                      onChange={(e) => setPickup(e.target.value)}
+                      onChange={handlePickupChange}
                       className="w-full pl-3 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50"
                     />
                     <MapPin className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -126,7 +271,7 @@ const BookingPanel: React.FC<BookingPanelProps> = ({
                       type="text"
                       placeholder="Para onde?"
                       value={destination}
-                      onChange={(e) => setDestination(e.target.value)}
+                      onChange={handleDestinationChange}
                       className="w-full pl-3 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50"
                     />
                     <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -134,12 +279,42 @@ const BookingPanel: React.FC<BookingPanelProps> = ({
                 </div>
               </div>
               
-              <div className="flex items-center space-x-3 py-2">
-                <Clock className="h-5 w-5 text-gray-500" />
-                <span className="text-gray-800">Agora</span>
-                <span className="text-gray-500">•</span>
-                <span className="text-gray-800">5 min de espera</span>
+              <div className="flex justify-between items-center py-2">
+                <div className="flex items-center">
+                  <Clock className="h-5 w-5 text-gray-500 mr-2" />
+                  <span className="text-gray-800">Agora</span>
+                </div>
+                
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={calculateRoute}
+                  disabled={!pickup || !destination}
+                  className="text-xs"
+                >
+                  <Navigation className="h-4 w-4 mr-1" />
+                  Calcular
+                </Button>
               </div>
+              
+              {distance && duration && (
+                <div className="p-3 bg-gray-50 rounded-lg text-sm">
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="font-medium">Distância:</span>
+                    <span>{distance.toFixed(1)} km</span>
+                  </div>
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="font-medium">Tempo estimado:</span>
+                    <span>{duration} min</span>
+                  </div>
+                  {fare && (
+                    <div className="flex justify-between items-center pt-1 border-t border-gray-200 mt-1">
+                      <span className="font-semibold">Valor estimado:</span>
+                      <span className="font-semibold">{fare}</span>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </TabsContent>
           
@@ -154,7 +329,11 @@ const BookingPanel: React.FC<BookingPanelProps> = ({
           </TabsContent>
         </Tabs>
         
-        <VehicleOptions rideOptions={rideOptions} selectedType={carType} onSelect={setCarType} />
+        <VehicleOptions 
+          rideOptions={rideOptionsState} 
+          selectedType={carType} 
+          onSelect={setCarType} 
+        />
         
         <PassengerSelector passengers={passengers} setPassengers={setPassengers} />
         

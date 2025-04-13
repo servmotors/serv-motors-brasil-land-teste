@@ -12,8 +12,17 @@ export interface MapProps {
   center?: { lat: number, lng: number };
   markers?: Marker[];
   zoom?: number;
+  withDirections?: boolean;
 }
 
 export interface DriverMapProps {
   className?: string;
+}
+
+export interface RouteDetails {
+  distance: number; // in kilometers
+  duration: number; // in minutes
+  fare: number; // calculated fare
+  origin: string;
+  destination: string;
 }
