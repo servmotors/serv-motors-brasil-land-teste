@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { MapPin, Search, Navigation, Clock, MapPinOff, Loader2 } from 'lucide-react';
+import { MapPin, Search, Navigation, Clock, Loader2 } from 'lucide-react';
 import { useGeolocation } from '@/hooks/useGeolocation';
 import { useToast } from '@/hooks/use-toast';
 import { useAddressLookup } from '@/hooks/useAddressLookup';
@@ -149,28 +149,15 @@ const LocationSelector: React.FC<LocationSelectorProps> = ({
               {isLoadingLocation || isLoadingCep ? (
                 <Loader2 className="h-5 w-5 text-gray-400 animate-spin" />
               ) : (
-                <>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 p-0"
-                    onClick={handleUseCurrentLocation}
-                    title="Usar localização atual"
-                  >
-                    <MapPin className="h-5 w-5 text-primary" />
-                  </Button>
-                  {pickup && (
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 p-0"
-                      onClick={() => onPickupChange('')}
-                      title="Limpar"
-                    >
-                      <MapPinOff className="h-5 w-5 text-gray-400" />
-                    </Button>
-                  )}
-                </>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 p-0"
+                  onClick={handleUseCurrentLocation}
+                  title="Usar localização atual"
+                >
+                  <MapPin className="h-5 w-5 text-primary" />
+                </Button>
               )}
             </div>
           </div>
@@ -187,20 +174,7 @@ const LocationSelector: React.FC<LocationSelectorProps> = ({
               {isLoadingCep ? (
                 <Loader2 className="h-5 w-5 text-gray-400 animate-spin" />
               ) : (
-                <>
-                  <Search className="h-5 w-5 text-gray-400" />
-                  {destination && (
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 p-0"
-                      onClick={() => onDestinationChange('')}
-                      title="Limpar"
-                    >
-                      <MapPinOff className="h-5 w-5 text-gray-400" />
-                    </Button>
-                  )}
-                </>
+                <Search className="h-5 w-5 text-gray-400" />
               )}
             </div>
           </div>
