@@ -14,10 +14,11 @@ import {
   FormLabel, 
   FormMessage 
 } from '@/components/ui/form';
-import { toast } from '@/hooks/use-toast';
+import { useToast } from '@/hooks/use-toast';
 
 interface CreditCardPaymentFormProps {
   onCancel: () => void;
+  onComplete: () => void;
 }
 
 const formSchema = z.object({
@@ -27,7 +28,11 @@ const formSchema = z.object({
   cvv: z.string().min(3, 'CVV inválido').max(4),
 });
 
-const CreditCardPaymentForm: React.FC<CreditCardPaymentFormProps> = ({ onCancel }) => {
+const CreditCardPaymentForm: React.FC<CreditCardPaymentFormProps> = ({ 
+  onCancel, 
+  onComplete 
+}) => {
+  const { toast } = useToast();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -47,6 +52,9 @@ const CreditCardPaymentForm: React.FC<CreditCardPaymentFormProps> = ({ onCancel 
       title: "Pagamento Processado",
       description: "Seu pagamento com cartão foi aprovado!",
     });
+
+    // Call onComplete to finalize the payment process
+    onComplete();
   };
 
   return (

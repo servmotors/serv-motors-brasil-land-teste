@@ -2,14 +2,16 @@
 import React, { useState } from 'react';
 import { QrCode, Copy, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { toast } from '@/hooks/use-toast';
+import { useToast } from '@/hooks/use-toast';
 
 interface PixPaymentFormProps {
   onCancel: () => void;
+  onComplete: () => void;
 }
 
-const PixPaymentForm: React.FC<PixPaymentFormProps> = ({ onCancel }) => {
+const PixPaymentForm: React.FC<PixPaymentFormProps> = ({ onCancel, onComplete }) => {
   const [copied, setCopied] = useState(false);
+  const { toast } = useToast();
   
   // Simulação de código PIX
   const pixCode = "00020126580014BR.GOV.BCB.PIX0136a629533e-7693-4846-b028-f33a8794f70d5204000053039865802BR5925APLICATIVO EXEMPLO SA6009SAO PAULO62070503***6304E2CA";
@@ -23,6 +25,23 @@ const PixPaymentForm: React.FC<PixPaymentFormProps> = ({ onCancel }) => {
     });
     
     setTimeout(() => setCopied(false), 3000);
+  };
+
+  const handlePaymentVerification = () => {
+    // Simulação de verificação de pagamento
+    toast({
+      title: "Verificando pagamento",
+      description: "Estamos verificando seu pagamento PIX.",
+    });
+
+    // Simular confirmação após 2 segundos
+    setTimeout(() => {
+      toast({
+        title: "Pagamento confirmado",
+        description: "Seu pagamento via PIX foi aprovado!",
+      });
+      onComplete();
+    }, 2000);
   };
   
   return (
@@ -74,13 +93,7 @@ const PixPaymentForm: React.FC<PixPaymentFormProps> = ({ onCancel }) => {
         <Button type="button" variant="outline" onClick={onCancel}>
           Cancelar
         </Button>
-        <Button type="button" onClick={() => {
-          // Simulação de verificação de pagamento
-          toast({
-            title: "Verificando pagamento",
-            description: "Estamos verificando seu pagamento PIX.",
-          });
-        }}>
+        <Button type="button" onClick={handlePaymentVerification}>
           Já paguei
         </Button>
       </div>

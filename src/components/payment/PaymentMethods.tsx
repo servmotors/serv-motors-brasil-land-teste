@@ -17,8 +17,17 @@ import PixPaymentForm from './methods/PixPaymentForm';
 import CashPaymentDialog from './dialogs/CashPaymentDialog';
 import WalletBalanceDialog from './dialogs/WalletBalanceDialog';
 import AddBalanceDialog from './dialogs/AddBalanceDialog';
+import { RideData } from '@/components/passageiro/BookingPanel';
 
-const PaymentMethods = () => {
+interface PaymentMethodsProps {
+  rideData?: RideData;
+  onPaymentComplete: (method: string) => void;
+}
+
+const PaymentMethods: React.FC<PaymentMethodsProps> = ({ 
+  rideData,
+  onPaymentComplete
+}) => {
   const [paymentMethod, setPaymentMethod] = useState('wallet');
   const [showForm, setShowForm] = useState(false);
   const [showCashDialog, setShowCashDialog] = useState(false);
@@ -27,6 +36,7 @@ const PaymentMethods = () => {
   const { toast } = useToast();
 
   const walletBalance = 50.75; // Exemplo - será obtido da API
+  const rideAmount = rideData?.fare ? parseFloat(rideData.fare.replace('R$ ', '')) : 35.50;
 
   const handlePaymentSelection = (value: string) => {
     setPaymentMethod(value);
@@ -45,7 +55,7 @@ const PaymentMethods = () => {
         setShowCashDialog(true);
         break;
       case 'wallet':
-        if (walletBalance >= 35.50) {
+        if (walletBalance >= rideAmount) {
           setShowBalanceDialog(true);
         } else {
           toast({
@@ -64,19 +74,23 @@ const PaymentMethods = () => {
     setShowAddBalanceDialog(true);
   };
 
+  const handlePaymentCompleted = (method: string) => {
+    onPaymentComplete(method);
+  };
+
   return (
     <div className="bg-white rounded-lg shadow-sm p-6">
       <div className="mb-6">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold">Resumo da corrida</h2>
-          <span className="text-xl font-bold">R$ 35,50</span>
+          <span className="text-xl font-bold">{rideData?.fare || `R$ ${rideAmount.toFixed(2)}`}</span>
         </div>
         <div className="flex justify-between text-gray-600 text-sm">
-          <span>De: Av. Paulista, 1000</span>
-          <span>Distância: 5.7 km</span>
+          <span>De: {rideData?.pickup || 'Localização atual'}</span>
+          <span>Distância: {rideData?.distance?.toFixed(1) || '5.7'} km</span>
         </div>
         <div className="text-gray-600 text-sm">
-          <span>Para: Rua Augusta, 500</span>
+          <span>Para: {rideData?.destination || 'Destino selecionado'}</span>
         </div>
       </div>
 
@@ -144,11 +158,17 @@ const PaymentMethods = () => {
       </div>
 
       {showForm && paymentMethod === 'credit' && (
-        <CreditCardPaymentForm onCancel={() => setShowForm(false)} />
+        <CreditCardPaymentForm 
+          onCancel={() => setShowForm(false)} 
+          onComplete={() => handlePaymentCompleted('credit')}
+        />
       )}
 
       {showForm && paymentMethod === 'pix' && (
-        <PixPaymentForm onCancel={() => setShowForm(false)} />
+        <PixPaymentForm 
+          onCancel={() => setShowForm(false)}
+          onComplete={() => handlePaymentCompleted('pix')}
+        />
       )}
 
       <div className="mt-6">
@@ -164,14 +184,16 @@ const PaymentMethods = () => {
       <CashPaymentDialog 
         open={showCashDialog} 
         onOpenChange={setShowCashDialog} 
-        rideAmount={35.50}
+        rideAmount={rideAmount}
+        onConfirm={() => handlePaymentCompleted('cash')}
       />
 
       <WalletBalanceDialog 
         open={showBalanceDialog} 
         onOpenChange={setShowBalanceDialog}
-        rideAmount={35.50}
+        rideAmount={rideAmount}
         currentBalance={walletBalance}
+        onConfirm={() => handlePaymentCompleted('wallet')}
       />
 
       <AddBalanceDialog 

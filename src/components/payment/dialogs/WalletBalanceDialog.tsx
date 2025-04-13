@@ -3,21 +3,24 @@ import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Wallet, CheckCircle2 } from 'lucide-react';
-import { toast } from '@/hooks/use-toast';
+import { useToast } from '@/hooks/use-toast';
 
 interface WalletBalanceDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   rideAmount: number;
   currentBalance: number;
+  onConfirm: () => void;
 }
 
 const WalletBalanceDialog: React.FC<WalletBalanceDialogProps> = ({
   open,
   onOpenChange,
   rideAmount,
-  currentBalance
+  currentBalance,
+  onConfirm
 }) => {
+  const { toast } = useToast();
   const remainingBalance = currentBalance - rideAmount;
   
   const handleConfirm = () => {
@@ -27,6 +30,7 @@ const WalletBalanceDialog: React.FC<WalletBalanceDialogProps> = ({
       description: `R$ ${rideAmount.toFixed(2)} foi debitado do seu saldo em carteira.`,
     });
     onOpenChange(false);
+    onConfirm();
   };
 
   return (

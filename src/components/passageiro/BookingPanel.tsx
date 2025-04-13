@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
+import { useNavigate } from 'react-router-dom';
 import {
   Car, MapPin, Clock, CreditCard, Search,
   Users, Plus, Minus, Calendar, Navigation
@@ -18,11 +19,23 @@ interface BookingPanelProps {
   toggleBookingPanel: () => void;
 }
 
+// Create a type for ride data that will be stored in sessionStorage
+export interface RideData {
+  pickup: string;
+  destination: string;
+  carType: string;
+  passengers: number;
+  distance: number | null;
+  duration: number | null;
+  fare: string | null;
+}
+
 const BookingPanel: React.FC<BookingPanelProps> = ({ 
   onBookRide, 
   showBookingPanel, 
   toggleBookingPanel 
 }) => {
+  const navigate = useNavigate();
   const [destination, setDestination] = useState('');
   const [pickup, setPickup] = useState('');
   const [carType, setCarType] = useState('serv-x');
@@ -30,6 +43,8 @@ const BookingPanel: React.FC<BookingPanelProps> = ({
   const [distance, setDistance] = useState<number | null>(null);
   const [duration, setDuration] = useState<number | null>(null);
   const [fare, setFare] = useState<string | null>(null);
+  const [paymentComplete, setPaymentComplete] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<string | null>(null);
   const { toast } = useToast();
   const { 
     currentLocation, 
@@ -47,6 +62,47 @@ const BookingPanel: React.FC<BookingPanelProps> = ({
       setPickup(`${currentLocation.lat.toFixed(6)}, ${currentLocation.lng.toFixed(6)}`);
     }
   }, [currentLocation, pickup]);
+
+  // Check for stored ride data when component mounts
+  useEffect(() => {
+    const storedRideData = sessionStorage.getItem('rideData');
+    const storedPaymentMethod = sessionStorage.getItem('paymentMethod');
+    
+    if (storedRideData) {
+      const rideData: RideData = JSON.parse(storedRideData);
+      setPickup(rideData.pickup);
+      setDestination(rideData.destination);
+      setCarType(rideData.carType);
+      setPassengers(rideData.passengers);
+      setDistance(rideData.distance);
+      setDuration(rideData.duration);
+      setFare(rideData.fare);
+    }
+
+    if (storedPaymentMethod) {
+      setPaymentMethod(storedPaymentMethod);
+      setPaymentComplete(true);
+      
+      // If payment is complete, show a toast
+      toast({
+        title: "Pagamento confirmado",
+        description: `Forma de pagamento: ${getPaymentMethodName(storedPaymentMethod)}`,
+      });
+
+      // Clear payment method from storage after loading
+      sessionStorage.removeItem('paymentMethod');
+    }
+  }, [toast]);
+
+  const getPaymentMethodName = (method: string): string => {
+    switch (method) {
+      case 'cash': return 'Dinheiro';
+      case 'credit': return 'Cartão de Crédito';
+      case 'pix': return 'PIX';
+      case 'wallet': return 'Saldo em Carteira';
+      default: return method;
+    }
+  };
 
   useEffect(() => {
     if (distance) {
@@ -156,7 +212,7 @@ const BookingPanel: React.FC<BookingPanelProps> = ({
     setPickup(e.target.value);
   };
 
-  const handleBookRide = () => {
+  const saveRideDataAndGoToPayment = () => {
     if (!pickup || !destination) {
       toast({
         title: "Campos incompletos",
@@ -175,6 +231,30 @@ const BookingPanel: React.FC<BookingPanelProps> = ({
       return;
     }
     
+    // Save ride data to sessionStorage
+    const rideData: RideData = {
+      pickup,
+      destination,
+      carType,
+      passengers,
+      distance,
+      duration,
+      fare
+    };
+    
+    sessionStorage.setItem('rideData', JSON.stringify(rideData));
+    
+    // Navigate to payment page
+    navigate('/payment');
+  };
+
+  const handleFindDriver = () => {
+    // Clear the payment status as the ride is now being processed
+    setPaymentComplete(false);
+    setPaymentMethod(null);
+    sessionStorage.removeItem('paymentMethod');
+    
+    // Handle the actual booking
     onBookRide();
   };
 
@@ -220,6 +300,9 @@ const BookingPanel: React.FC<BookingPanelProps> = ({
       image: '/lovable-uploads/b894cf04-c110-4f11-8149-d6caa7b00f5f.png'
     }
   ]);
+
+  const shouldShowPaymentButton = pickup && destination;
+  const shouldShowFindDriverButton = paymentComplete && paymentMethod;
 
   return (
     <div className={`h-full bg-white shadow-lg transition-all duration-300 ${!showBookingPanel && 'translate-y-[calc(100%-60px)] md:translate-y-0'} z-10`}>
@@ -328,12 +411,23 @@ const BookingPanel: React.FC<BookingPanelProps> = ({
         
         <PassengerSelector passengers={passengers} setPassengers={setPassengers} />
         
-        <Button 
-          onClick={handleBookRide}
-          className="w-full bg-primary hover:bg-primary/90 text-black font-semibold"
-        >
-          {getButtonText()}
-        </Button>
+        {shouldShowFindDriverButton ? (
+          <Button 
+            onClick={handleFindDriver}
+            className="w-full bg-primary hover:bg-primary/90 text-black font-semibold"
+          >
+            Buscar Motorista
+          </Button>
+        ) : (
+          shouldShowPaymentButton && (
+            <Button 
+              onClick={saveRideDataAndGoToPayment}
+              className="w-full bg-primary hover:bg-primary/90 text-black font-semibold"
+            >
+              {getButtonText()}
+            </Button>
+          )
+        )}
       </div>
     </div>
   );
