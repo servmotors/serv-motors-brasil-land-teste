@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import GoogleMapDisplay from '@/components/map/GoogleMapDisplay';
 import GoogleApiKeyForm from '@/components/map/GoogleApiKeyForm';
 import { useGoogleMaps } from '@/hooks/useGoogleMaps';
@@ -15,18 +15,14 @@ const MapContainer: React.FC = () => {
     isLoading, 
     getCurrentPosition 
   } = useGeolocation();
+  
+  const mapInitializedRef = useRef(false);
 
-  // Obter localização atual quando o componente carrega
+  // Initialize map only once when we have API key and location
   useEffect(() => {
-    if (!currentLocation) {
-      getCurrentPosition();
-    }
-  }, [getCurrentPosition, currentLocation]);
-
-  // Carregar mapa quando temos a chave API e localização atual
-  useEffect(() => {
-    if (googleApiKey && currentLocation) {
+    if (googleApiKey && currentLocation && !mapInitializedRef.current) {
       loadGoogleMapsApi(currentLocation);
+      mapInitializedRef.current = true;
     }
   }, [googleApiKey, currentLocation, loadGoogleMapsApi]);
 

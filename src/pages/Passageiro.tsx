@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Button } from "@/components/ui/button";
@@ -21,6 +21,7 @@ const Passageiro = () => {
   const [showBookingPanel, setShowBookingPanel] = useState(true);
   const [showFullContent, setShowFullContent] = useState(false);
   const [mapLoaded, setMapLoaded] = useState(false);
+  const mapInitializedRef = useRef(false);
   
   const { toast } = useToast();
   const { 
@@ -43,8 +44,9 @@ const Passageiro = () => {
 
   // Start watching position when component mounts
   useEffect(() => {
-    if (googleApiKey) {
+    if (googleApiKey && !mapInitializedRef.current) {
       startWatchingPosition();
+      mapInitializedRef.current = true;
     }
     
     // Clean up when component unmounts
@@ -55,11 +57,11 @@ const Passageiro = () => {
 
   // Initialize map when component mounts if API key and location exist
   useEffect(() => {
-    if (googleApiKey && currentLocation) {
+    if (googleApiKey && currentLocation && !mapLoaded) {
       loadGoogleMapsApi(currentLocation);
       setMapLoaded(true);
     }
-  }, [googleApiKey, currentLocation, loadGoogleMapsApi]);
+  }, [googleApiKey, currentLocation, loadGoogleMapsApi, mapLoaded]);
 
   const handleInitMap = () => {
     if (googleApiKey) {
@@ -128,7 +130,7 @@ const Passageiro = () => {
               <div className="w-full h-full flex flex-col">
                 <GoogleMapDisplay 
                   center={currentLocation || { lat: -23.5505, lng: -46.6333 }}
-                  markers={markers}
+                  markers={markers.filter(marker => marker.title === 'Sua localização')}
                   zoom={14}
                   className="w-full h-full rounded-lg shadow-md"
                   withDirections={true}

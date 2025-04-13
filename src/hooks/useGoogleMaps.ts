@@ -25,6 +25,8 @@ export const useGoogleMaps = (): GoogleMapsState => {
   const [isLoadingAddress, setIsLoadingAddress] = useState<boolean>(false);
   const geocoderRef = useRef<google.maps.Geocoder | null>(null);
   const directionsServiceRef = useRef<google.maps.DirectionsService | null>(null);
+  const apiLoadingRef = useRef<boolean>(false);
+  const lastCenterRef = useRef<{lat: number, lng: number} | null>(null);
 
   // Store API key in localStorage when it changes
   useEffect(() => {
@@ -35,7 +37,24 @@ export const useGoogleMaps = (): GoogleMapsState => {
 
   // Initialize Google Maps with API key
   const loadGoogleMapsApi = useCallback((center: { lat: number, lng: number }) => {
-    if (!googleApiKey) return;
+    if (!googleApiKey || apiLoadingRef.current) return;
+
+    // Avoid reloading for small position changes
+    if (lastCenterRef.current) {
+      const distance = calculateDistance(
+        lastCenterRef.current.lat, 
+        lastCenterRef.current.lng, 
+        center.lat, 
+        center.lng
+      );
+      
+      // If distance is less than 10 meters and we have markers, no need to reload
+      if (distance < 0.01 && markers.length > 0) {
+        return;
+      }
+    }
+    
+    lastCenterRef.current = center;
 
     // Clear existing markers when reloading
     setMarkers([]);
@@ -49,6 +68,7 @@ export const useGoogleMaps = (): GoogleMapsState => {
 
     // Load Google Maps API if not already loaded
     if (!window.google?.maps) {
+      apiLoadingRef.current = true;
       setIsLoadingAddress(true);
       const script = document.createElement('script');
       script.src = `https://maps.googleapis.com/maps/api/js?key=${googleApiKey}&libraries=places`;
@@ -60,6 +80,7 @@ export const useGoogleMaps = (): GoogleMapsState => {
         directionsServiceRef.current = new window.google.maps.DirectionsService();
         // Get address for initial location
         getAddressFromCoords(center);
+        apiLoadingRef.current = false;
       };
       document.head.appendChild(script);
     } else {
@@ -69,14 +90,31 @@ export const useGoogleMaps = (): GoogleMapsState => {
       // Get address for location
       getAddressFromCoords(center);
     }
-  }, [googleApiKey]);
+  }, [googleApiKey, markers.length]);
+
+  // Calculate distance between two coordinates in kilometers (Haversine formula)
+  const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
+    const R = 6371; // Radius of the earth in km
+    const dLat = deg2rad(lat2 - lat1);
+    const dLon = deg2rad(lon2 - lon1);
+    const a = 
+      Math.sin(dLat/2) * Math.sin(dLat/2) +
+      Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
+      Math.sin(dLon/2) * Math.sin(dLon/2); 
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+    const d = R * c; // Distance in km
+    return d;
+  };
+
+  const deg2rad = (deg: number): number => {
+    return deg * (Math.PI/180);
+  };
 
   // Get street address from coordinates using reverse geocoding
   const getAddressFromCoords = useCallback((coords: { lat: number, lng: number }) => {
     if (!geocoderRef.current) return;
     
     setIsLoadingAddress(true);
-    setCurrentAddress(null);
     
     geocoderRef.current.geocode({ location: coords }, (results, status) => {
       if (status === 'OK' && results && results[0]) {

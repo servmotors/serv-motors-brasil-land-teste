@@ -1,5 +1,5 @@
 
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, memo } from 'react';
 import { MapProps, Marker } from '@/types/map';
 import { useToast } from '@/hooks/use-toast';
 
@@ -7,7 +7,7 @@ interface GoogleMapDisplayProps extends MapProps {
   withDirections?: boolean;
 }
 
-const GoogleMapDisplay: React.FC<GoogleMapDisplayProps> = ({ 
+const GoogleMapDisplay: React.FC<GoogleMapDisplayProps> = memo(({ 
   className, 
   center,
   markers = [],
@@ -17,12 +17,14 @@ const GoogleMapDisplay: React.FC<GoogleMapDisplayProps> = ({
   const mapRef = useRef<HTMLDivElement>(null);
   const googleMapRef = useRef<google.maps.Map | null>(null);
   const directionsRendererRef = useRef<google.maps.DirectionsRenderer | null>(null);
+  const markerRefs = useRef<google.maps.Marker[]>([]);
   const [routeSet, setRouteSet] = useState(false);
   const { toast } = useToast();
+  const mapInitializedRef = useRef(false);
 
-  // Initialize map
+  // Initialize map only once
   useEffect(() => {
-    if (!center || !mapRef.current || !window.google?.maps) return;
+    if (!center || !mapRef.current || !window.google?.maps || mapInitializedRef.current) return;
     
     // Create new map
     googleMapRef.current = new window.google.maps.Map(mapRef.current, {
@@ -49,39 +51,50 @@ const GoogleMapDisplay: React.FC<GoogleMapDisplayProps> = ({
       directionsRendererRef.current.setMap(googleMapRef.current);
     }
     
+    mapInitializedRef.current = true;
+  }, [center, zoom, withDirections]);
+
+  // Update center when it changes
+  useEffect(() => {
+    if (!googleMapRef.current || !center) return;
+    googleMapRef.current.setCenter(center);
+  }, [center]);
+
+  // Add or update markers
+  useEffect(() => {
+    if (!googleMapRef.current || !markers.length || !mapInitializedRef.current) return;
+    
+    // Clear existing markers
+    markerRefs.current.forEach(marker => marker.setMap(null));
+    markerRefs.current = [];
+    
     // Add all markers if no directions are being shown or if we're still waiting for route
     if (!withDirections || !routeSet) {
-      addMarkersToMap();
+      markers.forEach(marker => {
+        const newMarker = new window.google.maps.Marker({
+          position: marker.position,
+          map: googleMapRef.current,
+          title: marker.title,
+          icon: marker.icon
+        });
+
+        // Add info window for each marker
+        const infoWindow = new window.google.maps.InfoWindow({
+          content: `<div style="font-weight: bold;">${marker.title}</div>`
+        });
+
+        newMarker.addListener('click', () => {
+          infoWindow.open(googleMapRef.current, newMarker);
+        });
+        
+        markerRefs.current.push(newMarker);
+      });
     }
-  }, [center, markers, zoom, withDirections]);
-
-  // Function to add markers to the map
-  const addMarkersToMap = () => {
-    if (!googleMapRef.current) return;
-    
-    // Clear existing markers (could implement marker manager for better efficiency)
-    markers.forEach(marker => {
-      const newMarker = new window.google.maps.Marker({
-        position: marker.position,
-        map: googleMapRef.current,
-        title: marker.title,
-        icon: marker.icon
-      });
-
-      // Add info window for each marker
-      const infoWindow = new window.google.maps.InfoWindow({
-        content: `<div style="font-weight: bold;">${marker.title}</div>`
-      });
-
-      newMarker.addListener('click', () => {
-        infoWindow.open(googleMapRef.current, newMarker);
-      });
-    });
-  };
+  }, [markers, withDirections, routeSet]);
 
   // Listen for route calculation requests
   useEffect(() => {
-    if (!withDirections || !googleMapRef.current || !directionsRendererRef.current) return;
+    if (!withDirections || !googleMapRef.current || !directionsRendererRef.current || !mapInitializedRef.current) return;
     
     // Setup an event listener for route calculation
     const handleRouteCalculation = (event: CustomEvent) => {
@@ -147,6 +160,6 @@ const GoogleMapDisplay: React.FC<GoogleMapDisplayProps> = ({
       className={`w-full h-64 rounded-md border overflow-hidden bg-gray-100 ${className || ''}`}
     />
   );
-};
+});
 
 export default GoogleMapDisplay;
