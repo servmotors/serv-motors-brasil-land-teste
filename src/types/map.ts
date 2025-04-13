@@ -31,4 +31,14 @@ export interface RouteDetails {
   fare: number; // calculated fare
   origin: string;
   destination: string;
+  cargoInfo?: {
+    weight: number;
+    dimensions: {
+      height: number;
+      width: number;
+      length: number;
+    };
+    quantity: number;
+    description: string;
+  };
 }
