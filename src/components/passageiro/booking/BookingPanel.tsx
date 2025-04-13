@@ -4,26 +4,16 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from 'react-router-dom';
 import { Car } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { RideOption } from '@/types/ride';
 import { useGeolocation } from '@/hooks/useGeolocation';
+import { RideOption } from '@/types/ride';
 import BookingTabs from './BookingTabs';
 import LocationSelector from './LocationSelector';
 import RouteInformation from './RouteInformation';
 import VehicleOptions from './VehicleOptions';
 import PassengerSelector from './PassengerSelector';
+import BookingButton from './BookingButton';
 import { calculateRoute } from './utils/routeCalculator';
-import { calculateFare } from './utils/vehicleFareCalculator';
-
-// Create a type for ride data that will be stored in sessionStorage
-export interface RideData {
-  pickup: string;
-  destination: string;
-  carType: string;
-  passengers: number;
-  distance: number | null;
-  duration: number | null;
-  fare: string | null;
-}
+import { RideData } from './types';
 
 interface BookingPanelProps {
   onBookRide: () => void;
@@ -84,6 +74,7 @@ const BookingPanel: React.FC<BookingPanelProps> = ({
     }
   ]);
 
+  // Effects to handle location and saved ride data
   useEffect(() => {
     getCurrentPosition();
   }, [getCurrentPosition]);
@@ -94,7 +85,6 @@ const BookingPanel: React.FC<BookingPanelProps> = ({
     }
   }, [currentLocation, pickup]);
 
-  // Check for stored ride data when component mounts
   useEffect(() => {
     const storedRideData = sessionStorage.getItem('rideData');
     const storedPaymentMethod = sessionStorage.getItem('paymentMethod');
@@ -114,17 +104,22 @@ const BookingPanel: React.FC<BookingPanelProps> = ({
       setPaymentMethod(storedPaymentMethod);
       setPaymentComplete(true);
       
-      // If payment is complete, show a toast
       toast({
         title: "Pagamento confirmado",
         description: `Forma de pagamento: ${getPaymentMethodName(storedPaymentMethod)}`,
       });
 
-      // Clear payment method from storage after loading
       sessionStorage.removeItem('paymentMethod');
     }
   }, [toast]);
 
+  useEffect(() => {
+    if (distance) {
+      updateRideOptionFares(distance);
+    }
+  }, [distance, carType]);
+
+  // Handler functions
   const getPaymentMethodName = (method: string): string => {
     switch (method) {
       case 'cash': return 'Dinheiro';
@@ -134,12 +129,6 @@ const BookingPanel: React.FC<BookingPanelProps> = ({
       default: return method;
     }
   };
-
-  useEffect(() => {
-    if (distance) {
-      updateRideOptionFares(distance);
-    }
-  }, [distance, carType]);
 
   const updateRideOptionFares = (distanceInKm: number) => {
     const updatedOptions = [...rideOptionsState].map(option => {
@@ -164,7 +153,6 @@ const BookingPanel: React.FC<BookingPanelProps> = ({
       const minFare = baseFare + (distanceInKm * ratePerKm * 0.9);
       const maxFare = baseFare + (distanceInKm * ratePerKm * 1.1);
       
-      // Update current fare if this is the selected vehicle type
       if (option.id === carType) {
         const calculatedFare = baseFare + (distanceInKm * ratePerKm);
         setFare(`R$ ${calculatedFare.toFixed(2)}`);
@@ -233,7 +221,6 @@ const BookingPanel: React.FC<BookingPanelProps> = ({
       return;
     }
     
-    // Save ride data to sessionStorage
     const rideData: RideData = {
       pickup,
       destination,
@@ -245,18 +232,13 @@ const BookingPanel: React.FC<BookingPanelProps> = ({
     };
     
     sessionStorage.setItem('rideData', JSON.stringify(rideData));
-    
-    // Navigate to payment page
     navigate('/payment');
   };
 
   const handleFindDriver = () => {
-    // Clear the payment status as the ride is now being processed
     setPaymentComplete(false);
     setPaymentMethod(null);
     sessionStorage.removeItem('paymentMethod');
-    
-    // Handle the actual booking
     onBookRide();
   };
 
@@ -311,23 +293,13 @@ const BookingPanel: React.FC<BookingPanelProps> = ({
         
         <PassengerSelector passengers={passengers} setPassengers={setPassengers} />
         
-        {shouldShowFindDriverButton ? (
-          <Button 
-            onClick={handleFindDriver}
-            className="w-full bg-primary hover:bg-primary/90 text-black font-semibold"
-          >
-            Buscar Motorista
-          </Button>
-        ) : (
-          shouldShowPaymentButton && (
-            <Button 
-              onClick={saveRideDataAndGoToPayment}
-              className="w-full bg-primary hover:bg-primary/90 text-black font-semibold"
-            >
-              {getButtonText()}
-            </Button>
-          )
-        )}
+        <BookingButton
+          shouldShowFindDriverButton={shouldShowFindDriverButton}
+          shouldShowPaymentButton={shouldShowPaymentButton}
+          handleFindDriver={handleFindDriver}
+          saveRideDataAndGoToPayment={saveRideDataAndGoToPayment}
+          getButtonText={getButtonText}
+        />
       </div>
     </div>
   );
