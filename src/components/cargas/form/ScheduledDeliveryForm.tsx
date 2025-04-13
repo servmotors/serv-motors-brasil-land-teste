@@ -1,20 +1,28 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { useForm } from 'react-hook-form';
+import { useForm, FormProvider } from 'react-hook-form';
 import { useToast } from '@/hooks/use-toast';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Form } from "@/components/ui/form";
 import { 
   AddressField, 
   ContactFields, 
   PickupDateField, 
-  InfoBox 
+  InfoBox,
+  ErrorAlert
 } from './FormFields';
 import CargoDetailsSection from './CargoDetailsSection';
-import { DeliveryFormValues } from './types';
+import { 
+  DeliveryFormValues, 
+  ScheduledDeliveryFormValues,
+  scheduledDeliverySchema 
+} from './types';
 
 const ScheduledDeliveryForm: React.FC = () => {
   const { toast } = useToast();
-  const scheduledForm = useForm<DeliveryFormValues>({
+  const methods = useForm<ScheduledDeliveryFormValues>({
+    resolver: zodResolver(scheduledDeliverySchema),
     defaultValues: {
       pickupAddress: '',
       deliveryAddress: '',
@@ -27,8 +35,13 @@ const ScheduledDeliveryForm: React.FC = () => {
       pickupDate: '',
       contactName: '',
       contactPhone: ''
-    }
+    },
+    mode: 'onBlur'
   });
+
+  const { control, handleSubmit, formState: { errors, isSubmitting } } = methods;
+
+  const hasFormErrors = Object.keys(errors).length > 0;
 
   const handleScheduledSubmit = (data: DeliveryFormValues) => {
     console.log('Scheduled delivery data:', data);
@@ -39,48 +52,56 @@ const ScheduledDeliveryForm: React.FC = () => {
   };
 
   return (
-    <form onSubmit={scheduledForm.handleSubmit(handleScheduledSubmit)} className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <AddressField 
-          label="Endereço de coleta"
-          placeholder="Digite o endereço de coleta"
-          register={(options) => scheduledForm.register('pickupAddress', options)}
+    <Form {...methods}>
+      <form onSubmit={handleSubmit(handleScheduledSubmit)} className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <AddressField 
+            label="Endereço de coleta"
+            placeholder="Digite o endereço de coleta"
+            control={control}
+            name="pickupAddress"
+          />
+          
+          <AddressField 
+            label="Endereço de entrega"
+            placeholder="Digite o endereço de entrega"
+            control={control}
+            name="deliveryAddress"
+          />
+        </div>
+        
+        <PickupDateField 
+          control={control}
+          name="pickupDate"
         />
         
-        <AddressField 
-          label="Endereço de entrega"
-          placeholder="Digite o endereço de entrega"
-          register={(options) => scheduledForm.register('deliveryAddress', options)}
+        <CargoDetailsSection
+          control={control}
         />
-      </div>
-      
-      <PickupDateField 
-        register={(options) => scheduledForm.register('pickupDate', options)}
-      />
-      
-      <CargoDetailsSection
-        cargoDescriptionRegister={(options) => scheduledForm.register('cargoDescription', options)}
-        quantityRegister={(options) => scheduledForm.register('quantity', options)}
-        weightRegister={(options) => scheduledForm.register('weight', options)}
-        heightRegister={(options) => scheduledForm.register('height', options)}
-        widthRegister={(options) => scheduledForm.register('width', options)}
-        lengthRegister={(options) => scheduledForm.register('length', options)}
-      />
 
-      <ContactFields 
-        nameRegister={scheduledForm.register('contactName')}
-        phoneRegister={scheduledForm.register('contactPhone')}
-      />
-      
-      <InfoBox>
-        Ao agendar uma entrega, você garante que um motorista estará disponível 
-        no horário escolhido. Confirmaremos o agendamento por telefone.
-      </InfoBox>
-      
-      <Button type="submit" className="w-full mt-4" size="lg">
-        Agendar entrega
-      </Button>
-    </form>
+        <ContactFields 
+          control={control}
+        />
+        
+        {hasFormErrors && (
+          <ErrorAlert message="Por favor, corrija os erros no formulário antes de enviar." />
+        )}
+        
+        <InfoBox>
+          Ao agendar uma entrega, você garante que um motorista estará disponível 
+          no horário escolhido. Confirmaremos o agendamento por telefone.
+        </InfoBox>
+        
+        <Button 
+          type="submit" 
+          className="w-full mt-4" 
+          size="lg"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? "Processando..." : "Agendar entrega"}
+        </Button>
+      </form>
+    </Form>
   );
 };
 

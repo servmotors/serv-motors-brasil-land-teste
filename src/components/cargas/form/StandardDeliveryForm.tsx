@@ -1,19 +1,27 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { useForm } from 'react-hook-form';
+import { useForm, FormProvider } from 'react-hook-form';
 import { useToast } from '@/hooks/use-toast';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Form } from "@/components/ui/form";
 import { 
   AddressField, 
   ContactFields, 
-  InfoBox 
+  InfoBox,
+  ErrorAlert
 } from './FormFields';
 import CargoDetailsSection from './CargoDetailsSection';
-import { DeliveryFormValues } from './types';
+import { 
+  DeliveryFormValues, 
+  StandardDeliveryFormValues,
+  standardDeliverySchema 
+} from './types';
 
 const StandardDeliveryForm: React.FC = () => {
   const { toast } = useToast();
-  const standardForm = useForm<DeliveryFormValues>({
+  const methods = useForm<StandardDeliveryFormValues>({
+    resolver: zodResolver(standardDeliverySchema),
     defaultValues: {
       pickupAddress: '',
       deliveryAddress: '',
@@ -25,8 +33,13 @@ const StandardDeliveryForm: React.FC = () => {
       weight: 0,
       contactName: '',
       contactPhone: ''
-    }
+    },
+    mode: 'onBlur'
   });
+
+  const { control, handleSubmit, formState: { errors, isSubmitting } } = methods;
+
+  const hasFormErrors = Object.keys(errors).length > 0;
 
   const handleStandardSubmit = (data: DeliveryFormValues) => {
     console.log('Standard delivery data:', data);
@@ -37,44 +50,51 @@ const StandardDeliveryForm: React.FC = () => {
   };
 
   return (
-    <form onSubmit={standardForm.handleSubmit(handleStandardSubmit)} className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <AddressField 
-          label="Endereço de coleta"
-          placeholder="Digite o endereço de coleta"
-          register={(options) => standardForm.register('pickupAddress', options)}
+    <Form {...methods}>
+      <form onSubmit={handleSubmit(handleStandardSubmit)} className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <AddressField 
+            label="Endereço de coleta"
+            placeholder="Digite o endereço de coleta"
+            control={control}
+            name="pickupAddress"
+          />
+          
+          <AddressField 
+            label="Endereço de entrega"
+            placeholder="Digite o endereço de entrega"
+            control={control}
+            name="deliveryAddress"
+          />
+        </div>
+        
+        <CargoDetailsSection
+          control={control}
+        />
+
+        <ContactFields 
+          control={control}
         />
         
-        <AddressField 
-          label="Endereço de entrega"
-          placeholder="Digite o endereço de entrega"
-          register={(options) => standardForm.register('deliveryAddress', options)}
-        />
-      </div>
-      
-      <CargoDetailsSection
-        cargoDescriptionRegister={(options) => standardForm.register('cargoDescription', options)}
-        quantityRegister={(options) => standardForm.register('quantity', options)}
-        weightRegister={(options) => standardForm.register('weight', options)}
-        heightRegister={(options) => standardForm.register('height', options)}
-        widthRegister={(options) => standardForm.register('width', options)}
-        lengthRegister={(options) => standardForm.register('length', options)}
-      />
-
-      <ContactFields 
-        nameRegister={standardForm.register('contactName')}
-        phoneRegister={standardForm.register('contactPhone')}
-      />
-      
-      <InfoBox>
-        Motoristas mais próximos serão notificados sobre sua solicitação. 
-        O valor da entrega será calculado com base nas dimensões e distância.
-      </InfoBox>
-      
-      <Button type="submit" className="w-full mt-4" size="lg">
-        Buscar motoristas disponíveis
-      </Button>
-    </form>
+        {hasFormErrors && (
+          <ErrorAlert message="Por favor, corrija os erros no formulário antes de enviar." />
+        )}
+        
+        <InfoBox>
+          Motoristas mais próximos serão notificados sobre sua solicitação. 
+          O valor da entrega será calculado com base nas dimensões e distância.
+        </InfoBox>
+        
+        <Button 
+          type="submit" 
+          className="w-full mt-4" 
+          size="lg"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? "Processando..." : "Buscar motoristas disponíveis"}
+        </Button>
+      </form>
+    </Form>
   );
 };
 
