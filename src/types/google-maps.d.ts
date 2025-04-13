@@ -206,7 +206,24 @@ declare namespace google.maps {
 
   type VehicleType = 'BUS' | 'CABLE_CAR' | 'COMMUTER_TRAIN' | 'FERRY' | 'FUNICULAR' | 'GONDOLA_LIFT' | 'HEAVY_RAIL' | 'HIGH_SPEED_TRAIN' | 'INTERCITY_BUS' | 'METRO_RAIL' | 'MONORAIL' | 'OTHER' | 'RAIL' | 'SHARE_TAXI' | 'SUBWAY' | 'TRAM' | 'TROLLEYBUS';
 
-  type TravelMode = 'BICYCLING' | 'DRIVING' | 'TRANSIT' | 'WALKING';
+  // Definição dos tipos que estavam causando os erros
+  enum TravelMode {
+    BICYCLING = "BICYCLING",
+    DRIVING = "DRIVING",
+    TRANSIT = "TRANSIT",
+    WALKING = "WALKING"
+  }
+
+  enum DirectionsStatus {
+    INVALID_REQUEST = "INVALID_REQUEST",
+    MAX_WAYPOINTS_EXCEEDED = "MAX_WAYPOINTS_EXCEEDED",
+    NOT_FOUND = "NOT_FOUND",
+    OK = "OK",
+    OVER_QUERY_LIMIT = "OVER_QUERY_LIMIT",
+    REQUEST_DENIED = "REQUEST_DENIED",
+    UNKNOWN_ERROR = "UNKNOWN_ERROR",
+    ZERO_RESULTS = "ZERO_RESULTS"
+  }
 
   interface TransitOptions {
     arrivalTime?: Date;
@@ -288,8 +305,6 @@ declare namespace google.maps {
     placeId?: string;
     query?: string;
   }
-
-  type DirectionsStatus = 'INVALID_REQUEST' | 'MAX_WAYPOINTS_EXCEEDED' | 'NOT_FOUND' | 'OK' | 'OVER_QUERY_LIMIT' | 'REQUEST_DENIED' | 'UNKNOWN_ERROR' | 'ZERO_RESULTS';
 
   // Fix for rideOptions error in BookingPanel.tsx
   interface GeocoderRequest {
