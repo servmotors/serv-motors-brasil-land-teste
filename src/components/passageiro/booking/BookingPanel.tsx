@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { useNavigate } from 'react-router-dom';
@@ -8,8 +9,8 @@ import { useGeolocation } from '@/hooks/useGeolocation';
 import BookingTabs from './BookingTabs';
 import LocationSelector from './LocationSelector';
 import RouteInformation from './RouteInformation';
-import VehicleOptions from '../VehicleOptions';
-import PassengerSelector from '../PassengerSelector';
+import VehicleOptions from './VehicleOptions';
+import PassengerSelector from './PassengerSelector';
 import { calculateRoute } from './utils/routeCalculator';
 import { calculateFare } from './utils/vehicleFareCalculator';
 
