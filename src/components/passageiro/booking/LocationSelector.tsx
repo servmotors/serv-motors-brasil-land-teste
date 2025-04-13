@@ -1,11 +1,16 @@
 
 import React, { useEffect, useState } from 'react';
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { MapPin, Search, Navigation, Clock, Loader2 } from 'lucide-react';
+import { MapPin, Search } from 'lucide-react';
 import { useGeolocation } from '@/hooks/useGeolocation';
 import { useToast } from '@/hooks/use-toast';
 import { useAddressLookup } from '@/hooks/useAddressLookup';
+import { formatCEP, isCEPPattern } from './utils/addressUtils';
+import { 
+  AddressInput, 
+  RouteButton, 
+  LocationIndicator,
+  TimeDisplay
+} from './location';
 
 interface LocationSelectorProps {
   pickup: string;
@@ -14,22 +19,6 @@ interface LocationSelectorProps {
   onDestinationChange: (value: string) => void;
   onCalculateRoute: () => void;
 }
-
-const formatCEP = (cep: string): string => {
-  // Remove any non-digit characters
-  const digits = cep.replace(/\D/g, '');
-  
-  // Format as 00000-000
-  if (digits.length <= 5) {
-    return digits;
-  }
-  return `${digits.slice(0, 5)}-${digits.slice(5, 8)}`;
-};
-
-const isCEPPattern = (text: string): boolean => {
-  // Check if the input matches a CEP pattern (even partially)
-  return /^\d{5}-?\d{0,3}$/.test(text);
-};
 
 const LocationSelector: React.FC<LocationSelectorProps> = ({
   pickup,
@@ -127,80 +116,50 @@ const LocationSelector: React.FC<LocationSelectorProps> = ({
     }
   };
 
+  // Create the action button for the pickup input
+  const locationButton = (
+    <button
+      onClick={handleUseCurrentLocation}
+      className="h-8 w-8 p-0 inline-flex items-center justify-center rounded-md text-sm font-medium hover:bg-accent hover:text-accent-foreground"
+      title="Usar localização atual"
+    >
+      <MapPin className="h-5 w-5 text-primary" />
+    </button>
+  );
+
   return (
     <div className="space-y-4 mb-4">
       <div className="flex items-center space-x-3">
-        <div className="flex flex-col items-center">
-          <div className="w-3 h-3 rounded-full bg-primary"></div>
-          <div className="w-0.5 h-12 bg-gray-300 my-1"></div>
-          <div className="w-3 h-3 rounded-full bg-gray-800"></div>
-        </div>
+        <LocationIndicator />
         
         <div className="flex-1 space-y-3">
-          <div className="relative">
-            <Input
-              type="text"
-              placeholder="Local de partida ou CEP (00000-000)"
-              value={pickup}
-              onChange={handlePickupChange}
-              className="w-full pl-3 pr-10 py-2"
-            />
-            <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex space-x-1">
-              {isLoadingLocation || isLoadingCep ? (
-                <Loader2 className="h-5 w-5 text-gray-400 animate-spin" />
-              ) : (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 p-0"
-                  onClick={handleUseCurrentLocation}
-                  title="Usar localização atual"
-                >
-                  <MapPin className="h-5 w-5 text-primary" />
-                </Button>
-              )}
-            </div>
-          </div>
+          <AddressInput
+            value={pickup}
+            onChange={handlePickupChange}
+            placeholder="Local de partida ou CEP (00000-000)"
+            icon={null}
+            isLoading={isLoadingLocation || isLoadingCep}
+            actionButton={locationButton}
+          />
           
-          <div className="relative">
-            <Input
-              type="text"
-              placeholder="Para onde? Digite endereço ou CEP"
-              value={destination}
-              onChange={handleDestinationChange}
-              className="w-full pl-3 pr-10 py-2"
-            />
-            <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex space-x-1">
-              {isLoadingCep ? (
-                <Loader2 className="h-5 w-5 text-gray-400 animate-spin" />
-              ) : (
-                <Search className="h-5 w-5 text-gray-400" />
-              )}
-            </div>
-          </div>
+          <AddressInput
+            value={destination}
+            onChange={handleDestinationChange}
+            placeholder="Para onde? Digite endereço ou CEP"
+            icon={<Search className="h-5 w-5 text-gray-400" />}
+            isLoading={isLoadingCep}
+          />
         </div>
       </div>
       
       <div className="flex justify-between items-center py-2">
-        <div className="flex items-center">
-          <Clock className="h-5 w-5 text-gray-500 mr-2" />
-          <span className="text-gray-800">Agora</span>
-        </div>
+        <TimeDisplay />
         
-        <Button 
-          variant="outline" 
-          size="sm" 
-          onClick={onCalculateRoute}
-          disabled={!pickup || !destination || isLoadingLocation || isLoadingCep}
-          className="text-xs"
-        >
-          {isLoadingLocation || isLoadingCep ? (
-            <Loader2 className="h-4 w-4 mr-1 animate-spin" />
-          ) : (
-            <Navigation className="h-4 w-4 mr-1" />
-          )}
-          Calcular
-        </Button>
+        <RouteButton 
+          onCalculateRoute={onCalculateRoute}
+          isDisabled={!pickup || !destination || isLoadingLocation || isLoadingCep}
+          isLoading={isLoadingLocation || isLoadingCep}
+        />
       </div>
     </div>
   );
