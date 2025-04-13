@@ -1,7 +1,6 @@
 
 import React from 'react';
-import { Button } from "@/components/ui/button";
-import { CreditCard, Users, Plus, Minus } from 'lucide-react';
+import { Users, Plus, Minus } from 'lucide-react';
 
 interface PassengerSelectorProps {
   passengers: number;
@@ -33,13 +32,6 @@ const PassengerSelector: React.FC<PassengerSelectorProps> = ({
             <Plus size={16} />
           </button>
         </div>
-      </div>
-      
-      <div className="flex">
-        <Button variant="outline" className="w-full text-xs border-gray-300">
-          <CreditCard className="mr-2 h-4 w-4" />
-          Cartão
-        </Button>
       </div>
     </div>
   );
