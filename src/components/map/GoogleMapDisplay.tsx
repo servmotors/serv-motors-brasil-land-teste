@@ -102,10 +102,10 @@ const GoogleMapDisplay: React.FC<GoogleMapDisplayProps> = ({
         {
           origin,
           destination,
-          travelMode: window.google.maps.TravelMode.DRIVING,
+          travelMode: google.maps.TravelMode.DRIVING,
         },
         (result, status) => {
-          if (status === window.google.maps.DirectionsStatus.OK && result) {
+          if (status === google.maps.DirectionsStatus.OK && result) {
             directionsRendererRef.current?.setDirections(result);
             setRouteSet(true);
             

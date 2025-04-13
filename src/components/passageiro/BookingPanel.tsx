@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import {
@@ -120,10 +121,10 @@ const BookingPanel: React.FC<BookingPanelProps> = ({
       {
         origin: pickup,
         destination,
-        travelMode: window.google.maps.TravelMode.DRIVING,
+        travelMode: google.maps.TravelMode.DRIVING,
       },
       (result, status) => {
-        if (status === window.google.maps.DirectionsStatus.OK && result) {
+        if (status === google.maps.DirectionsStatus.OK && result) {
           const distanceValue = result.routes[0]?.legs[0]?.distance?.value || 0;
           const distanceInKm = distanceValue / 1000;
           setDistance(distanceInKm);
