@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -42,20 +41,17 @@ const Passageiro = () => {
     stopWatchingPosition
   } = useGeolocation();
 
-  // Start watching position when component mounts
   useEffect(() => {
     if (googleApiKey && !mapInitializedRef.current) {
       startWatchingPosition();
       mapInitializedRef.current = true;
     }
     
-    // Clean up when component unmounts
     return () => {
       stopWatchingPosition();
     };
   }, [googleApiKey, startWatchingPosition, stopWatchingPosition]);
 
-  // Initialize map when component mounts if API key and location exist
   useEffect(() => {
     if (googleApiKey && currentLocation && !mapLoaded) {
       loadGoogleMapsApi(currentLocation);
@@ -68,11 +64,9 @@ const Passageiro = () => {
       if (currentLocation) {
         loadGoogleMapsApi(currentLocation);
       } else {
-        // If we don't have the user's location yet, use default coordinates (São Paulo)
         loadGoogleMapsApi({ lat: -23.5505, lng: -46.6333 });
       }
       setMapLoaded(true);
-      // Start tracking user location
       startWatchingPosition();
     } else {
       toast({
@@ -98,15 +92,12 @@ const Passageiro = () => {
     <div className="flex flex-col min-h-screen">
       <Navbar />
       <main className="flex-1 relative">
-        {/* Mobile header */}
         <MobileHeader 
           showBookingPanel={showBookingPanel} 
           toggleBookingPanel={toggleBookingPanel} 
         />
 
-        {/* Map and booking interface - correct ordering for desktop */}
         <div className="flex flex-col-reverse md:flex-row h-[calc(100vh-64px)] md:h-[500px]">
-          {/* Booking panel - left side on desktop */}
           <div className="md:w-96 w-full">
             <BookingPanel 
               onBookRide={handleBookRide}
@@ -115,7 +106,6 @@ const Passageiro = () => {
             />
           </div>
           
-          {/* Map area - right side on desktop */}
           <div className="flex-1 bg-gray-100 flex flex-col items-center justify-center p-4">
             {!googleApiKey ? (
               <div className="w-full max-w-md p-4 bg-white rounded-lg shadow-md">
@@ -137,7 +127,6 @@ const Passageiro = () => {
                 />
                 <div className="mt-2 p-2 bg-white rounded-md shadow">
                   <LocationDisplay
-                    currentLocation={currentLocation}
                     currentAddress={currentAddress}
                     isLoadingAddress={isLoadingAddress}
                   />
@@ -146,8 +135,7 @@ const Passageiro = () => {
             )}
           </div>
         </div>
-        
-        {/* Toggle button for app info sections (mobile only) */}
+
         <div className="md:hidden mt-4 px-4">
           <Button 
             variant="outline" 
@@ -158,8 +146,7 @@ const Passageiro = () => {
             <ChevronRight className={`h-5 w-5 transition-transform ${showFullContent ? 'rotate-90' : ''}`} />
           </Button>
         </div>
-        
-        {/* App info sections (visible on desktop or when toggled on mobile) */}
+
         <div className={`${!showFullContent && 'hidden md:block'}`}>
           <PassageirosSection />
           <TestimonialsSection />

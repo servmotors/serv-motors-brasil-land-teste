@@ -10,7 +10,6 @@ interface LocationDisplayProps {
 }
 
 const LocationDisplay: React.FC<LocationDisplayProps> = ({ 
-  currentLocation, 
   currentAddress, 
   isLoadingAddress = false 
 }) => {

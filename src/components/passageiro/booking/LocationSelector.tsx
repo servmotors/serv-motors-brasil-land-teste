@@ -48,9 +48,9 @@ const LocationSelector: React.FC<LocationSelectorProps> = ({
     if (currentLocation && !pickup && !isUsingCurrentLocation) {
       // The effect should run only once when the component is first rendered
       setIsUsingCurrentLocation(true);
-      onCalculateRoute();
+      getCurrentPosition();
     }
-  }, [currentLocation, pickup, onCalculateRoute, isUsingCurrentLocation]);
+  }, [currentLocation, pickup, onCalculateRoute, isUsingCurrentLocation, getCurrentPosition]);
   
   // Handler for using current location
   const handleUseCurrentLocation = () => {
