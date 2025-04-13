@@ -1,23 +1,15 @@
 
 import React, { useState } from 'react';
-import { 
-  CreditCard, 
-  Wallet, 
-  DollarSign, 
-  QrCode, 
-  Plus 
-} from 'lucide-react';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import PaymentMethodCard from './PaymentMethodCard';
 import CreditCardPaymentForm from './methods/CreditCardPaymentForm';
 import PixPaymentForm from './methods/PixPaymentForm';
 import CashPaymentDialog from './dialogs/CashPaymentDialog';
 import WalletBalanceDialog from './dialogs/WalletBalanceDialog';
 import AddBalanceDialog from './dialogs/AddBalanceDialog';
-import { RideData } from '@/components/passageiro/BookingPanel';
+import { RideData } from '@/components/passageiro/booking/BookingPanel';
+import RideSummary from './RideSummary';
+import PaymentMethodSelector from './PaymentMethodSelector';
 
 interface PaymentMethodsProps {
   rideData?: RideData;
@@ -80,82 +72,14 @@ const PaymentMethods: React.FC<PaymentMethodsProps> = ({
 
   return (
     <div className="bg-white rounded-lg shadow-sm p-6">
-      <div className="mb-6">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold">Resumo da corrida</h2>
-          <span className="text-xl font-bold">{rideData?.fare || `R$ ${rideAmount.toFixed(2)}`}</span>
-        </div>
-        <div className="flex justify-between text-gray-600 text-sm">
-          <span>De: {rideData?.pickup || 'Localização atual'}</span>
-          <span>Distância: {rideData?.distance?.toFixed(1) || '5.7'} km</span>
-        </div>
-        <div className="text-gray-600 text-sm">
-          <span>Para: {rideData?.destination || 'Destino selecionado'}</span>
-        </div>
-      </div>
+      <RideSummary rideData={rideData} rideAmount={rideAmount} />
 
-      <div className="mb-6">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-semibold">Escolha como pagar</h2>
-          {paymentMethod === 'wallet' && (
-            <div className="flex items-center">
-              <span className="text-sm font-medium mr-2">
-                Saldo: R$ {walletBalance.toFixed(2)}
-              </span>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={handleAddBalance}
-                className="flex items-center"
-              >
-                <Plus className="h-4 w-4 mr-1" /> Adicionar
-              </Button>
-            </div>
-          )}
-        </div>
-
-        <RadioGroup 
-          value={paymentMethod} 
-          onValueChange={handlePaymentSelection}
-          className="grid grid-cols-1 md:grid-cols-2 gap-4"
-        >
-          <PaymentMethodCard value="wallet">
-            <Wallet className="h-5 w-5 mr-2 text-primary" />
-            <div>
-              <Label htmlFor="wallet" className="font-medium">Saldo em Carteira</Label>
-              <p className="text-xs text-gray-500">Use seu saldo disponível</p>
-            </div>
-            <RadioGroupItem value="wallet" id="wallet" className="ml-auto" />
-          </PaymentMethodCard>
-
-          <PaymentMethodCard value="credit">
-            <CreditCard className="h-5 w-5 mr-2 text-primary" />
-            <div>
-              <Label htmlFor="credit" className="font-medium">Cartão de Crédito</Label>
-              <p className="text-xs text-gray-500">Integração com Asaas</p>
-            </div>
-            <RadioGroupItem value="credit" id="credit" className="ml-auto" />
-          </PaymentMethodCard>
-
-          <PaymentMethodCard value="pix">
-            <QrCode className="h-5 w-5 mr-2 text-primary" />
-            <div>
-              <Label htmlFor="pix" className="font-medium">Pix</Label>
-              <p className="text-xs text-gray-500">Integração com Inter</p>
-            </div>
-            <RadioGroupItem value="pix" id="pix" className="ml-auto" />
-          </PaymentMethodCard>
-
-          <PaymentMethodCard value="cash">
-            <DollarSign className="h-5 w-5 mr-2 text-primary" />
-            <div>
-              <Label htmlFor="cash" className="font-medium">Dinheiro</Label>
-              <p className="text-xs text-gray-500">Pague diretamente ao motorista</p>
-            </div>
-            <RadioGroupItem value="cash" id="cash" className="ml-auto" />
-          </PaymentMethodCard>
-        </RadioGroup>
-      </div>
+      <PaymentMethodSelector
+        paymentMethod={paymentMethod}
+        onPaymentMethodChange={handlePaymentSelection}
+        walletBalance={walletBalance}
+        onAddBalance={handleAddBalance}
+      />
 
       {showForm && paymentMethod === 'credit' && (
         <CreditCardPaymentForm 
