@@ -12,6 +12,7 @@ import Motorista from "./pages/Motorista";
 import Cargas from "./pages/Cargas";
 import Passageiro from "./pages/Passageiro";
 import Admin from "./pages/Admin";
+import Payment from "./pages/Payment";
 import { AuthProvider } from "./contexts/auth";
 
 const queryClient = new QueryClient();
@@ -31,6 +32,7 @@ const App = () => (
             <Route path="/motorista/auth" element={<DriverAuth />} />
             <Route path="/motorista/dashboard" element={<DriverDashboard />} />
             <Route path="/admin" element={<Admin />} />
+            <Route path="/payment" element={<Payment />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
