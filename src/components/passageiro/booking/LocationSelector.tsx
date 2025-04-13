@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
-import { MapPin, Search, Navigation } from 'lucide-react';
+import { MapPin, Search } from 'lucide-react';
 import { useGeolocation } from '@/hooks/useGeolocation';
 import { useToast } from '@/hooks/use-toast';
 import { useAddressLookup } from '@/hooks/useAddressLookup';
@@ -11,8 +11,6 @@ import {
   LocationIndicator,
   TimeDisplay
 } from './location';
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface LocationSelectorProps {
   pickup: string;
@@ -33,20 +31,19 @@ const LocationSelector: React.FC<LocationSelectorProps> = ({
   const { currentLocation, getCurrentPosition, isLoading: isLoadingLocation } = useGeolocation();
   const { lookupAddressByCep, isLoading: isLoadingCep } = useAddressLookup();
   const [isUsingCurrentLocation, setIsUsingCurrentLocation] = useState(false);
-  const [pickupMethod, setPickupMethod] = useState<'current' | 'manual'>('current');
   
   // Effect to get current location on component mount
   useEffect(() => {
-    if (currentLocation && !pickup && !isUsingCurrentLocation && pickupMethod === 'current') {
+    if (currentLocation && !pickup && !isUsingCurrentLocation) {
+      // The effect should run only once when the component is first rendered
       setIsUsingCurrentLocation(true);
       getCurrentPosition();
     }
-  }, [currentLocation, pickup, onCalculateRoute, isUsingCurrentLocation, getCurrentPosition, pickupMethod]);
+  }, [currentLocation, pickup, onCalculateRoute, isUsingCurrentLocation, getCurrentPosition]);
   
   // Handler for using current location
   const handleUseCurrentLocation = () => {
     setIsUsingCurrentLocation(true);
-    setPickupMethod('current');
     getCurrentPosition();
     
     toast({
@@ -121,14 +118,13 @@ const LocationSelector: React.FC<LocationSelectorProps> = ({
 
   // Create the action button for the pickup input
   const locationButton = (
-    <Button
-      variant="ghost"
+    <button
       onClick={handleUseCurrentLocation}
       className="h-8 w-8 p-0 inline-flex items-center justify-center rounded-md text-sm font-medium hover:bg-accent hover:text-accent-foreground"
       title="Usar localização atual"
     >
       <MapPin className="h-5 w-5 text-primary" />
-    </Button>
+    </button>
   );
 
   return (
@@ -137,43 +133,14 @@ const LocationSelector: React.FC<LocationSelectorProps> = ({
         <LocationIndicator />
         
         <div className="flex-1 space-y-3">
-          <div className="mb-2">
-            <Tabs defaultValue={pickupMethod} onValueChange={(value) => setPickupMethod(value as 'current' | 'manual')}>
-              <TabsList className="w-full mb-2">
-                <TabsTrigger value="current" className="flex-1">
-                  <Navigation className="h-4 w-4 mr-1" /> Localização atual
-                </TabsTrigger>
-                <TabsTrigger value="manual" className="flex-1">
-                  <Search className="h-4 w-4 mr-1" /> Digitar endereço/CEP
-                </TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="current" className="mt-0">
-                {isLoadingLocation ? (
-                  <div className="text-sm text-gray-500 flex items-center">
-                    <Navigation className="h-4 w-4 mr-1 animate-pulse" /> 
-                    Obtendo sua localização...
-                  </div>
-                ) : (
-                  <div className="text-sm flex items-center">
-                    <Navigation className="h-4 w-4 mr-1 text-primary" /> 
-                    {pickup || "Localização será usada automaticamente"}
-                  </div>
-                )}
-              </TabsContent>
-              
-              <TabsContent value="manual" className="mt-0">
-                <AddressInput
-                  value={pickup}
-                  onChange={handlePickupChange}
-                  placeholder="Local de partida ou CEP (00000-000)"
-                  icon={null}
-                  isLoading={isLoadingCep}
-                  actionButton={locationButton}
-                />
-              </TabsContent>
-            </Tabs>
-          </div>
+          <AddressInput
+            value={pickup}
+            onChange={handlePickupChange}
+            placeholder="Local de partida ou CEP (00000-000)"
+            icon={null}
+            isLoading={isLoadingLocation || isLoadingCep}
+            actionButton={locationButton}
+          />
           
           <AddressInput
             value={destination}

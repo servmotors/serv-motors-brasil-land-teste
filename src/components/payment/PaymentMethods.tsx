@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { RideData } from '@/components/passageiro/booking/types';
+import { RideData } from '@/components/passageiro/booking/BookingPanel';
 import CreditCardPaymentForm from './methods/CreditCardPaymentForm';
 import PixPaymentForm from './methods/PixPaymentForm';
 import CashPaymentDialog from './dialogs/CashPaymentDialog';

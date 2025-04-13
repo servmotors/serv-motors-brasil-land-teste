@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { useNavigate } from 'react-router-dom';
@@ -73,6 +74,7 @@ const BookingPanel: React.FC<BookingPanelProps> = ({
     }
   ]);
 
+  // Effects to handle location and saved ride data
   useEffect(() => {
     getCurrentPosition();
   }, [getCurrentPosition]);
@@ -117,6 +119,7 @@ const BookingPanel: React.FC<BookingPanelProps> = ({
     }
   }, [distance, carType]);
 
+  // Handler functions
   const getPaymentMethodName = (method: string): string => {
     switch (method) {
       case 'cash': return 'Dinheiro';
@@ -252,8 +255,8 @@ const BookingPanel: React.FC<BookingPanelProps> = ({
     }
   };
 
-  const shouldShowPaymentButton = Boolean(pickup && destination);
-  const shouldShowFindDriverButton = Boolean(paymentComplete && paymentMethod);
+  const shouldShowPaymentButton = pickup && destination;
+  const shouldShowFindDriverButton = paymentComplete && paymentMethod;
 
   return (
     <div className={`h-full bg-white shadow-lg transition-all duration-300 ${!showBookingPanel && 'translate-y-[calc(100%-60px)] md:translate-y-0'} z-10`}>

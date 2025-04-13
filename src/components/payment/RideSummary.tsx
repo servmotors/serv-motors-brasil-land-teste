@@ -1,5 +1,6 @@
+
 import React from 'react';
-import { RideData } from '@/components/passageiro/booking/types';
+import { RideData } from '@/components/passageiro/booking/BookingPanel';
 
 interface RideSummaryProps {
   rideData: RideData | undefined;
