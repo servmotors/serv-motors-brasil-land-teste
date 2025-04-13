@@ -1,40 +1,78 @@
 
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import GoogleMapDisplay from '@/components/map/GoogleMapDisplay';
 import GoogleApiKeyForm from '@/components/map/GoogleApiKeyForm';
 import { useGoogleMaps } from '@/hooks/useGoogleMaps';
+import { useGeolocation } from '@/hooks/useGeolocation';
+import { Loader2, Navigation } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 const MapContainer: React.FC = () => {
-  const { googleApiKey, setGoogleApiKey, loadGoogleMapsApi } = useGoogleMaps();
-  const [center] = useState({ lat: -23.55052, lng: -46.633309 }); // São Paulo
+  const { googleApiKey, setGoogleApiKey, loadGoogleMapsApi, markers } = useGoogleMaps();
+  const { 
+    currentLocation, 
+    error, 
+    isLoading, 
+    getCurrentPosition 
+  } = useGeolocation();
 
-  // Load map when API key is available
-  React.useEffect(() => {
-    if (googleApiKey) {
-      loadGoogleMapsApi(center);
+  // Obter localização atual quando o componente carrega
+  useEffect(() => {
+    if (!currentLocation) {
+      getCurrentPosition();
     }
-  }, [googleApiKey, center, loadGoogleMapsApi]);
+  }, [getCurrentPosition, currentLocation]);
+
+  // Carregar mapa quando temos a chave API e localização atual
+  useEffect(() => {
+    if (googleApiKey && currentLocation) {
+      loadGoogleMapsApi(currentLocation);
+    }
+  }, [googleApiKey, currentLocation, loadGoogleMapsApi]);
+
+  const handleUpdateLocation = () => {
+    getCurrentPosition();
+  };
 
   return (
-    <div className="bg-gray-200 rounded-lg h-[400px] mb-6 flex items-center justify-center">
+    <div className="bg-gray-200 rounded-lg h-[400px] mb-6 flex flex-col overflow-hidden">
       {googleApiKey ? (
-        <GoogleMapDisplay
-          center={center}
-          zoom={13}
-          markers={[
-            {
-              position: center,
-              title: 'Localização de partida',
-              icon: 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png',
-            },
-          ]}
-        />
+        <>
+          <GoogleMapDisplay
+            center={currentLocation || { lat: -23.55052, lng: -46.633309 }}
+            zoom={13}
+            markers={markers}
+            className="h-full"
+          />
+          {currentLocation && (
+            <div className="absolute bottom-4 right-4 z-10">
+              <Button 
+                onClick={handleUpdateLocation} 
+                size="sm"
+                className="bg-white text-black hover:bg-gray-200 rounded-full shadow-lg p-2 h-10 w-10"
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                ) : (
+                  <Navigation className="h-5 w-5 text-primary" />
+                )}
+              </Button>
+            </div>
+          )}
+        </>
       ) : (
-        <div className="p-4 w-full max-w-md">
+        <div className="p-4 w-full max-w-md mx-auto my-auto">
           <GoogleApiKeyForm 
             googleApiKey={googleApiKey} 
             setGoogleApiKey={setGoogleApiKey} 
           />
+        </div>
+      )}
+      
+      {error && (
+        <div className="p-2 bg-red-50 border border-red-200 rounded-md text-sm text-red-600 mt-2 mx-4">
+          {error}
         </div>
       )}
     </div>

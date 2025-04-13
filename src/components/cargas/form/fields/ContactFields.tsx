@@ -10,16 +10,16 @@ interface ContactFieldsProps {
 export const ContactFields: React.FC<ContactFieldsProps> = ({ 
   control
 }) => (
-  <div className="grid grid-cols-2 gap-4">
+  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
     <FormField
       control={control}
       name="contactName"
       render={({ field }) => (
         <FormItem className="space-y-1">
-          <FormLabel>Nome para contato</FormLabel>
+          <FormLabel>Nome do destinatário</FormLabel>
           <FormControl>
             <Input 
-              placeholder="Seu nome"
+              placeholder="Nome do destinatário"
               {...field}
             />
           </FormControl>

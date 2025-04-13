@@ -11,7 +11,7 @@ interface DimensionFieldsProps {
 export const DimensionFields: React.FC<DimensionFieldsProps> = ({ 
   control, required = true 
 }) => (
-  <div className="grid grid-cols-3 gap-3">
+  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
     <MeasurementField
       control={control}
       name="height"
