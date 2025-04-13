@@ -41,6 +41,20 @@ const BookingPanel: React.FC<BookingPanelProps> = ({
     onBookRide();
   };
 
+  // Function to get the button text based on the selected vehicle type
+  const getButtonText = () => {
+    switch (carType) {
+      case 'serv-x':
+        return 'Solicitar Moto';
+      case 'serv-comfort':
+        return 'Solicitar Carro';
+      case 'serv-black':
+        return 'Solicitar Executivo';
+      default:
+        return 'Solicitar Serviço';
+    }
+  };
+
   const rideOptions: RideOption[] = [
     {
       id: 'serv-x',
@@ -148,7 +162,7 @@ const BookingPanel: React.FC<BookingPanelProps> = ({
           onClick={handleBookRide}
           className="w-full bg-primary hover:bg-primary/90 text-black font-semibold"
         >
-          Solicitar Serv {carType.split('-')[1]?.toUpperCase() || 'X'}
+          {getButtonText()}
         </Button>
       </div>
     </div>

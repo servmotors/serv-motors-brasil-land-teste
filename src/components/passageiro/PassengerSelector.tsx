@@ -35,14 +35,10 @@ const PassengerSelector: React.FC<PassengerSelectorProps> = ({
         </div>
       </div>
       
-      <div className="flex space-x-2">
-        <Button variant="outline" className="flex-1 text-xs border-gray-300">
+      <div className="flex">
+        <Button variant="outline" className="w-full text-xs border-gray-300">
           <CreditCard className="mr-2 h-4 w-4" />
           Cartão
-        </Button>
-        <Button variant="outline" className="flex-1 text-xs border-gray-300">
-          <Users className="mr-2 h-4 w-4" />
-          Dividir
         </Button>
       </div>
     </div>
