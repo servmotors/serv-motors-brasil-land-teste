@@ -1,12 +1,7 @@
 
-import { ReactNode } from 'react';
-
-export interface RideOption {
-  id: string;
-  name: string;
-  icon: ReactNode;
-  description: string;
-  price: string;
-  time: string;
-  image: string;
+export interface RideData {
+  pickup?: string;
+  destination?: string;
+  distance?: number;
+  fare?: string;
 }
