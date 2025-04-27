@@ -12,7 +12,8 @@ interface Step1Props {
 }
 
 const Step1VehicleYear = ({ vehicleAge, isVehicleTooOld }: Step1Props) => {
-  const { control } = useFormContext();
+  const { control, watch } = useFormContext();
+  const vehicleYear = watch('vehicleYear');
 
   return (
     <div className="space-y-6">
@@ -32,7 +33,6 @@ const Step1VehicleYear = ({ vehicleAge, isVehicleTooOld }: Step1Props) => {
                 min={1990}
                 {...field}
                 onChange={(e) => {
-                  // Limitar a 4 dígitos
                   const value = e.target.value;
                   if (value.length <= 4) {
                     field.onChange(parseInt(value) || '');
@@ -45,7 +45,7 @@ const Step1VehicleYear = ({ vehicleAge, isVehicleTooOld }: Step1Props) => {
         )}
       />
       
-      {field.value && (
+      {vehicleYear && (
         <div className="mt-4">
           <p className="text-sm text-gray-500">
             Idade do veículo: <span className={vehicleAge > 13 ? "font-bold text-amber-500" : ""}>{vehicleAge} anos</span>
@@ -64,7 +64,7 @@ const Step1VehicleYear = ({ vehicleAge, isVehicleTooOld }: Step1Props) => {
       )}
       
       {vehicleAge > 13 && vehicleAge <= 15 && (
-        <Alert variant="warning">
+        <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
           <AlertTitle>Atenção</AlertTitle>
           <AlertDescription>
@@ -78,3 +78,4 @@ const Step1VehicleYear = ({ vehicleAge, isVehicleTooOld }: Step1Props) => {
 };
 
 export default Step1VehicleYear;
+
