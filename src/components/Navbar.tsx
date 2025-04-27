@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Menu, X } from 'lucide-react';
@@ -27,7 +26,7 @@ const Navbar: React.FC = () => {
             <img 
               src="/lovable-uploads/92dee777-99ea-4a9a-be34-544d4c04fdaf.png" 
               alt="ServMotors Logo" 
-              className="h-10 object-contain"
+              className="h-12 md:h-14 object-contain transition-transform hover:scale-105"
             />
           </Link>
         </div>

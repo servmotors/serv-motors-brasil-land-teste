@@ -24,7 +24,7 @@ const Header = ({ navigateBack }: HeaderProps) => {
           <img 
             src="/lovable-uploads/92dee777-99ea-4a9a-be34-544d4c04fdaf.png" 
             alt="ServMotors Logo" 
-            className="h-8 object-contain"
+            className="h-10 md:h-12 object-contain transition-transform hover:scale-105"
           />
         </Link>
       </div>

@@ -1,6 +1,6 @@
-
 import React from 'react';
 import { Button } from "@/components/ui/button";
+import { Link } from 'react-router-dom';
 
 const MainHeroSection: React.FC = () => {
   const scrollToDownload = () => {
@@ -16,6 +16,13 @@ const MainHeroSection: React.FC = () => {
       <div className="container-custom relative z-10 py-20 md:py-32">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           <div className="flex flex-col space-y-6 animate-fade-in">
+            <Link to="/" className="inline-block max-w-xs">
+              <img 
+                src="/lovable-uploads/92dee777-99ea-4a9a-be34-544d4c04fdaf.png" 
+                alt="ServMotors Logo" 
+                className="h-16 md:h-20 object-contain mb-4 transition-transform hover:scale-105"
+              />
+            </Link>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
               Sua jornada, <span className="text-primary">nossa missão</span>
             </h1>
