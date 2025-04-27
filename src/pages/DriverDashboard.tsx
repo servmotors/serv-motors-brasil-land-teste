@@ -23,7 +23,7 @@ import DashboardLayout from '@/components/driver-dashboard/DashboardLayout';
 
 const DriverDashboard = () => {
   const { user, profile, driverProfile } = useAuth();
-  const [activeSection, setActiveSection] = useState('dashboard');
+  const [activeSection, setActiveSection] = useState('vehicle'); // Iniciar no cadastro de veículos
   
   // If not logged in, redirect to auth page
   if (!user) {
@@ -42,7 +42,6 @@ const DriverDashboard = () => {
       id: 'balance',
       label: 'Saldo',
       icon: <Wallet className="h-5 w-5" />,
-      value: 'R$ 0,00',
       color: 'text-green-500'
     },
     {

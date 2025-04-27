@@ -1,5 +1,6 @@
 
 import React, { useEffect } from 'react';
+import WelcomeHeader from './WelcomeHeader';
 import DriverProfile from './DriverProfile';
 import DriverMap from '@/components/DriverMap';
 import { useGeolocation } from '@/hooks/useGeolocation';
@@ -48,9 +49,12 @@ const DashboardSection = ({ profile, driverProfile }: DashboardSectionProps) => 
   }, [googleApiKey, currentLocation, loadGoogleMapsApi]);
   
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <DriverProfile profile={combinedProfile} />
-      <DriverMap className="h-full" />
+    <div className="space-y-6">
+      <WelcomeHeader />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <DriverProfile profile={combinedProfile} />
+        <DriverMap className="h-full" />
+      </div>
     </div>
   );
 };

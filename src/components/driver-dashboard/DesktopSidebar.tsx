@@ -1,6 +1,6 @@
 
-import React from 'react';
-import { LogOut } from 'lucide-react';
+import React, { useState } from 'react';
+import { LogOut, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { 
@@ -13,6 +13,8 @@ import {
   SidebarFooter
 } from '@/components/ui/sidebar';
 import { MenuItem } from '@/types/dashboard';
+import { useToast } from '@/hooks/use-toast';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface DesktopSidebarProps {
   isAvailable: boolean;
@@ -21,6 +23,7 @@ interface DesktopSidebarProps {
   activeSection: string;
   setActiveSection: (id: string) => void;
   signOut: () => void;
+  balance: string;
 }
 
 const DesktopSidebar = ({
@@ -29,8 +32,30 @@ const DesktopSidebar = ({
   menuItems,
   activeSection,
   setActiveSection,
-  signOut
+  signOut,
+  balance
 }: DesktopSidebarProps) => {
+  const { toast } = useToast();
+  const [collapsed, setCollapsed] = useState(false);
+  
+  const handleToggleAvailability = () => {
+    // Se o motorista estiver ficando disponível, aqui seria o lugar para verificar 
+    // se tem mais de um veículo e exibir o popup para seleção
+    toggleAvailability();
+    
+    if (!isAvailable) {
+      toast({
+        title: 'Você está disponível para corridas',
+        description: 'Agora você poderá receber solicitações de corridas.',
+      });
+    } else {
+      toast({
+        title: 'Você está indisponível para corridas',
+        description: 'Você não receberá solicitações de corridas.',
+      });
+    }
+  };
+
   return (
     <Sidebar className="hidden md:flex">
       <SidebarHeader className="p-4 border-b">
@@ -42,7 +67,7 @@ const DesktopSidebar = ({
             <span className="text-sm text-gray-500">Disponível:</span>
             <Switch 
               checked={isAvailable} 
-              onCheckedChange={toggleAvailability} 
+              onCheckedChange={handleToggleAvailability} 
               aria-label="Toggle disponibilidade"
             />
             <span className="text-sm font-medium">
@@ -63,8 +88,8 @@ const DesktopSidebar = ({
               >
                 <span className={`${item.color}`}>{item.icon}</span>
                 <span>{item.label}</span>
-                {item.value && (
-                  <span className="ml-auto font-medium text-green-600">{item.value}</span>
+                {item.id === 'balance' && (
+                  <span className="ml-auto font-medium text-green-600">{balance}</span>
                 )}
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -72,7 +97,7 @@ const DesktopSidebar = ({
         </SidebarMenu>
       </SidebarContent>
       
-      <SidebarFooter className="p-4 border-t">
+      <SidebarFooter className="p-4 border-t flex flex-col space-y-2">
         <Button 
           variant="outline" 
           className="w-full justify-start text-red-500 hover:text-red-600" 
@@ -80,6 +105,21 @@ const DesktopSidebar = ({
         >
           <LogOut className="h-5 w-5 mr-2" />
           Sair
+        </Button>
+        
+        <Button
+          variant="ghost"
+          size="sm"
+          className="w-full justify-center"
+          onClick={() => setCollapsed(!collapsed)}
+        >
+          {collapsed ? 
+            <ChevronRight className="h-4 w-4" /> : 
+            <ChevronLeft className="h-4 w-4" />
+          }
+          <span className="sr-only">
+            {collapsed ? 'Expandir' : 'Recolher'} menu
+          </span>
         </Button>
       </SidebarFooter>
     </Sidebar>
