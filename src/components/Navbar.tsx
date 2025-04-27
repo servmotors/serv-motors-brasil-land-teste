@@ -23,8 +23,12 @@ const Navbar: React.FC = () => {
     <nav className="bg-white sticky top-0 z-50 shadow-sm">
       <div className="container-custom flex justify-between items-center py-4">
         <div className="flex items-center">
-          <Link to="/" className="text-2xl font-display font-bold text-primary">
-            Serv<span className="text-black">Motors</span>
+          <Link to="/" className="flex items-center">
+            <img 
+              src="/lovable-uploads/92dee777-99ea-4a9a-be34-544d4c04fdaf.png" 
+              alt="ServMotors Logo" 
+              className="h-10 object-contain"
+            />
           </Link>
         </div>
 
