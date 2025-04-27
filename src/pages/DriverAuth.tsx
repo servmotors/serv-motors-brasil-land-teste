@@ -1,5 +1,4 @@
-
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -11,11 +10,18 @@ import { useRegistrationSteps } from '@/hooks/useRegistrationSteps';
 import { useAuthTabs, AuthTab } from '@/hooks/useAuthTabs';
 import LoginTab from '@/components/auth/tabs/LoginTab';
 import RegisterTab from '@/components/auth/tabs/RegisterTab';
+import { useAuth } from '@/contexts/AuthContext';
 
 const DriverAuth = () => {
-  const [registrationSuccess, setRegistrationSuccess] = useState(false);
   const navigate = useNavigate();
+  const { user, driverProfile } = useAuth();
   
+  useEffect(() => {
+    if (user && driverProfile) {
+      navigate('/motorista/dashboard');
+    }
+  }, [user, driverProfile, navigate]);
+
   const { 
     isSubmitting, 
     handleLogin, 
@@ -24,7 +30,6 @@ const DriverAuth = () => {
 
   const { isRegistering, handleTabChange } = useAuthTabs();
 
-  // Login form with zod validation
   const loginForm = useForm<{
     email: string;
     password: string;
@@ -36,7 +41,6 @@ const DriverAuth = () => {
     },
   });
 
-  // Register form with zod validation for account details (step 1)
   const registerForm = useForm<{
     fullName: string;
     email: string;
@@ -58,7 +62,6 @@ const DriverAuth = () => {
     mode: 'onTouched'
   });
 
-  // Identity form with zod validation (step 2)
   const identityForm = useForm<{
     birthDate: Date;
     cpf: string;
@@ -76,7 +79,6 @@ const DriverAuth = () => {
     mode: 'onTouched'
   });
 
-  // Address form with zod validation (step 3)
   const addressForm = useForm<{
     cep: string;
     street: string;
@@ -107,7 +109,6 @@ const DriverAuth = () => {
     resetForms
   } = useRegistrationSteps(registerForm, identityForm, addressForm);
 
-  // Reset forms when registration is successful
   useEffect(() => {
     if (registrationSuccess) {
       resetForms();
@@ -119,19 +120,16 @@ const DriverAuth = () => {
     const addressValid = await addressForm.trigger();
     if (!addressValid) return;
 
-    // Combine all form data
     const accountData = registerForm.getValues();
     const identityData = identityForm.getValues();
     const addressData = addressForm.getValues();
 
-    // Call registration handler with all data
     const result = await handleRegister({
       ...accountData,
       ...identityData,
       ...addressData,
     });
     
-    // Set registration success if the registration was successful
     if (result && !result.error) {
       setRegistrationSuccess(true);
     }
@@ -140,7 +138,6 @@ const DriverAuth = () => {
   const handleTabValueChange = (value: string) => {
     handleTabChange(value as AuthTab);
     if (value === 'register') {
-      // Reset to first step when switching to register tab
       setCurrentStep('account');
     }
   };
