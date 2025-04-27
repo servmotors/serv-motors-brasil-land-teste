@@ -11,9 +11,23 @@ export const useDriverAuth = () => {
   const { signIn, signUp } = useAuth();
   const { toast } = useToast();
 
+  const isDemoAccount = (email: string, password: string) => {
+    return email === 'demo@motorista.com' && password === 'demo123';
+  };
+
   const handleLogin = async (data: LoginFormValues) => {
     setIsSubmitting(true);
     try {
+      // Check for demo account
+      if (isDemoAccount(data.email, data.password)) {
+        toast({
+          title: 'Modo Demo',
+          description: 'Bem-vindo ao modo de demonstração!',
+        });
+        navigate('/motorista/dashboard');
+        return;
+      }
+
       const response = await signIn(data.email, data.password);
       
       if (response.error) {

@@ -6,14 +6,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
-// Update interface to make fields match the useForm implementation
 interface LoginFormValues {
   email: string;
   password: string;
 }
 
-// Update the form prop to explicitly match what useForm returns
 interface LoginFormProps {
   form: UseFormReturn<{
     email: string;
@@ -32,6 +31,12 @@ const LoginForm = ({ form, onSubmit, isSubmitting }: LoginFormProps) => {
       </CardHeader>
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <CardContent className="space-y-4">
+          <Alert>
+            <AlertDescription>
+              Acesso demo - Email: demo@motorista.com | Senha: demo123
+            </AlertDescription>
+          </Alert>
+          
           <div className="space-y-2">
             <Label htmlFor="email">E-mail</Label>
             <div className="relative">
