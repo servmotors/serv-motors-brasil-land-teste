@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -15,6 +16,7 @@ import { useAuth } from '@/contexts/AuthContext';
 const DriverAuth = () => {
   const navigate = useNavigate();
   const { user, driverProfile } = useAuth();
+  const [registrationSuccess, setRegistrationSuccess] = useState(false);
   
   useEffect(() => {
     if (user && driverProfile) {
