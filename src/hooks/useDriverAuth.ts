@@ -14,8 +14,18 @@ export const useDriverAuth = () => {
   const handleLogin = async (data: LoginFormValues) => {
     setIsSubmitting(true);
     try {
-      const result = await signIn(data.email, data.password);
-      if (!result.error) {
+      const response = await signIn(data.email, data.password);
+      
+      if (response.error) {
+        toast({
+          title: 'Erro ao fazer login',
+          description: response.error.message,
+          variant: 'destructive',
+        });
+        return;
+      }
+
+      if (response.data?.user) {
         toast({
           title: 'Login realizado com sucesso!',
           description: 'Bem-vindo de volta.',
@@ -34,7 +44,6 @@ export const useDriverAuth = () => {
         fullName: data.fullName,
         userType: 'driver',
         phone: data.phone,
-        // Add profileImage to the data being passed to signUp
         profileImage: data.profileImage
       });
       
